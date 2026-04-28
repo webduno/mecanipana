@@ -65,3 +65,35 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 > ok, start adding all pages that only handle localStorage stuff, and link the buttons of the main page
 
 **Outcome:** Rutas `/registrar-uso`, `/historial`, `/resumen`, `/combustible`, `/mantenimiento`, `/recordatorios`, `/opciones`, `/datos-vehiculo` con `PageShell` (Inicio). Datos en LS vía `storage-keys.ts`, `local-storage-data.ts`, tipos en `mecanipana-types.ts`. Inicio usa `Link` en la cuadrícula; cuenta sigue deshabilitada. `MecanipanaBodyClass` para “letra grande”. `VehicleDefaultPanel` usa `STORAGE_KEYS`.
+
+---
+
+## 2026-04-28 (7)
+
+**Prompt:**
+
+> pon que se hizo como un select, e igual opciones predefinidas, y agregar custom con localstorage
+
+**Outcome:** `mantenimiento-screen.tsx`: `<select>` con lista fija en código + extras desde LS (`mecanipana:maintenanceWhatCustom`). `loadMaintenanceWhatCustom` / `appendMaintenanceWhatCustom` en `local-storage-data.ts`. Botón `+` para añadir vía `prompt`. Clave en `storage-keys.ts`.
+
+---
+
+## 2026-04-28 (8)
+
+**Prompt:**
+
+> and add icons to this page aswell
+
+**Outcome:** `PageShell` con `titleIcon` opcional. `/mantenimiento` pasa `IconMantenimiento`. Etiquetas del form y “Últimos registros” con `IconCalendario`, `IconMantenimiento`, `IconNota`, `IconHistorial`. Nuevos `IconCalendario` e `IconNota` en `grid-action-icons.tsx`. Clases `.win98-titlebar-icon`, `.win98-label--with-icon`, `.win98-label-icon` en `globals.css`.
+
+---
+
+## 2026-04-28 (9)
+
+**Prompt:**
+
+> put easy options like today, yesterday, last week, last 2 week, last month and so on, as well as last optionn be custom date so its easier to select,
+
+**Outcome:** `mantenimiento-screen.tsx`: `<select>` de atajos (hoy, ayer, 1/2 semanas, 1/3 meses, “Otra fecha y hora…”) que actualiza `datetime-local`; edición manual fuerza modo personalizado.
+
+---
