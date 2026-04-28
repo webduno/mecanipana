@@ -1,0 +1,36 @@
+---
+description: Log user prompts and outcomes in PROMPTS.md after substantive work
+alwaysApply: true
+---
+
+# Prompt history (`PROMPTS.md`)
+
+After you complete **user-driven** work that changes behavior, features, data model, or notable UX (not tiny typo-only edits unless the user asks), **append a new entry to `PROMPTS.md`** so the team can share context later.
+
+## How to append
+
+- Add **below the latest entry** (file header says newest at bottom).
+- Use this shape (match existing entries):
+
+```markdown
+---
+
+## YYYY-MM-DD (n)
+
+**Prompt:**
+
+> (verbatim or faithful paraphrase of what the user asked)
+
+**Outcome:** Short summary: files touched, main decision, 1–2 lines max.
+```
+
+- Number `(n)` only if there are multiple entries the same calendar day (continue the sequence in the file).
+- One entry per coherent task; you may merge closely related messages from the same session into a single entry.
+
+## Do not log
+
+- Pure refactors with no user request, internal tooling, or negligible one-line fixes—unless the user explicitly wants it recorded.
+
+## Related docs
+
+- **`PROJECT.md`**: product vision and scope (not the prompt log).
