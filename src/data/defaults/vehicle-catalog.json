@@ -1,0 +1,21 @@
+{
+  "brands": [
+    {
+      "id": "fiat",
+      "name": "Fiat",
+      "models": [
+        {
+          "id": "siena",
+          "name": "Siena",
+          "variants": [
+            {
+              "id": "siena-14-2008",
+              "engine": "1.4",
+              "year": 2008
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,454 @@
+@import "tailwindcss";
+
+:root {
+  --win-bg-desktop: #008080;
+  --win-bg-face: #c0c0c0;
+  --win-border-light: #ffffff;
+  --win-border-dark: #404040;
+  --win-border-shadow: #808080;
+  --win-title-start: #000080;
+  --win-title-end: #1084d0;
+  --win-text: #000000;
+}
+
+@theme inline {
+  --font-sans: Tahoma, "MS Sans Serif", Verdana, "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--win-bg-desktop);
+  color: var(--win-text);
+  font-family: Tahoma, "MS Sans Serif", Verdana, "Segoe UI", system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.45;
+  -webkit-font-smoothing: auto;
+}
+
+/* Win98-style raised panel */
+.win98-window {
+  background: var(--win-bg-face);
+  border: 2px solid;
+  border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark)
+    var(--win-border-light);
+  box-shadow: 2px 2px 0 #000000;
+}
+
+.win98-titlebar {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(
+    90deg,
+    var(--win-title-start) 0%,
+    var(--win-title-end) 100%
+  );
+  color: #ffffff;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 4vw, 1.35rem);
+  letter-spacing: 0.02em;
+}
+
+.win98-body {
+  padding: 1rem;
+}
+
+.win98-inset {
+  background: #ffffff;
+  border: 2px solid;
+  border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light)
+    var(--win-border-dark);
+  padding: 0.75rem 1rem;
+  font-size: clamp(1rem, 3.8vw, 1.2rem);
+}
+
+.win98-inset-vehicle {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.win98-field-group {
+  padding: 0.65rem 0.7rem 0.75rem;
+  background: #d4d0c8;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.win98-field-group--vehicle {
+  box-shadow: inset 5px 0 0 #000080;
+}
+
+.win98-field-group--motor {
+  box-shadow: inset 5px 0 0 #1f6b3a;
+}
+
+.win98-field-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.45rem;
+}
+
+.win98-field-head-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.win98-field-hint {
+  margin: 0.2rem 0 0;
+  font-size: clamp(0.8rem, 3vw, 0.95rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: #303030;
+}
+
+.win98-btn-square {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 3.35rem;
+  min-height: 3.1rem;
+  padding: 0.2rem 0.35rem;
+  margin: 0;
+  background: var(--win-bg-face);
+  border: 2px solid;
+  border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark)
+    var(--win-border-light);
+  font: inherit;
+  line-height: 1;
+  color: var(--win-text);
+  cursor: pointer;
+}
+
+.win98-btn-square-plus {
+  font-weight: 800;
+  font-size: 1.45rem;
+}
+
+.win98-btn-square-caption {
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.win98-btn-square--vehicle {
+  background: #000080;
+  color: #ffffff;
+  border-color: #6b7fd7 #000030 #000030 #6b7fd7;
+}
+
+.win98-btn-square--vehicle .win98-btn-square-caption {
+  color: #dde3ff;
+}
+
+.win98-btn-square--motor {
+  background: #1f6b3a;
+  color: #ffffff;
+  border-color: #5ccd88 #0a2816 #0a2816 #5ccd88;
+}
+
+.win98-btn-square--motor .win98-btn-square-caption {
+  color: #d8f0e2;
+}
+
+.win98-btn-square:active {
+  border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light)
+    var(--win-border-dark);
+  padding-top: 3px;
+  padding-left: 4px;
+}
+
+.win98-btn-square--vehicle:active,
+.win98-btn-square--motor:active {
+  border-color: #000030 #6b7fd7 #6b7fd7 #000030;
+}
+
+.win98-btn-square--motor:active {
+  border-color: #0a2816 #5ccd88 #5ccd88 #0a2816;
+}
+
+.win98-btn-square:focus-visible {
+  outline: 2px dotted #000000;
+  outline-offset: 2px;
+}
+
+.win98-btn-square--vehicle:focus-visible,
+.win98-btn-square--motor:focus-visible {
+  outline-color: #ffffff;
+}
+
+.win98-field-label {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(0.98rem, 3.6vw, 1.12rem);
+}
+
+.win98-select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 2.85rem;
+  padding: 0.4rem 0.55rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+  background: #ffffff;
+  border: 2px solid;
+  border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light)
+    var(--win-border-dark);
+  color: var(--win-text);
+  cursor: pointer;
+}
+
+.win98-select--vehicle {
+  border-left-width: 3px;
+  border-left-color: #000080;
+}
+
+.win98-select--motor {
+  border-left-width: 3px;
+  border-left-color: #1f6b3a;
+}
+
+.win98-select:disabled {
+  cursor: wait;
+  opacity: 0.85;
+}
+
+.win98-select:focus-visible {
+  outline: 2px dotted #000000;
+  outline-offset: 1px;
+}
+
+.win98-vehicle-resumen-box {
+  margin-top: 0.15rem;
+  padding: 0.55rem 0.65rem;
+  background: #ffffcc;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.win98-vehicle-resumen-label {
+  margin: 0;
+  font-size: clamp(0.78rem, 2.9vw, 0.9rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #505050;
+}
+
+.win98-vehicle-resumen {
+  margin: 0.35rem 0 0;
+  font-weight: 700;
+  font-size: clamp(1rem, 3.6vw, 1.15rem);
+  line-height: 1.35;
+}
+
+/* Large action button — Win98 raised */
+.win98-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.85rem 1.25rem;
+  margin: 0;
+  background: var(--win-bg-face);
+  border: 2px solid;
+  border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark)
+    var(--win-border-light);
+  font: inherit;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 4vw, 1.25rem);
+  color: var(--win-text);
+  cursor: pointer;
+  text-align: center;
+}
+
+.win98-btn:active {
+  border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light)
+    var(--win-border-dark);
+  padding-top: calc(0.85rem + 1px);
+  padding-left: calc(1.25rem + 1px);
+}
+
+.win98-btn:disabled {
+  color: #808080;
+  text-shadow: 1px 1px 0 #ffffff;
+  cursor: not-allowed;
+}
+
+.win98-btn:focus-visible {
+  outline: 2px dotted #000000;
+  outline-offset: 2px;
+}
+
+/* Cuadrícula 3×3: icono arriba, texto breve */
+.win98-btn-tile {
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 5.75rem;
+  padding: 0.55rem 0.35rem;
+  font-size: clamp(0.78rem, 3.1vw, 0.98rem);
+  line-height: 1.2;
+  hyphens: auto;
+}
+
+.win98-btn-icon {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .win98-btn-tile {
+    min-height: 6.25rem;
+    padding: 0.65rem 0.45rem;
+    font-size: clamp(0.88rem, 2.2vw, 1.05rem);
+  }
+
+  .win98-btn-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+/* Acciones más usadas — contraste sobre gris Win98 */
+.win98-btn--accent-blue {
+  background: #000080;
+  color: #ffffff;
+  border-color: #5a6fd4 #000040 #000040 #5a6fd4;
+}
+
+.win98-btn--accent-blue:active {
+  border-color: #000040 #5a6fd4 #5a6fd4 #000040;
+}
+
+.win98-btn--accent-green {
+  background: #1f6b3a;
+  color: #ffffff;
+  border-color: #4caf7a #0d3018 #0d3018 #4caf7a;
+}
+
+.win98-btn--accent-green:active {
+  border-color: #0d3018 #4caf7a #4caf7a #0d3018;
+}
+
+.win98-btn--accent-blue:focus-visible,
+.win98-btn--accent-green:focus-visible {
+  outline-color: #ffffff;
+}
+
+a.win98-btn {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+body.mp-font-lg {
+  font-size: 1.35rem;
+}
+
+.win98-label {
+  display: block;
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 3.4vw, 1.05rem);
+}
+
+.win98-input,
+.win98-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+  font-size: clamp(1rem, 3.5vw, 1.1rem);
+  background: #ffffff;
+  border: 2px solid;
+  border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light)
+    var(--win-border-dark);
+  color: var(--win-text);
+}
+
+.win98-input {
+  min-height: 2.85rem;
+}
+
+.win98-textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
+.win98-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.win98-form-row + .win98-form-row {
+  margin-top: 0.85rem;
+}
+
+.win98-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.win98-banner-ok {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  background: #ffffcc;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  font-weight: 600;
+}
+
+.win98-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.win98-list-item {
+  padding: 0.55rem 0.6rem;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  background: #ffffff;
+  margin-bottom: 0.45rem;
+}
+
+.win98-badge {
+  display: inline-block;
+  padding: 0.1rem 0.35rem;
+  margin-right: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: var(--win-bg-face);
+  border: 1px solid #808080;
+}
+
+.win98-badge--uso {
+  border-left: 4px solid #000080;
+}
+
+.win98-badge--combustible {
+  border-left: 4px solid #b35900;
+}
+
+.win98-badge--mantenimiento {
+  border-left: 4px solid #1f6b3a;
+}
+
+.win98-muted {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  color: #404040;
+}
