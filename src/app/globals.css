@@ -34,6 +34,28 @@ body {
   box-shadow: 2px 2px 0 #000000;
 }
 
+.win98-titlebar-icon {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  color: #ffffff;
+  opacity: 0.95;
+}
+
+.win98-label--with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.win98-label-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  color: #000080;
+}
+
 .win98-titlebar {
   display: flex;
   align-items: center;

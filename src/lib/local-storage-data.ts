@@ -120,6 +120,31 @@ export function appendMaintenance(entry: Omit<MaintenanceEntry, "id">): Maintena
   return row;
 }
 
+function isNonEmptyTrimmedString(x: unknown): x is string {
+  return typeof x === "string" && x.trim() !== "";
+}
+
+export function loadMaintenanceWhatCustom(): string[] {
+  if (typeof window === "undefined") return [];
+  const v = safeParse<unknown>(
+    window.localStorage.getItem(STORAGE_KEYS.maintenanceWhatCustom),
+    []
+  );
+  if (!Array.isArray(v)) return [];
+  return v.filter(isNonEmptyTrimmedString).map((s) => s.trim());
+}
+
+export function appendMaintenanceWhatCustom(label: string): string[] {
+  const trimmed = label.trim();
+  if (!trimmed) return loadMaintenanceWhatCustom();
+  const current = loadMaintenanceWhatCustom();
+  const lower = trimmed.toLowerCase();
+  if (current.some((x) => x.toLowerCase() === lower)) return current;
+  const next = [...current, trimmed];
+  window.localStorage.setItem(STORAGE_KEYS.maintenanceWhatCustom, JSON.stringify(next));
+  return next;
+}
+
 export function loadReminders(): ReminderEntry[] {
   if (typeof window === "undefined") return [];
   const v = safeParse<unknown>(window.localStorage.getItem(STORAGE_KEYS.reminders), []);

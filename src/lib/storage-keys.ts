@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   usageLog: "mecanipana:usageLog",
   fuelLog: "mecanipana:fuelLog",
   maintenanceLog: "mecanipana:maintenanceLog",
+  maintenanceWhatCustom: "mecanipana:maintenanceWhatCustom",
   reminders: "mecanipana:reminders",
   options: "mecanipana:options",
   vehicleNotes: "mecanipana:vehicleNotes",

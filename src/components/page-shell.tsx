@@ -3,9 +3,11 @@ import type { ReactNode } from "react";
 
 export function PageShell({
   title,
+  titleIcon,
   children,
 }: {
   title: string;
+  titleIcon?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -18,7 +20,10 @@ export function PageShell({
           >
             ← Inicio
           </Link>
-          <span className="min-w-0 truncate">{title}</span>
+          <span className="flex min-w-0 flex-1 items-center gap-2">
+            {titleIcon ? <span className="shrink-0">{titleIcon}</span> : null}
+            <span className="min-w-0 truncate">{title}</span>
+          </span>
         </header>
         <div className="win98-body flex flex-col gap-4">{children}</div>
       </div>

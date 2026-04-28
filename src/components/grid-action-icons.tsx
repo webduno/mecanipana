@@ -141,3 +141,35 @@ export function IconCuenta(props: IconProps) {
     </svg>
   );
 }
+
+export function IconCalendario(props: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className={props.className}
+      aria-hidden
+    >
+      <path
+        fill="currentColor"
+        d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14c0 1.1.9 2 2 2h14a2 2 0 002-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"
+      />
+    </svg>
+  );
+}
+
+export function IconNota(props: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className={props.className}
+      aria-hidden
+    >
+      <path
+        fill="currentColor"
+        d="M6 22a2 2 0 01-2-2V4a2 2 0 012-2h8l6 6v12a2 2 0 01-2 2H6zm8-18H6v16h12V10h-5V4zm1 8H7v2h8v-2zm0 4H7v2h8v-2z"
+      />
+    </svg>
+  );
+}
