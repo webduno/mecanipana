@@ -160,7 +160,7 @@ export function EsteEquipoModalControl() {
             role="tabpanel"
             aria-labelledby={`${baseId}-tab-car`}
             hidden={tab !== "car"}
-            className={tab === "car" ? "flex min-h-0 flex-col gap-3" : "hidden"}
+            className={tab === "car" ? "flex shrink-0 flex-col gap-3" : "hidden"}
           >
             <VehicleDefaultPanel />
             <Link
@@ -176,7 +176,7 @@ export function EsteEquipoModalControl() {
             role="tabpanel"
             aria-labelledby={`${baseId}-tab-datos`}
             hidden={tab !== "datos"}
-            className={tab === "datos" ? "flex min-h-0 flex-col gap-3" : "hidden"}
+            className={tab === "datos" ? "flex shrink-0 flex-col gap-3" : "hidden"}
           >
             <p className="m-0 text-[0.92rem] leading-snug text-[#404040]">
               Resumen de lo guardado en{" "}

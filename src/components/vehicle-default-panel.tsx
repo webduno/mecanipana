@@ -111,7 +111,7 @@ export function VehicleDefaultPanel() {
         <div className="win98-field-head">
           <div className="win98-field-head-text">
             <label className="win98-field-label" htmlFor="vehiculo-defecto-linea">
-              1 · Vehículo por defecto
+              1 · Selecciona tu vehículo
             </label>
             <p className="win98-field-hint">
               Marca y modelo (ej. Fiat Siena). Aquí eliges cuál carro usas más.
@@ -153,7 +153,7 @@ export function VehicleDefaultPanel() {
         <div className="win98-field-head">
           <div className="win98-field-head-text">
             <label className="win98-field-label" htmlFor="vehiculo-defecto-version">
-              2 · Motor y año
+              2 · Selecciona el motor y año
             </label>
             <p className="win98-field-hint">
               Cilindraje y año (ej. 1.4 · 2008). Va aparte del nombre del carro.

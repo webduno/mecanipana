@@ -217,3 +217,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `AppWindowShell` unifica landing + páginas internas (titlebar + `win98-body`). `HeaderToolbar` siempre monta `EsteEquipoModalControl` (`este-equipo-modal.tsx`) + prop `extra`. `PageShell` delega en `AppWindowShell variant="page"` con `headerActionsExtra`. Landing usa `AppWindowShell variant="landing"`. Eliminado `container-shortcuts.tsx`. `Win98ChromeModal`: helper para otro botón cuadrado + modal con portal y `mp-overlay-dialog`.
 
 ---
+
+## 2026-04-28 (22)
+
+**Prompt:**
+
+> are these supposed to overlap and hide parts like that on these screen size?
+
+**Outcome:** No era intencional: paneles de pestaña tenían `min-h-0` y podían encogerse en el flex del `win98-body`, con desbordamiento bajo el botón «Cerrar». Sustituido por `shrink-0` en ambos `tabpanel` en `este-equipo-modal.tsx` para que el scroll sea el del cuerpo del modal y no se tape el contenido.
+
+---
