@@ -12,6 +12,7 @@ import {
   urgenciaFromForm,
   UrgenciaField,
 } from "@/components/urgencia-field";
+import { useToast } from "@/components/toast-provider";
 import {
   appendMaintenance,
   appendMaintenanceWhatCustom,
@@ -87,6 +88,7 @@ function formatDisplayAt(iso: string) {
 }
 
 export function MantenimientoScreen() {
+  const { showToast } = useToast();
   const now = useMemo(() => new Date(), []);
   const [urgenciaPreset, setUrgenciaPreset] = useState<UrgenciaPreset>("50");
   const [urgenciaCustom, setUrgenciaCustom] = useState(50);
@@ -110,15 +112,16 @@ export function MantenimientoScreen() {
     return out;
   }, [customWhat]);
 
-  useEffect(() => {
-    setCustomWhat(loadMaintenanceWhatCustom());
-  }, []);
+  const whatForSelect = useMemo(
+    () => (whatOptions.includes(what) ? what : (whatOptions[0] ?? "")),
+    [whatOptions, what]
+  );
 
   useEffect(() => {
-    if (!whatOptions.includes(what) && whatOptions[0]) {
-      setWhat(whatOptions[0]!);
-    }
-  }, [whatOptions, what]);
+    queueMicrotask(() => {
+      setCustomWhat(loadMaintenanceWhatCustom());
+    });
+  }, []);
 
   function addCustomWhat() {
     const raw = window.prompt("¿Qué mantenimiento quieres añadir a la lista?", "");
@@ -133,16 +136,19 @@ export function MantenimientoScreen() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const iso = new Date(at).toISOString();
+    const whatSaved =
+      (whatOptions.includes(what) ? what : whatOptions[0] ?? "").trim() || "Mantenimiento";
     const row = appendMaintenance({
       urgencia: urgenciaFromForm(urgenciaPreset, urgenciaCustom),
       at: iso,
-      what: what.trim() || "Mantenimiento",
+      what: whatSaved,
       note: note.trim(),
     });
     void pushMaintenanceEntryRemote(row);
     setWhat(PREDEFINED_MAINTENANCE_WHAT[0]!);
     setNote("");
     bump((n) => n + 1);
+    showToast("Guardado en este equipo.");
   }
 
   function onDatePresetChange(id: DatePresetId) {
@@ -216,7 +222,7 @@ export function MantenimientoScreen() {
               id="mant-que"
               className="win98-select"
               style={{ flex: 1, minWidth: 0 }}
-              value={what}
+              value={whatForSelect}
               onChange={(e) => setWhat(e.target.value)}
               required
             >

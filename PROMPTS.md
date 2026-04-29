@@ -429,3 +429,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Middleware solo llama `updateSession` si hay cookies `sb-*` de sesión; `pushUsageEntryRemote` / `pushMaintenanceEntryRemote` hacen `getSession()` y no hacen `fetch` a `/api` sin usuario. localStorage sigue igual sin login.
 
 ---
+
+## 2026-04-28 (43)
+
+**Prompt:**
+
+> add toast notification component, and implement when adding a mantenimiento or agregar info
+
+**Outcome:** `ToastProvider` + `useToast()` en `src/components/toast-provider.tsx`, envuelve la app en `app-providers.tsx`; estilo `.mp-toast` (Win98 + themes); toasts al guardar en `mantenimiento-screen` y `registro-uso-screen` («Agregar Info»).
+
+---

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import usageNotePresets from "@/data/defaults/usage-note-presets.json";
 import { urgenciaFromForm, type UrgenciaPreset, UrgenciaField } from "@/components/urgencia-field";
+import { useToast } from "@/components/toast-provider";
 import { appendUsage } from "@/lib/local-storage-data";
 import { pushUsageEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
@@ -48,21 +49,23 @@ function appendToNote(prev: string, addition: string, maxLen: number) {
 const KINDS = ["Viaje", "Trabajo", "Recado", "Otro"];
 
 export function RegistroUsoScreen() {
+  const { showToast } = useToast();
   const [urgenciaPreset, setUrgenciaPreset] = useState<UrgenciaPreset>("50");
   const [urgenciaCustom, setUrgenciaCustom] = useState(50);
   const [at, setAt] = useState(() => toDatetimeLocalValue(new Date()));
   const [kind, setKind] = useState(KINDS[0]!);
   const [odometerKm, setOdometerKm] = useState("");
   const [note, setNote] = useState("");
-  const [ok, setOk] = useState<string | null>(null);
   const [phrases, setPhrases] = useState<string[]>(() => [...CATALOG_PRESETS]);
   const [hydrated, setHydrated] = useState(false);
   const [phrasePick, setPhrasePick] = useState("");
 
   useEffect(() => {
-    const extra = readJsonArray(STORAGE_KEYS.extraUsageNotePresets);
-    setPhrases(mergeUnique([...CATALOG_PRESETS], extra));
-    setHydrated(true);
+    queueMicrotask(() => {
+      const extra = readJsonArray(STORAGE_KEYS.extraUsageNotePresets);
+      setPhrases(mergeUnique([...CATALOG_PRESETS], extra));
+      setHydrated(true);
+    });
   }, []);
 
   const addCustomPreset = useCallback(() => {
@@ -90,10 +93,9 @@ export function RegistroUsoScreen() {
       odometerKm: odometerKm.trim(),
     });
     void pushUsageEntryRemote(row);
-    setOk("Guardado en este equipo.");
+    showToast("Guardado en este equipo.");
     setNote("");
     setOdometerKm("");
-    setTimeout(() => setOk(null), 3500);
   }
 
   return (
@@ -210,7 +212,6 @@ export function RegistroUsoScreen() {
           </button>
         </div>
       </form>
-      {ok ? <p className="win98-banner-ok">{ok}</p> : null}
     </>
   );
 }

@@ -496,6 +496,24 @@ body.mp-font-lg {
   font-weight: 600;
 }
 
+/* Fixed toast (Win98 panel); bottom-left to stay clear of floating nav (right) */
+.mp-toast {
+  position: fixed;
+  z-index: 100;
+  left: max(0.75rem, env(safe-area-inset-left, 0px));
+  bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  max-width: min(22rem, calc(100vw - 1.5rem));
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  background: #ffffcc;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  font-weight: 600;
+  box-shadow: 2px 2px 0 #000000;
+  pointer-events: none;
+  text-wrap: pretty;
+}
+
 .win98-list {
   margin: 0;
   padding: 0;
