@@ -590,3 +590,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 
 ---
 
+## 2026-04-28 (59)
+
+**Prompt:**
+
+> fix this on mobile, doesnt need that much info text
+
+**Outcome:** En `resumen-screen.tsx`, bloque «Actividad por día»: columna en móvil (`flex-col`) para no comprimir el texto junto al checkbox; párrafo largo solo desde `sm:` (`hidden sm:block`).
+
+---
+

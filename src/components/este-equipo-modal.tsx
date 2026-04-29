@@ -270,8 +270,7 @@ export function EsteEquipoModalControl() {
 
             <p className="m-0 rounded-sm border-2 border-[#808080] bg-[#ffffcc] px-2.5 py-2 text-[0.88rem] leading-snug text-[#404040] shadow-[inset_1px_1px_0_#fff,inset_-1px_-1px_0_#404040]">
               <span className="font-semibold">Tamaño total (aprox.):</span>{" "}
-              <strong className="tabular-nums">{summary.approxChars}</strong> caracteres UTF-16 en
-              claves <code className="text-[0.82rem]">mecanipana:*</code>.
+              <strong className="tabular-nums">{summary.approxChars}</strong> 
             </p>
           </div>
 

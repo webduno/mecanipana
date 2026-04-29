@@ -58,17 +58,16 @@ export function ResumenScreen() {
       </div>
 
       <div className="win98-inset">
-        <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+          <div className="min-w-0 w-full sm:flex-1">
             <p className="win98-label m-0">Actividad por día</p>
-            <p className="win98-muted m-0 mt-1 max-w-none text-[0.88rem] leading-snug">
-              Estilo grilla de contribuciones: cada cuadro es un día con datos de{" "}
-              <strong>este equipo</strong>. Si un día tiene más de un tipo, el cuadro se divide
-              en franjas de color.
+            <p className="win98-muted m-0 mt-1 hidden max-w-none text-[0.88rem] leading-snug text-pretty sm:block">
+              Cada cuadro es un día con datos de{" "}
+              <strong>este equipo</strong>. 
             </p>
           </div>
           <label
-            className="flex max-w-[16rem] shrink-0 cursor-not-allowed items-start gap-2 opacity-60"
+            className="flex w-full cursor-not-allowed items-start gap-2 opacity-60 sm:w-auto sm:max-w-[16rem] sm:shrink-0"
             title="Próximamente: sincronización con cuenta."
           >
             <input
