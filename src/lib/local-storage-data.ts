@@ -24,28 +24,71 @@ function isObjectRecord(x: unknown): x is Record<string, unknown> {
 }
 
 export function makeId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID();
   }
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
+    const b = new Uint8Array(16);
+    crypto.getRandomValues(b);
+    b[6] = (b[6]! & 0x0f) | 0x40;
+    b[8] = (b[8]! & 0x3f) | 0x80;
+    let hex = "";
+    for (const x of b) {
+      hex += x.toString(16).padStart(2, "0");
+    }
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(
+      16,
+      20
+    )}-${hex.slice(20)}`;
+  }
+  throw new Error(
+    "Mecanipana: no se puede generar id (crypto.randomUUID / getRandomValues no disponibles)."
+  );
+}
+
+function normalizeUrgencia(raw: unknown): number {
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    return Math.min(100, Math.max(1, Math.round(raw)));
+  }
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const n = Number(raw.trim().replace(",", "."));
+    if (Number.isFinite(n)) return Math.min(100, Math.max(1, Math.round(n)));
+  }
+  return 50;
+}
+
+function parseUsageEntry(x: unknown): UsageEntry | null {
+  if (!isObjectRecord(x)) return null;
+  if (
+    typeof x.id !== "string" ||
+    typeof x.at !== "string" ||
+    typeof x.kind !== "string" ||
+    typeof x.note !== "string" ||
+    typeof x.odometerKm !== "string"
+  ) {
+    return null;
+  }
+  return {
+    id: x.id,
+    at: x.at,
+    kind: x.kind,
+    note: x.note,
+    odometerKm: x.odometerKm,
+    urgencia: normalizeUrgencia(x.urgencia),
+  };
 }
 
 export function loadUsageLog(): UsageEntry[] {
   if (typeof window === "undefined") return [];
   const v = safeParse<unknown>(window.localStorage.getItem(STORAGE_KEYS.usageLog), []);
   if (!Array.isArray(v)) return [];
-  return v.filter(isUsageEntry);
-}
-
-function isUsageEntry(x: unknown): x is UsageEntry {
-  if (!isObjectRecord(x)) return false;
-  return (
-    typeof x.id === "string" &&
-    typeof x.at === "string" &&
-    typeof x.kind === "string" &&
-    typeof x.note === "string" &&
-    typeof x.odometerKm === "string"
-  );
+  return v.map(parseUsageEntry).filter((e): e is UsageEntry => e !== null);
 }
 
 export function saveUsageLog(entries: UsageEntry[]) {
@@ -97,17 +140,26 @@ export function loadMaintenanceLog(): MaintenanceEntry[] {
     []
   );
   if (!Array.isArray(v)) return [];
-  return v.filter(isMaintenanceEntry);
+  return v.map(parseMaintenanceEntry).filter((e): e is MaintenanceEntry => e !== null);
 }
 
-function isMaintenanceEntry(x: unknown): x is MaintenanceEntry {
-  if (!isObjectRecord(x)) return false;
-  return (
-    typeof x.id === "string" &&
-    typeof x.at === "string" &&
-    typeof x.what === "string" &&
-    typeof x.note === "string"
-  );
+function parseMaintenanceEntry(x: unknown): MaintenanceEntry | null {
+  if (!isObjectRecord(x)) return null;
+  if (
+    typeof x.id !== "string" ||
+    typeof x.at !== "string" ||
+    typeof x.what !== "string" ||
+    typeof x.note !== "string"
+  ) {
+    return null;
+  }
+  return {
+    id: x.id,
+    at: x.at,
+    what: x.what,
+    note: x.note,
+    urgencia: normalizeUrgencia(x.urgencia),
+  };
 }
 
 export function saveMaintenanceLog(entries: MaintenanceEntry[]) {
@@ -219,7 +271,14 @@ export function buildHistoryRows(): HistoryRow[] {
       at: e.at,
       kind: "uso",
       title: e.kind,
-      detail: [e.odometerKm && `${e.odometerKm} km`, e.note].filter(Boolean).join(" · "),
+      urgencia: e.urgencia,
+      detail: [
+        `urg. ${e.urgencia}`,
+        e.odometerKm && `${e.odometerKm} km`,
+        e.note,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     });
   }
   for (const e of loadFuelLog()) {
@@ -239,7 +298,8 @@ export function buildHistoryRows(): HistoryRow[] {
       at: e.at,
       kind: "mantenimiento",
       title: e.what || "Mantenimiento",
-      detail: e.note,
+      urgencia: e.urgencia,
+      detail: [`urg. ${e.urgencia}`, e.note].filter(Boolean).join(" · "),
     });
   }
   rows.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));

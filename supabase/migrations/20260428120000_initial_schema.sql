@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS public.usage_entries (
   id uuid PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
   at timestamptz NOT NULL,
+  urgencia smallint NOT NULL DEFAULT 50 CHECK (urgencia >= 1 AND urgencia <= 100),
   kind text NOT NULL,
   note text NOT NULL DEFAULT '',
   odometer_km text NOT NULL DEFAULT '',
@@ -57,6 +58,7 @@ CREATE TABLE IF NOT EXISTS public.maintenance_entries (
   id uuid PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
   at timestamptz NOT NULL,
+  urgencia smallint NOT NULL DEFAULT 50 CHECK (urgencia >= 1 AND urgencia <= 100),
   what text NOT NULL DEFAULT '',
   note text NOT NULL DEFAULT '',
   created_at timestamptz NOT NULL DEFAULT now()
@@ -102,6 +104,18 @@ CREATE TABLE IF NOT EXISTS public.user_maintenance_what_custom (
   PRIMARY KEY (user_id, label)
 );
 
+CREATE TABLE IF NOT EXISTS public.admin_emails (
+  email text PRIMARY KEY,
+  inserted_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.admin_emails IS
+  'Administradores UI (JWT email igual en Supabase Authentication). Paso manual típico: crear usuario admin@mecanipana.com con contraseña de prueba (ej. test) en Dashboard.';
+
+INSERT INTO public.admin_emails (email)
+VALUES ('admin@mecanipana.com')
+ON CONFLICT (email) DO NOTHING;
+
 -- -----------------------------------------------------------------------------
 -- 2. Columnas nuevas (instalaciones que ya ejecutaron una versión anterior del script)
 -- -----------------------------------------------------------------------------
@@ -119,13 +133,41 @@ COMMENT ON COLUMN public.app_options.locale IS 'Idioma / locale BCP 47 (ej. es, 
 COMMENT ON COLUMN public.app_options.preferences_extra IS 'Flags y opciones futuras sin migración (JSON arbitrario acotado por la app).';
 COMMENT ON COLUMN public.app_options.fuentes_grandes IS 'Accesibilidad: texto más grande (equivale a opciones actuales).';
 
+ALTER TABLE public.usage_entries ADD COLUMN IF NOT EXISTS urgencia smallint NOT NULL DEFAULT 50;
+ALTER TABLE public.maintenance_entries ADD COLUMN IF NOT EXISTS urgencia smallint NOT NULL DEFAULT 50;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'usage_entries_urgencia_check'
+  ) THEN
+    ALTER TABLE public.usage_entries
+      ADD CONSTRAINT usage_entries_urgencia_check CHECK (urgencia >= 1 AND urgencia <= 100);
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'maintenance_entries_urgencia_check'
+  ) THEN
+    ALTER TABLE public.maintenance_entries
+      ADD CONSTRAINT maintenance_entries_urgencia_check CHECK (urgencia >= 1 AND urgencia <= 100);
+  END IF;
+END $$;
+
+COMMENT ON COLUMN public.usage_entries.urgencia IS 'Prioridad 1–100 para tablero (típico 75/50/25).';
+COMMENT ON COLUMN public.maintenance_entries.urgencia IS 'Prioridad 1–100 para tablero (típico 75/50/25).';
+
 -- -----------------------------------------------------------------------------
 -- 3. Índices (consultas por usuario + orden temporal)
 -- -----------------------------------------------------------------------------
 
 CREATE INDEX IF NOT EXISTS idx_usage_entries_user_at ON public.usage_entries (user_id, at DESC);
+CREATE INDEX IF NOT EXISTS idx_usage_entries_user_urgencia ON public.usage_entries (user_id, urgencia DESC);
 CREATE INDEX IF NOT EXISTS idx_fuel_entries_user_at ON public.fuel_entries (user_id, at DESC);
 CREATE INDEX IF NOT EXISTS idx_maintenance_entries_user_at ON public.maintenance_entries (user_id, at DESC);
+CREATE INDEX IF NOT EXISTS idx_maintenance_entries_user_urgencia ON public.maintenance_entries (user_id, urgencia DESC);
 CREATE INDEX IF NOT EXISTS idx_reminders_user_due ON public.reminders (user_id, due_at);
 
 -- -----------------------------------------------------------------------------
@@ -256,7 +298,8 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, service_role;
 -- - Perfil: profiles.display_name / avatar_url (metadatos opcionales para UI).
 -- - Config sincronizable: app_options.theme, .locale, .fuentes_grandes, .preferences_extra (JSON).
 -- - vehicle_line / variant_label / vehicle_notes → vehicle_context.
--- - Logs: usage_entries, fuel_entries, maintenance_entries, reminders.
+-- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders.
+-- - admin_emails: correos con rol admin UI (crear el mismo correo en Authentication con contraseña de prueba).
 -- - Opciones extra por desplegable / lista:
 --     user_extra_vehicle_lines, user_extra_variant_labels,
 --     user_extra_usage_kinds (tipos de uso además de los fijos en código),

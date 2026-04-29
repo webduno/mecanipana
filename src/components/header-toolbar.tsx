@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { HeaderAuth } from "@/components/auth/header-auth";
 import { EsteEquipoModalControl } from "@/components/este-equipo-modal";
 
 export type HeaderToolbarProps = {
@@ -19,9 +20,10 @@ export type HeaderToolbarProps = {
 export function HeaderToolbar({ extra }: HeaderToolbarProps) {
   return (
     <div
-      className="flex shrink-0 items-center gap-1"
+      className="flex shrink-0 items-center gap-2"
       aria-label="Acciones de la ventana"
     >
+      <HeaderAuth />
       <EsteEquipoModalControl />
       {extra}
     </div>

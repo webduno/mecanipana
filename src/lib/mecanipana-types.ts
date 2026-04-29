@@ -1,6 +1,8 @@
 export type UsageEntry = {
   id: string;
   at: string;
+  /** Prioridad para tablero (1–100); 75/50/25 son niveles típicos. */
+  urgencia: number;
   kind: string;
   note: string;
   odometerKm: string;
@@ -17,6 +19,8 @@ export type FuelEntry = {
 export type MaintenanceEntry = {
   id: string;
   at: string;
+  /** Prioridad para tablero (1–100); 75/50/25 son niveles típicos. */
+  urgencia: number;
   what: string;
   note: string;
 };
@@ -43,4 +47,6 @@ export type HistoryRow = {
   kind: "uso" | "combustible" | "mantenimiento";
   title: string;
   detail: string;
+  /** Solo uso y mantenimiento; orden futuro para tableros */
+  urgencia?: number;
 };

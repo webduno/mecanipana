@@ -8,11 +8,17 @@ import {
   IconNota,
 } from "@/components/grid-action-icons";
 import {
+  type UrgenciaPreset,
+  urgenciaFromForm,
+  UrgenciaField,
+} from "@/components/urgencia-field";
+import {
   appendMaintenance,
   appendMaintenanceWhatCustom,
   loadMaintenanceLog,
   loadMaintenanceWhatCustom,
 } from "@/lib/local-storage-data";
+import { pushMaintenanceEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 
 const PREDEFINED_MAINTENANCE_WHAT = [
   "Cambio de aceite",
@@ -82,6 +88,8 @@ function formatDisplayAt(iso: string) {
 
 export function MantenimientoScreen() {
   const now = useMemo(() => new Date(), []);
+  const [urgenciaPreset, setUrgenciaPreset] = useState<UrgenciaPreset>("50");
+  const [urgenciaCustom, setUrgenciaCustom] = useState(50);
   const [at, setAt] = useState(toDatetimeLocalValue(now));
   const [datePreset, setDatePreset] = useState<DatePresetId>("today");
   const [customWhat, setCustomWhat] = useState<string[]>([]);
@@ -125,11 +133,13 @@ export function MantenimientoScreen() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const iso = new Date(at).toISOString();
-    appendMaintenance({
+    const row = appendMaintenance({
+      urgencia: urgenciaFromForm(urgenciaPreset, urgenciaCustom),
       at: iso,
       what: what.trim() || "Mantenimiento",
       note: note.trim(),
     });
+    void pushMaintenanceEntryRemote(row);
     setWhat(PREDEFINED_MAINTENANCE_WHAT[0]!);
     setNote("");
     bump((n) => n + 1);
@@ -150,6 +160,13 @@ export function MantenimientoScreen() {
         Cambio de aceite, caucho, frenos, taller, etc.
       </p>
       <form onSubmit={onSubmit} className="win98-inset">
+        <UrgenciaField
+          id="mant-urgencia"
+          preset={urgenciaPreset}
+          custom={urgenciaCustom}
+          onPreset={setUrgenciaPreset}
+          onCustom={setUrgenciaCustom}
+        />
         <div className="win98-form-row">
           <label
             className="win98-label win98-label--with-icon"
@@ -255,7 +272,10 @@ export function MantenimientoScreen() {
             {recent.map((r) => (
               <li key={r.id} className="win98-list-item">
                 <strong>{formatDisplayAt(r.at)}</strong> — {r.what}
-                {r.note ? <div className="win98-muted">{r.note}</div> : null}
+                <div className="win98-muted">
+                  Urg. {r.urgencia}
+                  {r.note ? ` · ${r.note}` : ""}
+                </div>
               </li>
             ))}
           </ul>

@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import usageNotePresets from "@/data/defaults/usage-note-presets.json";
+import { urgenciaFromForm, type UrgenciaPreset, UrgenciaField } from "@/components/urgencia-field";
 import { appendUsage } from "@/lib/local-storage-data";
+import { pushUsageEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
 
 const NOTE_MAX = 2000;
@@ -46,6 +48,8 @@ function appendToNote(prev: string, addition: string, maxLen: number) {
 const KINDS = ["Viaje", "Trabajo", "Recado", "Otro"];
 
 export function RegistroUsoScreen() {
+  const [urgenciaPreset, setUrgenciaPreset] = useState<UrgenciaPreset>("50");
+  const [urgenciaCustom, setUrgenciaCustom] = useState(50);
   const [at, setAt] = useState(() => toDatetimeLocalValue(new Date()));
   const [kind, setKind] = useState(KINDS[0]!);
   const [odometerKm, setOdometerKm] = useState("");
@@ -78,7 +82,14 @@ export function RegistroUsoScreen() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const iso = new Date(at).toISOString();
-    appendUsage({ at: iso, kind, note: note.trim(), odometerKm: odometerKm.trim() });
+    const row = appendUsage({
+      urgencia: urgenciaFromForm(urgenciaPreset, urgenciaCustom),
+      at: iso,
+      kind,
+      note: note.trim(),
+      odometerKm: odometerKm.trim(),
+    });
+    void pushUsageEntryRemote(row);
     setOk("Guardado en este equipo.");
     setNote("");
     setOdometerKm("");
@@ -92,6 +103,13 @@ export function RegistroUsoScreen() {
         navegador.
       </p>
       <form onSubmit={onSubmit} className="win98-inset">
+        <UrgenciaField
+          id="uso-urgencia"
+          preset={urgenciaPreset}
+          custom={urgenciaCustom}
+          onPreset={setUrgenciaPreset}
+          onCustom={setUrgenciaCustom}
+        />
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="uso-fecha">
             Fecha y hora

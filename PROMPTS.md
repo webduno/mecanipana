@@ -377,3 +377,45 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `themes.css`: mismas luces inset + sombras gemelas elevadas por color en modo neumorphism (incluye `:active` por color); `app-window-shell.tsx`: enlace de marca usa `text-inherit` / `decoration-current` para heredar `#2d3748` en neumorphism (corrige texto blanco forzado) y mantener contrastes en tema Win98 y Facephism.
 
 ---
+
+## 2026-04-28 (38)
+
+**Prompt:**
+
+> also for facebook
+
+**Outcome:** Tema Facephism: mismas fichas intermedias con luces inset (verde / rosa / amarillo) + sombra tipo tarjeta `0 1px 3px`; `:active` con fondo gris tema + inset.
+
+---
+
+## 2026-04-28 (39)
+
+**Prompt:**
+
+> agrega un select de urgencia como principal, 4 opciones, urgente(75), importante(50), pendiente (25) y custom que es un numero del 1 al 100, ese orden servira despues para un tablero especial, agregalo al nitial migration script, igual para mantenimiento
+
+**Outcome:** Tipos `UsageEntry` y `MaintenanceEntry` con `urgencia` 1–100; `UrgenciaField` + helpers en `urgencia-field.tsx`; formularios «Registrar uso» y «Mantenimiento» con urgencia arriba; `localStorage`/histórico normalizan legacy con 50; `HistoryRow.urgencia`; migración `20260428120000_initial_schema.sql`: columnas `urgencia`, CHECK, índices por `(user_id, urgencia DESC)`, bloque ALTER idempotente.
+
+---
+
+## 2026-04-28 (40)
+
+**Prompt:**
+
+> we will start adding endpoints to also save to databse on supabase, they will all fail for now, but it will still add to localstorage, just add catch with consolelog to keep track of which one fails when i actually connect with env vars, add endpoints with the initial migration script in mind
+>
+> remember when a maintnance or registrar uso is added, it should add the id and actual value, since they can be changed later, and they can be cutom only for localstorage, the ones in localstorage also saved on db but only pure string, not local storage id it has
+
+**Outcome:** Dependencia `@supabase/supabase-js`; rutas `POST /api/usage-entries` y `POST /api/maintenance-entries` (columnas alineadas a migración, `SUPABASE_SYNC_USER_ID` + service role hasta login); cliente `sync-log-entries-remote.ts` sólo payloads string (snake_case API) después de guardar entrada con `makeId`; `makeId()` siempre UUID; `.env.example`. Fallos esperados hasta env: `console.log`/`console.warn`.
+
+---
+
+## 2026-04-28 (41)
+
+**Prompt:**
+
+> i havent checked, but make sure to add login page, and to save and keep track of auth key to handle rls, also add a new button here only visible for admin affter they login, add admin by default admin@mecanipana.com hardcoded with "test" as password when logging in, and also add in initial script migration
+
+**Outcome:** `@supabase/ssr` + cookies (middleware); `SupabaseAuthProvider` + `HeaderAuth` (Entrar/Salir); `/login` con `signInWithPassword`; constante `DEFAULT_ADMIN_EMAIL`, contraseña **no** hardcodeada (documentada «test» vía crear usuario en Supabase Auth); `/admin` (dinámico) protegido por email admin; landing `HomePageClient`: botón «Administración» si admin; `getLogInsertContext` prioriza JWT y RLS, fallback SYNC; fetch sync `credentials: "include"`; migración: tabla `admin_emails` + fila `admin@mecanipana.com`; `.env.example` con `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+
+---

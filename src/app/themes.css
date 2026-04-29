@@ -323,6 +323,67 @@
   background: #b91c1c;
 }
 
+/* Inner glow sobre facephism (tarjeta + luces inset por color) */
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-combustible {
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.14),
+    inset 0 0 14px rgb(57 255 20 / 0.45),
+    inset 0 0 26px rgb(57 255 20 / 0.22),
+    inset 3px 3px 8px rgb(57 255 20 / 0.35),
+    inset -3px -3px 8px rgb(57 255 20 / 0.25);
+}
+
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-mantenimiento {
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.14),
+    inset 0 0 14px rgb(255 110 199 / 0.45),
+    inset 0 0 26px rgb(255 110 199 / 0.22),
+    inset 3px 3px 8px rgb(255 110 199 / 0.35),
+    inset -3px -3px 8px rgb(255 110 199 / 0.25);
+}
+
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-recordatorios {
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.14),
+    inset 0 0 14px rgb(255 240 31 / 0.5),
+    inset 0 0 26px rgb(255 240 31 / 0.26),
+    inset 3px 3px 8px rgb(255 240 31 / 0.38),
+    inset -3px -3px 8px rgb(255 240 31 / 0.26);
+}
+
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-combustible:active,
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-mantenimiento:active,
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-recordatorios:active {
+  background: #d8dadf;
+}
+
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-combustible:active {
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.12),
+    inset 0 0 14px rgb(57 255 20 / 0.35),
+    inset 0 0 22px rgb(57 255 20 / 0.16),
+    inset 2px 2px 6px rgb(57 255 20 / 0.28),
+    inset -2px -2px 6px rgb(57 255 20 / 0.16);
+}
+
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-mantenimiento:active {
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.12),
+    inset 0 0 14px rgb(255 110 199 / 0.35),
+    inset 0 0 22px rgb(255 110 199 / 0.16),
+    inset 2px 2px 6px rgb(255 110 199 / 0.28),
+    inset -2px -2px 6px rgb(255 110 199 / 0.16);
+}
+
+[data-theme="facephism"] .win98-btn.win98-btn-tile--mid-frame-recordatorios:active {
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.12),
+    inset 0 0 14px rgb(255 240 31 / 0.38),
+    inset 0 0 22px rgb(255 240 31 / 0.17),
+    inset 2px 2px 6px rgb(255 240 31 / 0.3),
+    inset -2px -2px 6px rgb(255 240 31 / 0.18);
+}
+
 [data-theme="facephism"] .win98-btn-square {
   border: none;
   border-radius: 0.5rem;
