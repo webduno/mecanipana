@@ -1,12 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
 import { appendFuel, loadFuelLog } from "@/lib/local-storage-data";
-
-function toDatetimeLocalValue(d: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
 
 function formatDisplayAt(iso: string) {
   try {
@@ -19,7 +15,8 @@ function formatDisplayAt(iso: string) {
 
 export function CombustibleScreen() {
   const now = useMemo(() => new Date(), []);
-  const [at, setAt] = useState(toDatetimeLocalValue(now));
+  const { at, datePreset, onDatePresetChange, onDatetimeChange } =
+    useDatePresetState(now);
   const [liters, setLiters] = useState("");
   const [amountBs, setAmountBs] = useState("");
   const [note, setNote] = useState("");
@@ -48,19 +45,15 @@ export function CombustibleScreen() {
         tengas a mano.
       </p>
       <form onSubmit={onSubmit} className="win98-inset">
-        <div className="win98-form-row">
-          <label className="win98-label" htmlFor="comb-fecha">
-            Fecha y hora
-          </label>
-          <input
-            id="comb-fecha"
-            className="win98-input"
-            type="datetime-local"
-            value={at}
-            onChange={(e) => setAt(e.target.value)}
-            required
-          />
-        </div>
+        <DatePresetField
+          presetSelectId="comb-fecha-preset"
+          datetimeId="comb-fecha"
+          label="Fecha y hora"
+          at={at}
+          datePreset={datePreset}
+          onDatePresetChange={onDatePresetChange}
+          onDatetimeChange={onDatetimeChange}
+        />
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="comb-litros">
             Litros

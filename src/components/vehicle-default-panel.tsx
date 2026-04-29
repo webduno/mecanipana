@@ -201,14 +201,24 @@ export function VehicleDefaultPanel() {
     const savedLine = window.localStorage.getItem(STORAGE_KEYS.selectedVehicleLine);
     const savedVariant = window.localStorage.getItem(STORAGE_KEYS.selectedVariant);
 
+    const nextLine =
+      savedLine && lines.includes(savedLine) ? savedLine : defaultLine;
+
     const candidate =
       savedVariant && variants.includes(savedVariant) ? savedVariant : defaultVariant;
     const nextVariant = parseVariantLabel(candidate)
       ? candidate
       : (variants.find((v) => parseVariantLabel(v)) ?? defaultVariant);
 
-    setSelectedLine(savedLine && lines.includes(savedLine) ? savedLine : defaultLine);
+    setSelectedLine(nextLine);
     setSelectedVariant(nextVariant);
+
+    // Sin esto, solo el estado en pantalla refleja el catálogo por defecto y las claves
+    // `selectedVehicleLine` / `selectedVariant` pueden seguir vacías hasta que el usuario
+    // toque un selector — otras pantallas leen solo localStorage y dirían «sin modelo».
+    window.localStorage.setItem(STORAGE_KEYS.selectedVehicleLine, nextLine);
+    window.localStorage.setItem(STORAGE_KEYS.selectedVariant, nextVariant);
+
     setHydrated(true);
   }, [catalogLines, catalogVarLabels, defaultLine, defaultVariant]);
 
@@ -525,6 +535,13 @@ export function VehicleDefaultPanel() {
           {selectedLine} {selectedVariant}
         </p>
       </div>
+      <p className="win98-muted m-0 mt-2 max-w-none text-[0.88rem] leading-snug">
+        Cada cambio en las listas se guarda enseguida en este navegador:{" "}
+        <strong className="font-semibold text-[#303030]">no</strong> hace falta otro botón de
+        guardar. Si ya ves la combinación correcta arriba, puedes cerrar esta ventana con{" "}
+        <strong className="font-semibold text-[#303030]">Cerrar</strong> abajo y seguir usando la
+        app.
+      </p>
     </div>
   );
 }

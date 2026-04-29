@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  ActivityContributionGrid,
+  ActivityContributionLegend,
+} from "@/components/activity-contribution-grid";
+import {
   buildHistoryRows,
   loadFuelLog,
   loadMaintenanceLog,
@@ -50,6 +54,47 @@ export function ResumenScreen() {
           <p className="win98-muted m-0">Mantenimiento</p>
           <p className="m-1 text-2xl font-extrabold">{maint.length}</p>
         </div>
+      </div>
+
+      <div className="win98-inset">
+        <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="win98-label m-0">Actividad por día</p>
+            <p className="win98-muted m-0 mt-1 max-w-none text-[0.88rem] leading-snug">
+              Estilo grilla de contribuciones: cada cuadro es un día con datos de{" "}
+              <strong>este equipo</strong>. Si un día tiene más de un tipo, el cuadro se divide
+              en franjas de color.
+            </p>
+          </div>
+          <label
+            className="flex max-w-[16rem] shrink-0 cursor-not-allowed items-start gap-2 opacity-60"
+            title="Próximamente: sincronización con cuenta."
+          >
+            <input
+              type="checkbox"
+              className="mt-1 h-5 w-5 shrink-0"
+              disabled
+              checked={false}
+              readOnly
+              aria-disabled="true"
+            />
+            <span className="text-[0.88rem] leading-snug">
+              <span className="font-semibold text-[#303030]">
+                Usar info de base de datos
+              </span>
+              <span className="win98-muted block text-[0.82rem]">
+                Por ahora solo datos locales.
+              </span>
+            </span>
+          </label>
+        </div>
+        <ActivityContributionGrid
+          usageLog={usage}
+          fuelLog={fuel}
+          maintenanceLog={maint}
+          weeks={26}
+        />
+        <ActivityContributionLegend />
       </div>
 
       <div>

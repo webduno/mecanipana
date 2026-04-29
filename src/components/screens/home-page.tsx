@@ -42,8 +42,10 @@ export function HomePageClient() {
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
           <IconVehiculo className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
           <span>
-            Pulsa <strong className="font-bold">Info</strong> en la barra azul para
-            vehículo superior, para <b>cambiar tu vehículo seleccionado</b>.
+            Para <b>elegir o cambiar el carro</b>: arriba a la derecha pulsa{" "}
+            <strong className="font-bold">Mi Info</strong>, se abre{" "}
+            <strong className="font-bold">Este equipo</strong> y en la pestaña{" "}
+            <strong className="font-bold">Carro</strong> eliges marca, modelo y versión.
           </span>
         </p>
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">

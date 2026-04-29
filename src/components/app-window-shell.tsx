@@ -65,7 +65,9 @@ export function AppWindowShell({
         </Link>
         <span className="flex min-w-0 flex-1 items-center gap-2">
           {titleIcon ? <span className="shrink-0">{titleIcon}</span> : null}
-          <span className="min-w-0 truncate">{title ?? ""}</span>
+          <span className="min-w-0 truncate" title={title}>
+            {title ?? ""}
+          </span>
         </span>
       </div>
       <HeaderToolbar extra={headerActionsExtra} />

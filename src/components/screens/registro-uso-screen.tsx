@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import usageNotePresets from "@/data/defaults/usage-note-presets.json";
+import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
 import { urgenciaFromForm, type UrgenciaPreset, UrgenciaField } from "@/components/urgencia-field";
 import { useToast } from "@/components/toast-provider";
 import { appendUsage } from "@/lib/local-storage-data";
@@ -10,11 +11,6 @@ import { STORAGE_KEYS } from "@/lib/storage-keys";
 
 const NOTE_MAX = 2000;
 const CATALOG_PRESETS = usageNotePresets.presets;
-
-function toDatetimeLocalValue(d: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
 
 function mergeUnique(base: string[], extra: string[]) {
   const inBase = new Set(base);
@@ -50,9 +46,11 @@ const KINDS = ["Viaje", "Trabajo", "Recado", "Otro"];
 
 export function RegistroUsoScreen() {
   const { showToast } = useToast();
+  const now = useMemo(() => new Date(), []);
+  const { at, datePreset, onDatePresetChange, onDatetimeChange } =
+    useDatePresetState(now);
   const [urgenciaPreset, setUrgenciaPreset] = useState<UrgenciaPreset>("50");
   const [urgenciaCustom, setUrgenciaCustom] = useState(50);
-  const [at, setAt] = useState(() => toDatetimeLocalValue(new Date()));
   const [kind, setKind] = useState(KINDS[0]!);
   const [odometerKm, setOdometerKm] = useState("");
   const [note, setNote] = useState("");
@@ -112,19 +110,15 @@ export function RegistroUsoScreen() {
           onPreset={setUrgenciaPreset}
           onCustom={setUrgenciaCustom}
         />
-        <div className="win98-form-row">
-          <label className="win98-label" htmlFor="uso-fecha">
-            Fecha y hora
-          </label>
-          <input
-            id="uso-fecha"
-            className="win98-input"
-            type="datetime-local"
-            value={at}
-            onChange={(e) => setAt(e.target.value)}
-            required
-          />
-        </div>
+        <DatePresetField
+          presetSelectId="uso-fecha-preset"
+          datetimeId="uso-fecha"
+          label="Fecha y hora"
+          at={at}
+          datePreset={datePreset}
+          onDatePresetChange={onDatePresetChange}
+          onDatetimeChange={onDatetimeChange}
+        />
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="uso-tipo">
             Tipo

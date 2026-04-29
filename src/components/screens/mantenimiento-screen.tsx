@@ -20,6 +20,7 @@ import {
   loadMaintenanceWhatCustom,
 } from "@/lib/local-storage-data";
 import { pushMaintenanceEntryRemote } from "@/lib/remote/sync-log-entries-remote";
+import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
 
 const PREDEFINED_MAINTENANCE_WHAT = [
   "Cambio de aceite",
@@ -30,53 +31,6 @@ const PREDEFINED_MAINTENANCE_WHAT = [
   "Batería",
   "Revisión en taller",
 ] as const;
-
-function toDatetimeLocalValue(d: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-type DatePresetId =
-  | "today"
-  | "yesterday"
-  | "lastWeek"
-  | "last2Weeks"
-  | "lastMonth"
-  | "last3Months"
-  | "custom";
-
-const DATE_PRESET_OPTIONS: { id: DatePresetId; label: string }[] = [
-  { id: "today", label: "Hoy" },
-  { id: "yesterday", label: "Ayer" },
-  { id: "lastWeek", label: "Hace 1 semana" },
-  { id: "last2Weeks", label: "Hace 2 semanas" },
-  { id: "lastMonth", label: "Hace 1 mes" },
-  { id: "last3Months", label: "Hace 3 meses" },
-  { id: "custom", label: "Otra fecha y hora…" },
-];
-
-function dateForPreset(id: Exclude<DatePresetId, "custom">): Date {
-  const d = new Date();
-  switch (id) {
-    case "today":
-      return d;
-    case "yesterday":
-      d.setDate(d.getDate() - 1);
-      return d;
-    case "lastWeek":
-      d.setDate(d.getDate() - 7);
-      return d;
-    case "last2Weeks":
-      d.setDate(d.getDate() - 14);
-      return d;
-    case "lastMonth":
-      d.setMonth(d.getMonth() - 1);
-      return d;
-    case "last3Months":
-      d.setMonth(d.getMonth() - 3);
-      return d;
-  }
-}
 
 function formatDisplayAt(iso: string) {
   try {
@@ -92,8 +46,8 @@ export function MantenimientoScreen() {
   const now = useMemo(() => new Date(), []);
   const [urgenciaPreset, setUrgenciaPreset] = useState<UrgenciaPreset>("50");
   const [urgenciaCustom, setUrgenciaCustom] = useState(50);
-  const [at, setAt] = useState(toDatetimeLocalValue(now));
-  const [datePreset, setDatePreset] = useState<DatePresetId>("today");
+  const { at, datePreset, onDatePresetChange, onDatetimeChange } =
+    useDatePresetState(now);
   const [customWhat, setCustomWhat] = useState<string[]>([]);
   const [what, setWhat] = useState<string>(PREDEFINED_MAINTENANCE_WHAT[0]!);
   const [note, setNote] = useState("");
@@ -151,15 +105,6 @@ export function MantenimientoScreen() {
     showToast("Guardado en este equipo.");
   }
 
-  function onDatePresetChange(id: DatePresetId) {
-    if (id === "custom") {
-      setDatePreset("custom");
-      return;
-    }
-    setAt(toDatetimeLocalValue(dateForPreset(id)));
-    setDatePreset(id);
-  }
-
   return (
     <>
       <p className="m-0 text-pretty">
@@ -173,39 +118,21 @@ export function MantenimientoScreen() {
           onPreset={setUrgenciaPreset}
           onCustom={setUrgenciaCustom}
         />
-        <div className="win98-form-row">
-          <label
-            className="win98-label win98-label--with-icon"
-            htmlFor="mant-fecha-preset"
-          >
-            <IconCalendario className="win98-label-icon" aria-hidden />
-            Fecha
-          </label>
-          <select
-            id="mant-fecha-preset"
-            className="win98-select"
-            value={datePreset}
-            onChange={(e) => onDatePresetChange(e.target.value as DatePresetId)}
-          >
-            {DATE_PRESET_OPTIONS.map((opt) => (
-              <option key={opt.id} value={opt.id}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-          <input
-            id="mant-fecha"
-            className="win98-input"
-            type="datetime-local"
-            value={at}
-            onChange={(e) => {
-              setAt(e.target.value);
-              setDatePreset("custom");
-            }}
-            required
-            aria-label="Fecha y hora exacta"
-          />
-        </div>
+        <DatePresetField
+          presetSelectId="mant-fecha-preset"
+          datetimeId="mant-fecha"
+          labelClassName="win98-label win98-label--with-icon"
+          label={
+            <>
+              <IconCalendario className="win98-label-icon" aria-hidden />
+              Fecha
+            </>
+          }
+          at={at}
+          datePreset={datePreset}
+          onDatePresetChange={onDatePresetChange}
+          onDatetimeChange={onDatetimeChange}
+        />
         <div className="win98-form-row">
           <label className="win98-label win98-label--with-icon" htmlFor="mant-que">
             <IconMantenimiento className="win98-label-icon" aria-hidden />

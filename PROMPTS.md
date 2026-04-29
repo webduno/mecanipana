@@ -449,3 +449,53 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Opciones: botón «Restaurar», fila de acciones con `.win98-form-actions--row`; `importAllLocalPayload` en `local-storage-data.ts`; textarea siempre visible para pegar JSON; confirmación antes de aplicar.
 
 ---
+
+## 2026-04-28 (45)
+
+**Prompt:**
+
+> esta pantalla no se entiende
+
+**Outcome:** Pantalla «Datos del vehículo»: copy más claro (qué es modelo vs notas, guardado local); estado vacío con enlace al inicio en lugar de «—»; botón «Volver a leer desde el inicio» + texto de ayuda; título corto en barra «Tu vehículo»; `title` en `AppWindowShell` para títulos truncados.
+
+---
+
+## 2026-04-28 (46)
+
+**Prompt:**
+
+> pero donde se escoge?
+
+**Outcome:** Aclarado en código que la elección es barra azul → **Mi Info** → **Este equipo** → pestaña **Carro** (`VehicleDefaultPanel`); landing y pantalla «Tu vehículo» actualizadas (antes hablaban de «inicio» de forma confusa).
+
+---
+
+## 2026-04-28 (47)
+
+**Prompt:**
+
+> pero si ya esta seleccionado y no hay otro boton? porque dice que no tengo ninguno seleccionado en la otra pantalla y aca si sale?
+
+**Outcome:** El panel mostraba la combinación por defecto solo en estado React; no escribía `selectedVehicleLine` / `selectedVariant` en localStorage hasta que el usuario tocaba un selector. En hidratación se persisten `nextLine` y `nextVariant` para que coincida con lo que muestra «Combinación ahora» y con `readSelectedVehicle()` en otras pantallas.
+
+---
+
+## 2026-04-28 (48)
+
+**Prompt:**
+
+> este select deberia ser igual, incluso usar el mismo componente, para lo de "hoy, ayer, hace 1 semana" yy eso
+
+**Outcome:** Nuevo `src/components/date-preset-field.tsx` (`DatePresetField`, `useDatePresetState`, opciones Hoy/Ayer/semanas/meses/Otra fecha… + `datetime-local`). Usado en Combustible, Mantenimiento y Registrar info (antes solo Man tenía el patrón).
+
+---
+
+## 2026-04-28 (49)
+
+**Prompt:**
+
+> en pagina resumen, debe aparecer una grilla como la de github de actividad, y cada color es diferente para uso carga de gas o mantenimiento, por default solo usa local storage, y agrega un toggle que diga usar info de base de datos pero bloqueado por ahora, disabled
+
+**Outcome:** `activity-contribution-grid.tsx`: grilla ~26 semanas × 7 días (Dom→Sáb), colores `#000080` / `#b35900` / `#1f6b3a` por tipo; mezcla el mismo día en franjas; solo datos de `loadUsageLog`/`loadFuelLog`/`loadMaintenanceLog`; leyenda; toggle «Usar info de base de datos» deshabilitado + texto «solo locales».
+
+---

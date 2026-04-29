@@ -166,9 +166,9 @@ export function EsteEquipoModalControl() {
             <VehicleDefaultPanel />
             <Link
               href="/datos-vehiculo"
-              className="win98-btn inline-flex w-auto self-start no-underline"
+              className="win98-btn flex w-full shrink-0 justify-center text-center no-underline"
             >
-              Ir a datos del vehículo
+              Ir a notas del vehículo (placa, detalles…)
             </Link>
           </div>
 
