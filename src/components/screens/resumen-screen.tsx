@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReminderEntry } from "@/lib/mecanipana-types";
+import { IconNota } from "@/components/grid-action-icons";
 import {
   ActivityContributionGrid,
   ActivityContributionLegend,
@@ -77,8 +78,21 @@ export function ResumenScreen() {
   const suggestionTiles = getMaintenanceSuggestionTiles(maint, reminders);
   const timeline = buildHistoryRows().slice(0, 8);
 
+  const onlyVehicleNoLogs =
+    usage.length === 0 && fuel.length === 0 && maint.length === 0;
+
   return (
     <VehicleSetupGate>
+      {onlyVehicleNoLogs ? (
+        <Link
+          href="/datos-vehiculo/cuestionario"
+          className="win98-btn win98-btn--accent-amber mb-3 flex min-h-[3.25rem] w-full max-w-md items-center justify-center gap-3 text-[clamp(1rem,3.5vw,1.15rem)] font-extrabold no-underline"
+          aria-label="Empezar el Quiz de estado del vehículo"
+        >
+          <IconNota className="h-7 w-7 shrink-0" aria-hidden />
+          Empezar Quiz (9 preguntas)
+        </Link>
+      ) : null}
       <p className="m-0 text-pretty">
         Resumen de lo que llevas guardado en <strong>este equipo</strong>.
       </p>

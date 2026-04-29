@@ -9,10 +9,16 @@ import {
   IconMantenimiento,
   IconOpciones,
   IconRecordatorios,
+  IconNota,
   IconRegistrar,
   IconResumen,
   IconVehiculo,
 } from "@/components/grid-action-icons";
+import {
+  loadFuelLog,
+  loadMaintenanceLog,
+  loadUsageLog,
+} from "@/lib/local-storage-data";
 import { OPEN_MI_INFO_EVENT } from "@/components/este-equipo-modal";
 import { useVehicleSetupReady } from "@/components/vehicle-setup-gate";
 import { isPlatformAdminEmail } from "@/lib/auth-constants";
@@ -57,6 +63,14 @@ export function HomePageClient() {
   );
 
   const canGo = mounted && complete;
+  const usageLog = loadUsageLog();
+  const fuelLog = loadFuelLog();
+  const maintLog = loadMaintenanceLog();
+  const onlyVehicleNoLogs =
+    canGo &&
+    usageLog.length === 0 &&
+    fuelLog.length === 0 &&
+    maintLog.length === 0;
 
   return (
     <AppWindowShell
@@ -78,7 +92,7 @@ export function HomePageClient() {
         {!canGo ? (
           <button
             type="button"
-            className="win98-btn win98-btn--accent-blue flex min-h-[3.25rem] w-full max-w-md items-center justify-center gap-3 text-[clamp(1rem,3.5vw,1.15rem)] font-extrabold"
+            className="win98-btn win98-btn--accent-amber flex min-h-[3.25rem] w-full max-w-md items-center justify-center gap-3 text-[clamp(1rem,3.5vw,1.15rem)] font-extrabold"
             onClick={() => {
               window.dispatchEvent(new CustomEvent(OPEN_MI_INFO_EVENT));
             }}
@@ -87,6 +101,15 @@ export function HomePageClient() {
             <IconVehiculo className="h-7 w-7 shrink-0" aria-hidden />
             Escoger mi carro
           </button>
+        ) : onlyVehicleNoLogs ? (
+          <Link
+            href="/datos-vehiculo/cuestionario"
+            className="win98-btn win98-btn--accent-amber flex min-h-[3.25rem] w-full max-w-md items-center justify-center gap-3 text-[clamp(1rem,3.5vw,1.15rem)] font-extrabold no-underline"
+            aria-label="Empezar el Quiz de estado del vehículo"
+          >
+            <IconNota className="h-7 w-7 shrink-0" aria-hidden />
+            Empezar Quiz (9 preguntas)
+          </Link>
         ) : null}
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
           <IconVehiculo className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
@@ -98,7 +121,12 @@ export function HomePageClient() {
             {!canGo ? (
               <>
                 {" "}
-                O usa el atajo: botón azul «Escoger mi carro».
+                O usa el atajo: botón naranja «Escoger mi carro».
+              </>
+            ) : onlyVehicleNoLogs ? (
+              <>
+                {" "}
+                O el atajo: botón naranja «Empezar Quiz».
               </>
             ) : (
               <>

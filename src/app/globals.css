@@ -405,6 +405,17 @@ dialog.mp-overlay-dialog::backdrop {
   border-color: #4a0909 #cf5a5a #cf5a5a #4a0909;
 }
 
+/* Amarillo/naranja — CTAs destacados (carro inicial, cuestionario) */
+.win98-btn--accent-amber {
+  background: #cc6a06;
+  color: #fffaf5;
+  border-color: #f4c982 #8a4700 #8a4700 #f4c982;
+}
+
+.win98-btn--accent-amber:active {
+  border-color: #8a4700 #f4c982 #f4c982 #8a4700;
+}
+
 .win98-btn-tile--mid-frame-combustible {
   box-shadow:
     inset 0 0 14px rgb(57 255 20 / 0.45),
@@ -431,7 +442,8 @@ dialog.mp-overlay-dialog::backdrop {
 
 .win98-btn--accent-blue:focus-visible,
 .win98-btn--accent-green:focus-visible,
-.win98-btn--accent-red:focus-visible {
+.win98-btn--accent-red:focus-visible,
+.win98-btn--accent-amber:focus-visible {
   outline-color: #ffffff;
 }
 

@@ -102,6 +102,14 @@
     -3px -3px 10px rgb(255 255 255 / 0.25);
 }
 
+[data-theme="neumorphism"] .win98-btn--accent-amber {
+  background: linear-gradient(145deg, #eab308 0%, #d97706 100%);
+  color: #1c1410;
+  box-shadow:
+    5px 5px 14px rgb(234 179 8 / 0.45),
+    -3px -3px 10px rgb(255 255 255 / 0.35);
+}
+
 /* Inner glow sobre neumorphism (misma combinación que en Win98 por defecto) */
 [data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-combustible {
   box-shadow:
@@ -322,6 +330,15 @@
 
 [data-theme="facephism"] .win98-btn--accent-red:active {
   background: #b91c1c;
+}
+
+[data-theme="facephism"] .win98-btn--accent-amber {
+  background: #ea580c;
+  color: #ffffff;
+}
+
+[data-theme="facephism"] .win98-btn--accent-amber:active {
+  background: #c2410c;
 }
 
 /* Inner glow sobre facephism (tarjeta + luces inset por color) */

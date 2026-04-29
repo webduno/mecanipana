@@ -669,3 +669,33 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Menú principal con submenús laterales tipo Win98: segundo nivel con íconos y enlaces a rutas reales (`/datos-vehiculo/cuestionario`, `/login`, y atajos cruzados por sección). Hover abre flyer; ▸ alterna sin puntero; `subMenuDomId` para `aria-controls`.
 
 ---
+
+## 2026-04-28 (67)
+
+**Prompt:**
+
+> make delete all local storage refreshes and go to landing root
+
+**Outcome:** Tras confirmar «Borrar todo» en Opciones, `window.location.assign("/")` al inicio con recarga completa (tras `clearAllMecanipanaKeys` + opciones por defecto). `opciones-screen.tsx`.
+
+---
+
+## 2026-04-28 (68)
+
+**Prompt:**
+
+> En resumen, agrega un botón al principio si todo está vacío y solo ha ingresado marca modelo y año y motor; igual en la landing donde estaba el botón «escoge mi carro».
+
+**Outcome:** CTA al cuestionario básico cuando solo hay vehículo y Usos/Cargas de gas/Mantenimiento en 0: `resumen-screen.tsx` y mismo hueco en `home-page.tsx` si ya hay carro configurado (`/datos-vehiculo/cuestionario`, «Empezar cuestionario básico (9 preguntas)»); párrafo de ayuda con atajo textual.
+
+---
+
+## 2026-04-28 (69)
+
+**Prompt:**
+
+> esos botones deberian ser amarillo/naranja, el de escoge mi carro y el de empezar quiz
+
+**Outcome:** Clase `.win98-btn--accent-amber` en `globals.css` (borde estilo Win98); variantes en `themes.css` (neumorphism gradient amarillo/naranja, facephism naranja). Landing y resumen: «Escoger mi carro» y «Empezar cuestionario básico» usan amber; ayuda en landing dice «botón naranja».
+
+---

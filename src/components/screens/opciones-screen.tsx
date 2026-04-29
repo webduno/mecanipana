@@ -111,7 +111,7 @@ export function OpcionesScreen() {
     applyFontClass(false);
     applyThemeToDocument("win98");
     setExportText(null);
-    setMsg("Listo. Recarga la página o vuelve al inicio.");
+    window.location.assign("/");
   }
 
   return (
