@@ -419,3 +419,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `@supabase/ssr` + cookies (middleware); `SupabaseAuthProvider` + `HeaderAuth` (Entrar/Salir); `/login` con `signInWithPassword`; constante `DEFAULT_ADMIN_EMAIL`, contraseña **no** hardcodeada (documentada «test» vía crear usuario en Supabase Auth); `/admin` (dinámico) protegido por email admin; landing `HomePageClient`: botón «Administración» si admin; `getLogInsertContext` prioriza JWT y RLS, fallback SYNC; fetch sync `credentials: "include"`; migración: tabla `admin_emails` + fila `admin@mecanipana.com`; `.env.example` con `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
 ---
+
+## 2026-04-28 (42)
+
+**Prompt:**
+
+> does it start sending requests to supabase if its just entered the website and start adding stuff like maintinace of services? cuz it shouldnt, unles it has clicked some kind of login or register button
+
+**Outcome:** Middleware solo llama `updateSession` si hay cookies `sb-*` de sesión; `pushUsageEntryRemote` / `pushMaintenanceEntryRemote` hacen `getSession()` y no hacen `fetch` a `/api` sin usuario. localStorage sigue igual sin login.
+
+---

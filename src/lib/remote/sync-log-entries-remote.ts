@@ -1,16 +1,25 @@
 import type { MaintenanceEntry, UsageEntry } from "@/lib/mecanipana-types";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 /** Valores coincidentes con columnas Postgres (solo strings / números; sin prefijos ni claves localStorage). */
 function logSyncFail(label: string, status: number, payload: unknown) {
   console.log(`[Mecanipana] Supabase sync ${label} falló:`, status, payload);
 }
 
+async function hasAuthSession(): Promise<boolean> {
+  const supabase = createSupabaseBrowserClient();
+  if (!supabase) return false;
+  const { data } = await supabase.auth.getSession();
+  return Boolean(data.session?.user);
+}
+
 /**
- * Inserta uso en servidor; fallos esperados hasta configurar `.env.local`.
- * localStorage ya guardó la fila; esto solo intenta Réplica Postgres.
+ * Inserta uso en servidor solo si hubo login (sesión). Sin sesión: solo localStorage.
  */
 export async function pushUsageEntryRemote(entry: UsageEntry): Promise<void> {
   try {
+    if (!(await hasAuthSession())) return;
+
     const res = await fetch("/api/usage-entries", {
       method: "POST",
       credentials: "include",
@@ -36,10 +45,13 @@ export async function pushUsageEntryRemote(entry: UsageEntry): Promise<void> {
   }
 }
 
+/** Igual que uso: solo con sesión de login. */
 export async function pushMaintenanceEntryRemote(
   entry: MaintenanceEntry
 ): Promise<void> {
   try {
+    if (!(await hasAuthSession())) return;
+
     const res = await fetch("/api/maintenance-entries", {
       method: "POST",
       credentials: "include",
