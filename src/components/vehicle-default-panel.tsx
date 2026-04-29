@@ -161,6 +161,9 @@ export function VehicleDefaultPanel() {
   const [variantLabels, setVariantLabels] = useState<string[]>(catalogVarLabels);
   const [selectedLine, setSelectedLine] = useState("");
   const [selectedVariant, setSelectedVariant] = useState("");
+  /** Coincide con localStorage tras «Guardar» (no con cada cambio del select). */
+  const [committedLine, setCommittedLine] = useState("");
+  const [committedVariant, setCommittedVariant] = useState("");
   const [hydrated, setHydrated] = useState(false);
   /** Formularios inline: `window.prompt` falla mucho en móvil (Safari/PWA). */
   const [addCarroOpen, setAddCarroOpen] = useState(false);
@@ -198,6 +201,8 @@ export function VehicleDefaultPanel() {
 
     setSelectedLine(nextLine);
     setSelectedVariant(nextVariant);
+    setCommittedLine(nextLine);
+    setCommittedVariant(nextVariant);
 
     setHydrated(true);
   }, [catalogLines, catalogVarLabels]);
@@ -237,9 +242,8 @@ export function VehicleDefaultPanel() {
         brand === prev.brand && ms.includes(prev.model) ? prev.model : ms[0]!;
       const line = formatVehicleLine(brand, model);
       setSelectedLine(line);
-      persistLine(line);
     },
-    [vehicleLines, selectedLine, persistLine]
+    [vehicleLines, selectedLine]
   );
 
   const onModelChange = useCallback(
@@ -249,9 +253,8 @@ export function VehicleDefaultPanel() {
       if (!brand) return;
       const line = formatVehicleLine(brand, model);
       setSelectedLine(line);
-      persistLine(line);
     },
-    [selectedLine, persistLine]
+    [selectedLine]
   );
 
   const parsedVariant = useMemo(
@@ -287,9 +290,8 @@ export function VehicleDefaultPanel() {
           : motors[0]!;
       const label = formatVariantLabel(engine, year);
       setSelectedVariant(label);
-      persistVariant(label);
     },
-    [variantLabels, selectedVariant, persistVariant]
+    [variantLabels, selectedVariant]
   );
 
   const onMotorChange = useCallback(
@@ -299,10 +301,39 @@ export function VehicleDefaultPanel() {
       if (!p) return;
       const label = formatVariantLabel(engine, p.year);
       setSelectedVariant(label);
-      persistVariant(label);
     },
-    [selectedVariant, persistVariant]
+    [selectedVariant]
   );
+
+  const selectionDirty =
+    selectedLine !== committedLine || selectedVariant !== committedVariant;
+
+  const canSaveSelection =
+    selectedLine.trim() !== "" && parseVariantLabel(selectedVariant) !== null;
+
+  const saveVehicleSelection = useCallback(() => {
+    if (!canSaveSelection) return;
+    persistLine(selectedLine);
+    persistVariant(selectedVariant);
+    setCommittedLine(selectedLine);
+    setCommittedVariant(selectedVariant);
+  }, [
+    canSaveSelection,
+    selectedLine,
+    selectedVariant,
+    persistLine,
+    persistVariant,
+  ]);
+
+  const cancelVehicleSelection = useCallback(() => {
+    setSelectedLine(committedLine);
+    setSelectedVariant(committedVariant);
+  }, [committedLine, committedVariant]);
+
+  const selectionSavedSuccess =
+    !selectionDirty &&
+    committedLine.trim() !== "" &&
+    parseVariantLabel(committedVariant) !== null;
 
   const confirmAddVehicleLine = useCallback(() => {
     setCarroDraftError("");
@@ -318,7 +349,6 @@ export function VehicleDefaultPanel() {
     const stored = readJsonArray(STORAGE_KEYS.extraVehicleLines);
     if (catalogLines.includes(next) || stored.includes(next)) {
       setSelectedLine(next);
-      persistLine(next);
       setAddCarroOpen(false);
       setDraftBrand("");
       setDraftModel("");
@@ -329,11 +359,10 @@ export function VehicleDefaultPanel() {
     writeJsonArray(STORAGE_KEYS.extraVehicleLines, newExtras);
     setVehicleLines(mergeUnique(catalogLines, newExtras));
     setSelectedLine(next);
-    persistLine(next);
     setAddCarroOpen(false);
     setDraftBrand("");
     setDraftModel("");
-  }, [catalogLines, draftBrand, draftModel, persistLine]);
+  }, [catalogLines, draftBrand, draftModel]);
 
   const cancelAddVehicleLine = useCallback(() => {
     setAddCarroOpen(false);
@@ -357,7 +386,6 @@ export function VehicleDefaultPanel() {
     const stored = readJsonArray(STORAGE_KEYS.extraVariantLabels);
     if (catalogVarLabels.includes(next) || stored.includes(next)) {
       setSelectedVariant(next);
-      persistVariant(next);
       setAddMotorOpen(false);
       setDraftVariantLabel("");
       return;
@@ -367,10 +395,9 @@ export function VehicleDefaultPanel() {
     writeJsonArray(STORAGE_KEYS.extraVariantLabels, newExtras);
     setVariantLabels(sortVariantLabels(mergeUnique(catalogVarLabels, newExtras)));
     setSelectedVariant(next);
-    persistVariant(next);
     setAddMotorOpen(false);
     setDraftVariantLabel("");
-  }, [catalogVarLabels, draftVariantLabel, persistVariant]);
+  }, [catalogVarLabels, draftVariantLabel]);
 
   const cancelAddVariant = useCallback(() => {
     setAddMotorOpen(false);
@@ -687,7 +714,33 @@ export function VehicleDefaultPanel() {
         </div>
       </div>
 
-      <div className="win98-vehicle-resumen-box">
+      {selectionDirty ? (
+        <div className="flex flex-wrap justify-end gap-2 pt-1">
+          <button
+            type="button"
+            className="win98-btn !w-auto shrink-0 px-4 py-2 min-h-0"
+            disabled={!canSaveSelection}
+            onClick={saveVehicleSelection}
+          >
+            <span className="font-semibold text-[#006400]">Guardar</span>
+          </button>
+          <button
+            type="button"
+            className="win98-btn !w-auto shrink-0 px-4 py-2 min-h-0"
+            onClick={cancelVehicleSelection}
+          >
+            Cancelar
+          </button>
+        </div>
+      ) : null}
+
+      <div
+        className={
+          selectionSavedSuccess
+            ? "win98-vehicle-resumen-box win98-vehicle-resumen-box--saved"
+            : "win98-vehicle-resumen-box"
+        }
+      >
         <p className="win98-vehicle-resumen-label">Carro seleccionado</p>
         <p className="win98-vehicle-resumen" aria-live="polite">
           {[selectedLine.trim(), selectedVariant.trim()].filter(Boolean).join(" ") ||

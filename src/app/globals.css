@@ -285,6 +285,10 @@ dialog.mp-overlay-dialog::backdrop {
   border-color: #808080 #ffffff #ffffff #808080;
 }
 
+.win98-vehicle-resumen-box.win98-vehicle-resumen-box--saved {
+  background: #ccffcc;
+}
+
 .win98-vehicle-resumen-label {
   margin: 0;
   font-size: clamp(0.78rem, 2.9vw, 0.9rem);

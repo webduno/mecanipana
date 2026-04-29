@@ -192,12 +192,6 @@ export function EsteEquipoModalControl() {
             className={tab === "car" ? "flex shrink-0 flex-col gap-3" : "hidden"}
           >
             <VehicleDefaultPanel />
-            <Link
-              href="/datos-vehiculo"
-              className="win98-btn flex w-full shrink-0 justify-center text-center no-underline"
-            >
-              Ir a notas del vehículo (placa, detalles…)
-            </Link>
           </div>
 
           <div

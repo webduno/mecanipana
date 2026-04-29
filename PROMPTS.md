@@ -580,3 +580,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 
 ---
 
+## 2026-04-28 (58)
+
+**Prompt:**
+
+> Al escoger carro: botón verde «Guardar» y «Cancelar», que no se guarde en cada cambio de select; botones sin fondo de color (normales); con carro guardado el recuadro inferior amarillo pasa a verde (éxito) y se ocultan Guardar/Cancelar.
+
+**Outcome:** En `vehicle-default-panel.tsx` estado borrador vs `committed*`; persistencia solo al Guardar; Cancel revierte; botones `win98-btn` compactos con texto «Guardar» en verde; recuadro `win98-vehicle-resumen-box--saved` en `globals.css`.
+
+---
+
