@@ -659,3 +659,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `mecanipana-navbar-brand.tsx`: solo el logo enlaza al inicio; «Mecanipana» abre menú estilo Win98 con rutas principales e íconos (`grid-action-icons`). `app-window-shell.tsx` usa el componente en landing y página.
 
 ---
+
+## 2026-04-28 (66)
+
+**Prompt:**
+
+> second level for each page for subpages or actions with their own page
+
+**Outcome:** Menú principal con submenús laterales tipo Win98: segundo nivel con íconos y enlaces a rutas reales (`/datos-vehiculo/cuestionario`, `/login`, y atajos cruzados por sección). Hover abre flyer; ▸ alterna sin puntero; `subMenuDomId` para `aria-controls`.
+
+---
