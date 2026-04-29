@@ -439,3 +439,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `ToastProvider` + `useToast()` en `src/components/toast-provider.tsx`, envuelve la app en `app-providers.tsx`; estilo `.mp-toast` (Win98 + themes); toasts al guardar en `mantenimiento-screen` y `registro-uso-screen` («Agregar Info»).
 
 ---
+
+## 2026-04-28 (44)
+
+**Prompt:**
+
+> hace falta un boton de restaurar, y pon los tres botones en horizontal
+
+**Outcome:** Opciones: botón «Restaurar», fila de acciones con `.win98-form-actions--row`; `importAllLocalPayload` en `local-storage-data.ts`; textarea siempre visible para pegar JSON; confirmación antes de aplicar.
+
+---

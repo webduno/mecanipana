@@ -320,6 +320,25 @@ export function exportAllLocalPayload(): Record<string, unknown> {
   return out;
 }
 
+const STORAGE_KEY_SET = new Set<string>(Object.values(STORAGE_KEYS));
+
+function valueToStorageString(v: unknown): string {
+  if (typeof v === "string") return v;
+  return JSON.stringify(v);
+}
+
+/** Aplica un objeto exportado por {@link exportAllLocalPayload} (solo claves conocidas). */
+export function importAllLocalPayload(payload: unknown): void {
+  if (!isObjectRecord(payload)) {
+    throw new Error("Mecanipana: el respaldo no es un objeto JSON.");
+  }
+  for (const [k, v] of Object.entries(payload)) {
+    if (!STORAGE_KEY_SET.has(k)) continue;
+    if (v === undefined) continue;
+    window.localStorage.setItem(k, valueToStorageString(v));
+  }
+}
+
 export function clearAllMecanipanaKeys() {
   const keys = Object.keys(window.localStorage);
   for (const k of keys) {

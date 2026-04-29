@@ -487,6 +487,13 @@ body.mp-font-lg {
   margin-top: 1rem;
 }
 
+/* Varias acciones en fila (los .win98-btn suelen ser width:100%) */
+.win98-form-actions--row .win98-btn {
+  width: auto;
+  flex: 1 1 6.5rem;
+  min-width: 0;
+}
+
 .win98-banner-ok {
   margin: 0;
   padding: 0.55rem 0.65rem;

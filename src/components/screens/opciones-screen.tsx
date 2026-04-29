@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   clearAllMecanipanaKeys,
   exportAllLocalPayload,
+  importAllLocalPayload,
   loadAppOptions,
   saveAppOptions,
 } from "@/lib/local-storage-data";
@@ -54,6 +55,44 @@ export function OpcionesScreen() {
     } catch {
       setMsg("No se pudo copiar. Selecciona el texto a mano.");
     }
+    setTimeout(() => setMsg(null), 2500);
+  }
+
+  function onRestore() {
+    const raw = (exportText ?? "").trim();
+    if (!raw) {
+      setMsg("Pega el respaldo en el cuadro o genera uno primero.");
+      setTimeout(() => setMsg(null), 3000);
+      return;
+    }
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw) as unknown;
+    } catch {
+      setMsg("El texto no es JSON válido.");
+      setTimeout(() => setMsg(null), 3000);
+      return;
+    }
+    if (
+      !window.confirm(
+        "¿Restaurar desde este respaldo? Se actualizarán los datos guardados para las claves que traiga el archivo."
+      )
+    ) {
+      return;
+    }
+    try {
+      importAllLocalPayload(parsed);
+    } catch (e) {
+      const text = e instanceof Error ? e.message : "Error al restaurar.";
+      setMsg(text);
+      setTimeout(() => setMsg(null), 3000);
+      return;
+    }
+    const next = loadAppOptions();
+    setOpts(next);
+    applyFontClass(next.fuentesGrandes);
+    applyThemeToDocument(next.theme);
+    setMsg("Respaldo aplicado.");
     setTimeout(() => setMsg(null), 2500);
   }
 
@@ -145,22 +184,24 @@ export function OpcionesScreen() {
         <p className="win98-muted mt-1">
           Genera un texto con lo guardado. Guárdalo en una nota o archivo si quieres.
         </p>
-        <div className="win98-form-actions">
+        <div className="win98-form-actions win98-form-actions--row">
           <button type="button" className="win98-btn" onClick={onExport}>
             Generar respaldo
           </button>
           <button type="button" className="win98-btn" onClick={onCopyExport}>
             Copiar
           </button>
+          <button type="button" className="win98-btn" onClick={onRestore}>
+            Restaurar
+          </button>
         </div>
-        {exportText ? (
-          <textarea
-            className="win98-textarea mt-2"
-            readOnly
-            value={exportText}
-            rows={8}
-          />
-        ) : null}
+        <textarea
+          className="win98-textarea mt-2"
+          placeholder="Aquí verás el respaldo al generarlo; también puedes pegar un JSON guardado antes para restaurar."
+          value={exportText ?? ""}
+          onChange={(e) => setExportText(e.target.value === "" ? null : e.target.value)}
+          rows={8}
+        />
       </div>
 
       <div className="win98-inset">
