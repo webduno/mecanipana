@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "savedVehicleLineFormat": "marca + espacio + modelo (ej. Fiat Siena)"
+  },
   "brands": [
     {
       "id": "fiat",

@@ -297,3 +297,43 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `THEME_IDS` + `theme` en `AppOptions`; `src/app/themes.css` + import en layout; `theme-ui.ts` (`applyThemeToDocument`, etiquetas); Opciones: radios de tema + persistencia; `MecanipanaBodyClass` aplica tema; `mp-floating-nav` para estilos; migración: `COMMENT` de `app_options.theme` con valores permitidos; modal Mi Info muestra tema; `docs/storage-vs-database.md` actualizado.
 
 ---
+
+## 2026-04-28 (30)
+
+**Prompt:**
+
+> put year then motor to sort better on select, and separate in 2 selects, side by side always , as to select better
+
+**Outcome:** `vehicle-default-panel.tsx`: dos `<select>` en fila (`Año` | `Motor`), opciones ordenadas por año ascendente y luego cilindraje; persistencia sigue siendo `motor · año` en `mecanipana:selectedVariant`; lista de variantes ordenada igual; validación al añadir versión personalizada.
+
+---
+
+## 2026-04-28 (31)
+
+**Prompt:**
+
+> is current year calculated automatically? it should, and put cars since 1944
+
+**Outcome:** `yearSelectRange()`: `new Date().getFullYear()` como tope mínimo junto al catálogo; lista desde `MIN_VEHICLE_YEAR` (1944) hasta ese máximo; años sin variantes en lista aparecen deshabilitados en el `<select>` de año.
+
+---
+
+## 2026-04-28 (32)
+
+**Prompt:**
+
+> separate aswell fiat siena with fiat and siena on different selects, and adjust predefined jsons
+
+**Outcome:** `vehicle-default-panel.tsx`: selects «Marca» y «Modelo» en fila; parsing por prefijo de marca del catálogo (orden por longitud de nombre); `selectedVehicleLine` sigue siendo `marca + espacio + modelo`. `vehicle-catalog.json`: objeto `meta.savedVehicleLineFormat` documentando el formato; extras con dos prompts (marca / modelo).
+
+---
+
+## 2026-04-28 (33)
+
+**Prompt:**
+
+> do these buttons do something to save on localstorage? if not fix it
+
+**Outcome:** Confirmado: `+ Carro` escribe `extraVehicleLines` + `selectedVehicleLine`; `+ Motor` escribe `extraVariantLabels` + `selectedVariant`. Ajuste: si la combinación ya está en catálogo o en extras, igualmente se actualiza la selección persistida (antes se salía sin `persistLine` / `persistVariant`).
+
+---
