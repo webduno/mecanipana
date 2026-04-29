@@ -56,39 +56,9 @@ export default function Home() {
         aria-label="Acciones principales"
         className="grid grid-cols-3 gap-2 sm:gap-3"
       >
-        <Link
-          href="/registrar-uso"
-          className="win98-btn win98-btn-tile win98-btn--accent-blue"
-        >
-          <IconRegistrar className="win98-btn-icon" />
-          Agregar Info
-        </Link>
-        <Link
-          href="/historial"
-          className="win98-btn win98-btn-tile win98-btn--accent-green"
-        >
-          <IconHistorial className="win98-btn-icon" />
-          Ver historial
-        </Link>
         <Link href="/resumen" className="win98-btn win98-btn-tile">
           <IconResumen className="win98-btn-icon" />
           Resumen
-        </Link>
-        <Link href="/combustible" className="win98-btn win98-btn-tile">
-          <IconCombustible className="win98-btn-icon" />
-          Combustible
-        </Link>
-        <Link href="/mantenimiento" className="win98-btn win98-btn-tile">
-          <IconMantenimiento className="win98-btn-icon" />
-          Mantenimiento
-        </Link>
-        <Link href="/recordatorios" className="win98-btn win98-btn-tile">
-          <IconRecordatorios className="win98-btn-icon" />
-          Recordatorios
-        </Link>
-        <Link href="/opciones" className="win98-btn win98-btn-tile">
-          <IconOpciones className="win98-btn-icon" />
-          Opciones (este equipo)
         </Link>
         <Link href="/datos-vehiculo" className="win98-btn win98-btn-tile">
           <IconVehiculo className="win98-btn-icon" />
@@ -98,6 +68,48 @@ export default function Home() {
           <IconCuenta className="win98-btn-icon" />
           Cuenta — próximamente
         </button>
+        <Link
+          href="/combustible"
+          className="win98-btn win98-btn-tile win98-btn-tile--mid-frame-combustible"
+        >
+          <IconCombustible className="win98-btn-icon" />
+          Combustible
+        </Link>
+        <Link
+          href="/mantenimiento"
+          className="win98-btn win98-btn-tile win98-btn-tile--mid-frame-mantenimiento"
+        >
+          <IconMantenimiento className="win98-btn-icon" />
+          Mantenimiento
+        </Link>
+        <Link
+          href="/recordatorios"
+          className="win98-btn win98-btn-tile win98-btn-tile--mid-frame-recordatorios"
+        >
+          <IconRecordatorios className="win98-btn-icon" />
+          Recordatorios
+        </Link>
+        <Link
+          href="/opciones"
+          className="win98-btn win98-btn-tile win98-btn--accent-red"
+        >
+          <IconOpciones className="win98-btn-icon" />
+          Opciones (este equipo)
+        </Link>
+        <Link
+          href="/historial"
+          className="win98-btn win98-btn-tile win98-btn--accent-green"
+        >
+          <IconHistorial className="win98-btn-icon" />
+          Ver historial
+        </Link>
+        <Link
+          href="/registrar-uso"
+          className="win98-btn win98-btn-tile win98-btn--accent-blue"
+        >
+          <IconRegistrar className="win98-btn-icon" />
+          Agregar Info
+        </Link>
       </nav>
     </AppWindowShell>
   );

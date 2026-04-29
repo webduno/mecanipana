@@ -94,6 +94,75 @@
     -3px -3px 10px rgb(255 255 255 / 0.25);
 }
 
+[data-theme="neumorphism"] .win98-btn--accent-red {
+  background: linear-gradient(145deg, #c53030 0%, #9b2626 100%);
+  color: #fff;
+  box-shadow:
+    5px 5px 14px rgb(197 48 48 / 0.45),
+    -3px -3px 10px rgb(255 255 255 / 0.25);
+}
+
+/* Inner glow sobre neumorphism (misma combinación que en Win98 por defecto) */
+[data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-combustible {
+  box-shadow:
+    5px 5px 12px rgb(163 177 198 / 0.55),
+    -4px -4px 12px rgb(255 255 255 / 0.9),
+    inset 0 0 14px rgb(57 255 20 / 0.45),
+    inset 0 0 26px rgb(57 255 20 / 0.22),
+    inset 3px 3px 8px rgb(57 255 20 / 0.35),
+    inset -3px -3px 8px rgb(57 255 20 / 0.25);
+}
+
+[data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-mantenimiento {
+  box-shadow:
+    5px 5px 12px rgb(163 177 198 / 0.55),
+    -4px -4px 12px rgb(255 255 255 / 0.9),
+    inset 0 0 14px rgb(255 110 199 / 0.45),
+    inset 0 0 26px rgb(255 110 199 / 0.22),
+    inset 3px 3px 8px rgb(255 110 199 / 0.35),
+    inset -3px -3px 8px rgb(255 110 199 / 0.25);
+}
+
+[data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-recordatorios {
+  box-shadow:
+    5px 5px 12px rgb(163 177 198 / 0.55),
+    -4px -4px 12px rgb(255 255 255 / 0.9),
+    inset 0 0 14px rgb(255 240 31 / 0.5),
+    inset 0 0 26px rgb(255 240 31 / 0.26),
+    inset 3px 3px 8px rgb(255 240 31 / 0.38),
+    inset -3px -3px 8px rgb(255 240 31 / 0.26);
+}
+
+[data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-combustible:active {
+  box-shadow:
+    inset 4px 4px 10px rgb(163 177 198 / 0.55),
+    inset -3px -3px 9px rgb(255 255 255 / 0.85),
+    inset 0 0 14px rgb(57 255 20 / 0.35),
+    inset 0 0 26px rgb(57 255 20 / 0.14),
+    inset 3px 3px 6px rgb(57 255 20 / 0.26),
+    inset -3px -3px 6px rgb(57 255 20 / 0.16);
+}
+
+[data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-mantenimiento:active {
+  box-shadow:
+    inset 4px 4px 10px rgb(163 177 198 / 0.55),
+    inset -3px -3px 9px rgb(255 255 255 / 0.85),
+    inset 0 0 14px rgb(255 110 199 / 0.35),
+    inset 0 0 26px rgb(255 110 199 / 0.14),
+    inset 3px 3px 6px rgb(255 110 199 / 0.26),
+    inset -3px -3px 6px rgb(255 110 199 / 0.16);
+}
+
+[data-theme="neumorphism"] .win98-btn.win98-btn-tile--mid-frame-recordatorios:active {
+  box-shadow:
+    inset 4px 4px 10px rgb(163 177 198 / 0.55),
+    inset -3px -3px 9px rgb(255 255 255 / 0.85),
+    inset 0 0 14px rgb(255 240 31 / 0.38),
+    inset 0 0 26px rgb(255 240 31 / 0.16),
+    inset 3px 3px 6px rgb(255 240 31 / 0.3),
+    inset -3px -3px 6px rgb(255 240 31 / 0.18);
+}
+
 [data-theme="neumorphism"] .win98-btn-square {
   border: none;
   border-radius: 0.75rem;
@@ -243,6 +312,15 @@
 
 [data-theme="facephism"] .win98-btn--accent-green:active {
   background: #36a420;
+}
+
+[data-theme="facephism"] .win98-btn--accent-red {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+[data-theme="facephism"] .win98-btn--accent-red:active {
+  background: #b91c1c;
 }
 
 [data-theme="facephism"] .win98-btn-square {

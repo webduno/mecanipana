@@ -32,7 +32,7 @@ export function AppWindowShell({
     <header className="win98-titlebar flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-none pr-1.5 sm:pr-2">
       <Link
         href="/"
-        className="flex min-w-0 flex-1 items-center gap-2 truncate font-bold text-white underline decoration-white underline-offset-2"
+        className="flex min-w-0 flex-1 items-center gap-2 truncate font-bold underline decoration-[currentColor] underline-offset-2 decoration-2 transition-colors text-inherit"
       >
         <img
           src="/mecanipanalogo.png"
@@ -51,7 +51,7 @@ export function AppWindowShell({
       <div className="flex min-w-0 flex-1 items-center gap-x-3 gap-y-1">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 font-bold text-white underline decoration-white underline-offset-2"
+          className="flex shrink-0 items-center gap-2 font-bold underline decoration-[currentColor] underline-offset-2 decoration-2 text-inherit"
         >
           <img
             src="/mecanipanalogo.png"

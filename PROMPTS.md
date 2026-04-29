@@ -337,3 +337,43 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Confirmado: `+ Carro` escribe `extraVehicleLines` + `selectedVehicleLine`; `+ Motor` escribe `extraVariantLabels` + `selectedVariant`. Ajuste: si la combinación ya está en catálogo o en extras, igualmente se actualiza la selección persistida (antes se salía sin `persistLine` / `persistVariant`).
 
 ---
+
+## 2026-04-28 (34)
+
+**Prompt:**
+
+> put opciones in red, and put ver historial and agregar info next so its rgb, but at the bottom, and the grey bottoms would be first, but add a border to the three in the horizontal middle, like the three at the bottom have full bg color, and the three on top just like the are right now
+
+**Outcome:** `page.tsx`: fila superior gris tipo Win98 — Resumen, Datos del vehículo, Cuenta — próximamente; fila media — Combustible, Mantenimiento, Recordatorios con clase `.win98-btn-tile--mid-row-frame` (contorno oscuro); fila inferior RGB — Opciones (`.win98-btn--accent-red`), Ver historial (verde), Agregar Info (azul). Nuevo estilo rojo en `globals.css`; temas neumorphism / facephism para rojo en `themes.css`.
+
+---
+
+## 2026-04-28 (35)
+
+**Prompt:**
+
+> the middle borders should have their own color, neon green for combustible, pink on mantenimiento , and yellow on recordatorios
+
+**Outcome:** `globals.css`: tres contornos — `.win98-btn-tile--mid-frame-combustible` (#39ff14), mantenimiento (#ff6ec7), recordatorios (#fff01f). `page.tsx`: cada ficha usa su clase.
+
+---
+
+## 2026-04-28 (36)
+
+**Prompt:**
+
+> do inner shadow instead
+
+**Outcome:** Misma fila media; reemplazados `outline` por `box-shadow` inset en degradado (#39ff14, #ff6ec7 / rgb, #fff01f).
+
+---
+
+## 2026-04-28 (37)
+
+**Prompt:**
+
+> add those inner shadow on neumorphism and fix title of mecanipana color
+
+**Outcome:** `themes.css`: mismas luces inset + sombras gemelas elevadas por color en modo neumorphism (incluye `:active` por color); `app-window-shell.tsx`: enlace de marca usa `text-inherit` / `decoration-current` para heredar `#2d3748` en neumorphism (corrige texto blanco forzado) y mantener contrastes en tema Win98 y Facephism.
+
+---
