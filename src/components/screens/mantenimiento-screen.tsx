@@ -21,6 +21,7 @@ import {
 } from "@/lib/local-storage-data";
 import { pushMaintenanceEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 
 const PREDEFINED_MAINTENANCE_WHAT = [
   "Cambio de aceite",
@@ -106,7 +107,7 @@ export function MantenimientoScreen() {
   }
 
   return (
-    <>
+    <VehicleSetupGate>
       <p className="m-0 text-pretty">
         Cambio de aceite, caucho, frenos, taller, etc.
       </p>
@@ -214,6 +215,6 @@ export function MantenimientoScreen() {
           </ul>
         )}
       </div>
-    </>
+    </VehicleSetupGate>
   );
 }

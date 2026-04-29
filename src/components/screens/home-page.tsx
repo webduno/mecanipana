@@ -13,14 +13,50 @@ import {
   IconResumen,
   IconVehiculo,
 } from "@/components/grid-action-icons";
+import { OPEN_MI_INFO_EVENT } from "@/components/este-equipo-modal";
+import { useVehicleSetupReady } from "@/components/vehicle-setup-gate";
 import { isPlatformAdminEmail } from "@/lib/auth-constants";
 import Link from "next/link";
+import type { ReactNode } from "react";
+
+/** Ficha navegable o bloqueada hasta configurar Mi Info → Carro. */
+function LandingTile(props: {
+  href: string;
+  complete: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  const base = props.className
+    ? `win98-btn win98-btn-tile ${props.className}`
+    : "win98-btn win98-btn-tile";
+
+  if (props.complete) {
+    return (
+      <Link href={props.href} className={base}>
+        {props.children}
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${base} cursor-not-allowed opacity-[0.72]`}
+      title="Primero elige marca, modelo, año y motor en Mi Info → Este equipo → Carro"
+    >
+      {props.children}
+    </button>
+  );
+}
 
 export function HomePageClient() {
   const { user, loading } = useSupabaseAuth();
+  const { mounted, complete } = useVehicleSetupReady();
   const showAdminBtn = Boolean(
     user?.email && !loading && isPlatformAdminEmail(user.email)
   );
+
+  const canGo = mounted && complete;
 
   return (
     <AppWindowShell
@@ -39,13 +75,37 @@ export function HomePageClient() {
       }
     >
       <div className="flex flex-col gap-3">
+        {!canGo ? (
+          <button
+            type="button"
+            className="win98-btn win98-btn--accent-blue flex min-h-[3.25rem] w-full max-w-md items-center justify-center gap-3 text-[clamp(1rem,3.5vw,1.15rem)] font-extrabold"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent(OPEN_MI_INFO_EVENT));
+            }}
+            aria-label="Abrir Mi Info para escoger marca, modelo, año y motor"
+          >
+            <IconVehiculo className="h-7 w-7 shrink-0" aria-hidden />
+            Escoger mi carro
+          </button>
+        ) : null}
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
           <IconVehiculo className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
           <span>
-            Para <b>elegir o cambiar el carro</b>: arriba a la derecha pulsa{" "}
-            <strong className="font-bold">Mi Info</strong>, se abre{" "}
-            <strong className="font-bold">Este equipo</strong> y en la pestaña{" "}
-            <strong className="font-bold">Carro</strong> eliges marca, modelo y versión.
+            <strong className="font-semibold text-[#000080]">Tu carro.</strong>{" "}
+            Escoge tu carro en {" "}
+            <strong className="font-semibold">Mi Info</strong> →{" "}
+            <strong className="font-semibold">Carro</strong>: marca, modelo, año, motor.
+            {!canGo ? (
+              <>
+                {" "}
+                O usa el atajo: botón azul «Escoger mi carro».
+              </>
+            ) : (
+              <>
+                {" "}
+                ¿Otro carro? Cambias ahí mismo.
+              </>
+            )}
           </span>
         </p>
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
@@ -53,12 +113,16 @@ export function HomePageClient() {
             className="win98-label-icon mt-0.5 shrink-0"
             aria-hidden
           />
-          <span>Anota uso del carro (viajes, combustible, mantenimiento).</span>
+          <span>
+            <strong className="font-semibold text-[#000080]">Tus registros por categoría:</strong>
+            viajes, gasolina, taller, recordatorios… un toque, un dato.
+          </span>
         </p>
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
           <IconOpciones className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
           <span>
-            Todo queda guardado; más adelante, con cuentas para sincronizar.
+            <strong className="font-semibold text-[#000080]">Este equipo primero.</strong> Todo vive primero offline y luego se sincroniza con el servidor. Letra y tema en{" "}
+            <strong className="font-semibold">Opciones</strong>. 
           </span>
         </p>
       </div>
@@ -68,60 +132,58 @@ export function HomePageClient() {
           aria-label="Acciones principales"
           className="grid grid-cols-3 gap-2 sm:gap-3"
         >
-          <Link href="/resumen" className="win98-btn win98-btn-tile">
+          <LandingTile href="/resumen" complete={canGo}>
             <IconResumen className="win98-btn-icon" />
             Resumen
-          </Link>
-          <Link href="/datos-vehiculo" className="win98-btn win98-btn-tile">
+          </LandingTile>
+          <LandingTile href="/datos-vehiculo" complete={canGo}>
             <IconVehiculo className="win98-btn-icon" />
             Datos del vehículo
-          </Link>
+          </LandingTile>
           <button type="button" className="win98-btn win98-btn-tile" disabled>
             <IconCuenta className="win98-btn-icon" />
             Cuenta — próximamente
           </button>
-          <Link
+          <LandingTile
             href="/combustible"
-            className="win98-btn win98-btn-tile win98-btn-tile--mid-frame-combustible"
+            complete={canGo}
+            className="win98-btn-tile--mid-frame-combustible"
           >
             <IconCombustible className="win98-btn-icon" />
             Combustible
-          </Link>
-          <Link
+          </LandingTile>
+          <LandingTile
             href="/mantenimiento"
-            className="win98-btn win98-btn-tile win98-btn-tile--mid-frame-mantenimiento"
+            complete={canGo}
+            className="win98-btn-tile--mid-frame-mantenimiento"
           >
             <IconMantenimiento className="win98-btn-icon" />
             Mantenimiento
-          </Link>
-          <Link
+          </LandingTile>
+          <LandingTile
             href="/recordatorios"
-            className="win98-btn win98-btn-tile win98-btn-tile--mid-frame-recordatorios"
+            complete={canGo}
+            className="win98-btn-tile--mid-frame-recordatorios"
           >
             <IconRecordatorios className="win98-btn-icon" />
             Recordatorios
-          </Link>
-          <Link
-            href="/opciones"
-            className="win98-btn win98-btn-tile win98-btn--accent-red"
-          >
+          </LandingTile>
+          <Link href="/opciones" className="win98-btn win98-btn-tile win98-btn--accent-red">
             <IconOpciones className="win98-btn-icon" />
-            Opciones (este equipo)
+            Opciones de Tema
           </Link>
-          <Link
+          <LandingTile
             href="/historial"
-            className="win98-btn win98-btn-tile win98-btn--accent-green"
+            complete={canGo}
+            className="win98-btn--accent-green"
           >
             <IconHistorial className="win98-btn-icon" />
             Ver historial
-          </Link>
-          <Link
-            href="/registrar-uso"
-            className="win98-btn win98-btn-tile win98-btn--accent-blue"
-          >
+          </LandingTile>
+          <LandingTile href="/registrar-uso" complete={canGo} className="win98-btn--accent-blue">
             <IconRegistrar className="win98-btn-icon" />
             Agregar Info
-          </Link>
+          </LandingTile>
         </nav>
 
         {showAdminBtn ? (

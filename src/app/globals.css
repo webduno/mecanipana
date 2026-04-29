@@ -563,3 +563,22 @@ body.mp-font-lg {
   font-size: 0.92rem;
   color: #404040;
 }
+
+/* Animación suave en Mi Info hasta completar marca / modelo / año / motor */
+@keyframes mpMiInfoPulseRing {
+  0%,
+  100% {
+    box-shadow:
+      2px 2px 0 #000000,
+      0 0 0 0 rgb(0 0 128 / 0%);
+  }
+  45% {
+    box-shadow:
+      2px 2px 0 #000000,
+      0 0 0 4px rgb(0 0 128 / 35%);
+  }
+}
+
+.mp-mi-info-pulse {
+  animation: mpMiInfoPulseRing 2s ease-in-out infinite;
+}

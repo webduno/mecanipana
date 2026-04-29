@@ -7,6 +7,7 @@ import {
   readSelectedVehicle,
   saveVehicleNotes,
 } from "@/lib/local-storage-data";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 
 export function DatosVehiculoScreen() {
   const [line, setLine] = useState("");
@@ -22,6 +23,11 @@ export function DatosVehiculoScreen() {
 
   useEffect(() => {
     refreshFromStorage();
+    const onVehicle = () => refreshFromStorage();
+    window.addEventListener("mecanipana:vehicle", onVehicle as EventListener);
+    return () => {
+      window.removeEventListener("mecanipana:vehicle", onVehicle as EventListener);
+    };
   }, []);
 
   useEffect(() => {
@@ -34,7 +40,7 @@ export function DatosVehiculoScreen() {
   const vehicleLine = [line.trim(), variant.trim()].filter(Boolean).join(" · ");
 
   return (
-    <>
+    <VehicleSetupGate>
       <div className="flex flex-col gap-2">
         <p className="m-0 text-pretty font-semibold">Tu modelo y tus notas</p>
         <p className="m-0 text-pretty">
@@ -52,9 +58,9 @@ export function DatosVehiculoScreen() {
         ) : (
           <div className="m-2 mb-0 space-y-2">
             <p className="m-0 text-pretty">
-              Todavía no hay modelo guardado. Pulsa <strong>Mi Info</strong> (arriba a la
-              derecha en la barra azul), abre la ventana <strong>Este equipo</strong> y en la
-              pestaña <strong>Carro</strong> elige línea y versión.
+              Pulsa <strong>Mi Info</strong> (arriba a la derecha en la barra azul), abre{" "}
+              <strong>Este equipo</strong> y en la pestaña <strong>Carro</strong> elige línea y
+              versión.
             </p>
             <p className="m-0">
               <Link href="/" className="font-semibold underline underline-offset-2">
@@ -64,16 +70,35 @@ export function DatosVehiculoScreen() {
             </p>
           </div>
         )}
-        <div className="win98-form-actions flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-          <button type="button" className="win98-btn" onClick={refreshFromStorage}>
+        <div className="m-2 mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+          <button
+            type="button"
+            className="m-0 cursor-pointer border-0 bg-transparent p-0 text-[0.82rem] text-[#505050] underline underline-offset-2 hover:text-[#000080]"
+            onClick={refreshFromStorage}
+          >
             Volver a leer lo guardado
           </button>
-          <p className="win98-muted m-0 text-sm">
-            Úsalo si cambiaste marca o versión en Mi Info y esta pantalla no se ha
-            actualizado.
-          </p>
+          <span className="win98-muted m-0 text-[0.78rem]">
+            Úsalo si cambiaste marca o versión en Mi Info y esta pantalla no se ha actualizado.
+          </span>
         </div>
       </div>
+
+      {notes.trim() === "" ? (
+        <div className="win98-inset">
+          <p className="m-0 text-pretty font-semibold">Estado del carro (opcional)</p>
+          <p className="win98-muted mt-1 mb-2 text-[0.95rem]">
+            Si todavía no escribiste nada, puedes contestar 9 preguntas breves (sin repetir modelo ni
+            año) y te lo volcamos a las notas.
+          </p>
+          <Link
+            href="/datos-vehiculo/cuestionario"
+            className="win98-btn inline-flex max-w-full items-center justify-center text-center"
+          >
+            Rellenar cuestionario rápido (9 preguntas)
+          </Link>
+        </div>
+      ) : null}
 
       <div className="win98-form-row">
         <label className="win98-label" htmlFor="veh-notas">
@@ -91,6 +116,6 @@ export function DatosVehiculoScreen() {
           Se guarda solo en este navegador, unos instantes después de escribir.
         </p>
       </div>
-    </>
+    </VehicleSetupGate>
   );
 }

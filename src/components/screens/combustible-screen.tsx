@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import { appendFuel, loadFuelLog } from "@/lib/local-storage-data";
 
 function formatDisplayAt(iso: string) {
@@ -39,7 +40,7 @@ export function CombustibleScreen() {
   }
 
   return (
-    <>
+    <VehicleSetupGate>
       <p className="m-0 text-pretty">
         Registra cada vez que echas gasolina o gas. Monto en bolívares (Bs) como tú lo
         tengas a mano.
@@ -120,6 +121,6 @@ export function CombustibleScreen() {
           </ul>
         )}
       </div>
-    </>
+    </VehicleSetupGate>
   );
 }

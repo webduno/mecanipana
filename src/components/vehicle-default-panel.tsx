@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import vehicleCatalog from "@/data/defaults/vehicle-catalog.json";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
+import { formatVariantLabel, parseVariantLabel } from "@/lib/vehicle-variant-parse";
 
 /** Marcas del catálogo ordenadas por nombre descendente en longitud (coincidencia tipo «Land Rover» antes que «Land»). */
 const BRANDS_LONGEST_FIRST = [...vehicleCatalog.brands].sort(
@@ -62,24 +63,8 @@ function catalogVehicleLines(): string[] {
   return out;
 }
 
-/** Etiqueta persistida: `motor · año` (ej. `1.4 · 2008`). */
-function formatVariantLabel(engine: string, year: number): string {
-  return `${engine} · ${year}`;
-}
-
 /** Años mostrados en el selector: desde aquí hasta el año civil actual (y años futuros si hay en catálogo/extras). */
 const MIN_VEHICLE_YEAR = 1944;
-
-function parseVariantLabel(label: string): { engine: string; year: number } | null {
-  const parts = label.split(/\s*·\s*/).map((s) => s.trim());
-  if (parts.length < 2) return null;
-  const yearPart = parts[parts.length - 1]!;
-  const year = Number.parseInt(yearPart, 10);
-  if (!Number.isFinite(year) || year < 1900 || year > 2100) return null;
-  const engine = parts.slice(0, -1).join(" · ");
-  if (!engine) return null;
-  return { engine, year };
-}
 
 function compareEngines(a: string, b: string): number {
   return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
@@ -133,7 +118,7 @@ function yearSelectRange(labels: string[]): number[] {
     variantYears.length > 0 ? Math.min(...variantYears) : MIN_VEHICLE_YEAR;
   const minY = Math.min(MIN_VEHICLE_YEAR, minCatalogLow);
   const out: number[] = [];
-  for (let y = minY; y <= maxY; y++) out.push(y);
+  for (let y = maxY; y >= minY; y--) out.push(y);
   return out;
 }
 
@@ -144,15 +129,6 @@ function enginesForYear(labels: string[], year: number): string[] {
     if (p && p.year === year) engines.add(p.engine);
   }
   return [...engines].sort(compareEngines);
-}
-
-function catalogDefaults() {
-  const b = vehicleCatalog.brands[0];
-  const m = b?.models[0];
-  const v = m?.variants[0];
-  const defaultLine = `${b?.name ?? ""} ${m?.name ?? ""}`.trim();
-  const defaultVariant = v ? formatVariantLabel(v.engine, v.year) : "";
-  return { defaultLine, defaultVariant };
 }
 
 function mergeUnique(base: string[], extra: string[]) {
@@ -178,16 +154,25 @@ function writeJsonArray(key: string, value: string[]) {
 }
 
 export function VehicleDefaultPanel() {
-  const { defaultLine, defaultVariant } = useMemo(() => catalogDefaults(), []);
   const catalogLines = useMemo(() => catalogVehicleLines(), []);
   const catalogVarLabels = useMemo(() => catalogVariantLabels(), []);
 
   const [vehicleLines, setVehicleLines] = useState<string[]>(catalogLines);
   const [variantLabels, setVariantLabels] = useState<string[]>(catalogVarLabels);
-  const [selectedLine, setSelectedLine] = useState(defaultLine);
-  const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
+  const [selectedLine, setSelectedLine] = useState("");
+  const [selectedVariant, setSelectedVariant] = useState("");
   const [hydrated, setHydrated] = useState(false);
-
+  /** Formularios inline: `window.prompt` falla mucho en móvil (Safari/PWA). */
+  const [addCarroOpen, setAddCarroOpen] = useState(false);
+  const [addMotorOpen, setAddMotorOpen] = useState(false);
+  const [draftBrand, setDraftBrand] = useState("");
+  const [draftModel, setDraftModel] = useState("");
+  const [carroDraftError, setCarroDraftError] = useState("");
+  const [draftVariantLabel, setDraftVariantLabel] = useState("");
+  const [variantDraftError, setVariantDraftError] = useState("");
+  const extrasFormId = useId();
+  const extrasLabelCls =
+    "text-[0.72rem] font-extrabold leading-tight tracking-wide text-[#505050]";
   useEffect(() => {
     const extraLines = readJsonArray(STORAGE_KEYS.extraVehicleLines);
     const extraVariants = readJsonArray(STORAGE_KEYS.extraVariantLabels);
@@ -202,32 +187,29 @@ export function VehicleDefaultPanel() {
     const savedVariant = window.localStorage.getItem(STORAGE_KEYS.selectedVariant);
 
     const nextLine =
-      savedLine && lines.includes(savedLine) ? savedLine : defaultLine;
+      savedLine && lines.includes(savedLine) ? savedLine : "";
 
-    const candidate =
-      savedVariant && variants.includes(savedVariant) ? savedVariant : defaultVariant;
-    const nextVariant = parseVariantLabel(candidate)
-      ? candidate
-      : (variants.find((v) => parseVariantLabel(v)) ?? defaultVariant);
+    const variantCandidate =
+      savedVariant && variants.includes(savedVariant) ? savedVariant : "";
+    const nextVariant =
+      variantCandidate && parseVariantLabel(variantCandidate)
+        ? variantCandidate
+        : "";
 
     setSelectedLine(nextLine);
     setSelectedVariant(nextVariant);
 
-    // Sin esto, solo el estado en pantalla refleja el catálogo por defecto y las claves
-    // `selectedVehicleLine` / `selectedVariant` pueden seguir vacías hasta que el usuario
-    // toque un selector — otras pantallas leen solo localStorage y dirían «sin modelo».
-    window.localStorage.setItem(STORAGE_KEYS.selectedVehicleLine, nextLine);
-    window.localStorage.setItem(STORAGE_KEYS.selectedVariant, nextVariant);
-
     setHydrated(true);
-  }, [catalogLines, catalogVarLabels, defaultLine, defaultVariant]);
+  }, [catalogLines, catalogVarLabels]);
 
   const persistLine = useCallback((line: string) => {
     window.localStorage.setItem(STORAGE_KEYS.selectedVehicleLine, line);
+    window.dispatchEvent(new CustomEvent("mecanipana:vehicle"));
   }, []);
 
   const persistVariant = useCallback((v: string) => {
     window.localStorage.setItem(STORAGE_KEYS.selectedVariant, v);
+    window.dispatchEvent(new CustomEvent("mecanipana:vehicle"));
   }, []);
 
   const parsedVehicle = useMemo(
@@ -247,6 +229,7 @@ export function VehicleDefaultPanel() {
 
   const onBrandChange = useCallback(
     (brand: string) => {
+      if (!brand.trim()) return;
       const ms = modelsForBrand(vehicleLines, brand);
       if (ms.length === 0) return;
       const prev = parseVehicleLine(selectedLine);
@@ -261,6 +244,7 @@ export function VehicleDefaultPanel() {
 
   const onModelChange = useCallback(
     (model: string) => {
+      if (!model.trim()) return;
       const { brand } = parseVehicleLine(selectedLine);
       if (!brand) return;
       const line = formatVehicleLine(brand, model);
@@ -310,6 +294,7 @@ export function VehicleDefaultPanel() {
 
   const onMotorChange = useCallback(
     (engine: string) => {
+      if (!engine.trim()) return;
       const p = parseVariantLabel(selectedVariant);
       if (!p) return;
       const label = formatVariantLabel(engine, p.year);
@@ -319,17 +304,24 @@ export function VehicleDefaultPanel() {
     [selectedVariant, persistVariant]
   );
 
-  const addVehicleLine = useCallback(() => {
-    const brandRaw = window.prompt("Marca (ej. Fiat):")?.trim();
-    const modelRaw = window.prompt("Modelo (ej. Siena):")?.trim();
-    if (!brandRaw || !modelRaw) return;
-    const next = formatVehicleLine(brandRaw, modelRaw);
+  const confirmAddVehicleLine = useCallback(() => {
+    setCarroDraftError("");
+    const brandTrim = draftBrand.trim();
+    const modelTrim = draftModel.trim();
+    if (!brandTrim || !modelTrim) {
+      setCarroDraftError("Escribe marca y modelo.");
+      return;
+    }
+    const next = formatVehicleLine(brandTrim, modelTrim);
     if (!next) return;
 
     const stored = readJsonArray(STORAGE_KEYS.extraVehicleLines);
     if (catalogLines.includes(next) || stored.includes(next)) {
       setSelectedLine(next);
       persistLine(next);
+      setAddCarroOpen(false);
+      setDraftBrand("");
+      setDraftModel("");
       return;
     }
 
@@ -338,17 +330,27 @@ export function VehicleDefaultPanel() {
     setVehicleLines(mergeUnique(catalogLines, newExtras));
     setSelectedLine(next);
     persistLine(next);
-  }, [catalogLines, persistLine]);
+    setAddCarroOpen(false);
+    setDraftBrand("");
+    setDraftModel("");
+  }, [catalogLines, draftBrand, draftModel, persistLine]);
 
-  const addVariant = useCallback(() => {
-    const raw = window.prompt(
-      "Motor y año (ej. 1.4 · 2008):",
-      ""
-    );
-    const next = raw?.trim();
-    if (!next) return;
+  const cancelAddVehicleLine = useCallback(() => {
+    setAddCarroOpen(false);
+    setDraftBrand("");
+    setDraftModel("");
+    setCarroDraftError("");
+  }, []);
+
+  const confirmAddVariant = useCallback(() => {
+    setVariantDraftError("");
+    const next = draftVariantLabel.trim();
+    if (!next) {
+      setVariantDraftError("Escribe cilindraje y año.");
+      return;
+    }
     if (!parseVariantLabel(next)) {
-      window.alert("Usa el formato: cilindraje · año (ej. 1.4 · 2008).");
+      setVariantDraftError("Usa el formato: cilindraje · año (ej. 1.4 · 2008).");
       return;
     }
 
@@ -356,6 +358,8 @@ export function VehicleDefaultPanel() {
     if (catalogVarLabels.includes(next) || stored.includes(next)) {
       setSelectedVariant(next);
       persistVariant(next);
+      setAddMotorOpen(false);
+      setDraftVariantLabel("");
       return;
     }
 
@@ -364,8 +368,15 @@ export function VehicleDefaultPanel() {
     setVariantLabels(sortVariantLabels(mergeUnique(catalogVarLabels, newExtras)));
     setSelectedVariant(next);
     persistVariant(next);
-  }, [catalogVarLabels, persistVariant]);
+    setAddMotorOpen(false);
+    setDraftVariantLabel("");
+  }, [catalogVarLabels, draftVariantLabel, persistVariant]);
 
+  const cancelAddVariant = useCallback(() => {
+    setAddMotorOpen(false);
+    setDraftVariantLabel("");
+    setVariantDraftError("");
+  }, []);
   return (
     <div className="win98-inset win98-inset-vehicle">
       <div className="win98-field-group win98-field-group--vehicle">
@@ -374,16 +385,28 @@ export function VehicleDefaultPanel() {
             <p className="win98-field-label" id="vehiculo-defecto-vehiculo-grupo">
               1 · Marca y modelo
             </p>
-            <p className="win98-field-hint">
-              Dos listas: marca (ej. Fiat) y modelo (ej. Siena). La combinación se guarda como una sola línea.
-            </p>
           </div>
           <button
             type="button"
             className="win98-btn-square win98-btn-square--vehicle"
-            onClick={addVehicleLine}
-            title="Añadir otro vehículo (marca y modelo)"
-            aria-label="Añadir otro vehículo marca y modelo"
+            aria-expanded={addCarroOpen}
+            onClick={() => {
+              setAddMotorOpen(false);
+              setVariantDraftError("");
+              setAddCarroOpen((prev) => {
+                const next = !prev;
+                if (next) {
+                  setCarroDraftError("");
+                } else {
+                  setDraftBrand("");
+                  setDraftModel("");
+                  setCarroDraftError("");
+                }
+                return next;
+              });
+            }}
+            title="Añadir combinación marca y modelo fuera del catálogo"
+            aria-label="Añadir combinación marca y modelo fuera del catálogo"
           >
             <span className="win98-btn-square-plus" aria-hidden>
               +
@@ -391,6 +414,60 @@ export function VehicleDefaultPanel() {
             <span className="win98-btn-square-caption">Carro</span>
           </button>
         </div>
+        {addCarroOpen ? (
+          <div className="mb-3 rounded-sm border-2 border-[#808080] bg-white p-3 shadow-[inset_1px_1px_0_#fff,inset_-1px_-1px_0_#404040]">
+            <p className="m-0 text-[0.88rem] font-semibold text-[#000080]" id={`${extrasFormId}-carro-leg`}>
+              Nuevo marca + modelo
+            </p>
+            <form
+              className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end"
+              onSubmit={(e) => {
+                e.preventDefault();
+                confirmAddVehicleLine();
+              }}
+            >
+              <div className="min-w-[8rem] flex-1 space-y-0.5">
+                <label className={extrasLabelCls} htmlFor={`${extrasFormId}-brand`}>
+                  Marca nueva
+                </label>
+                <input
+                  id={`${extrasFormId}-brand`}
+                  className="win98-input w-full"
+                  autoComplete="off"
+                  placeholder="Ej. Toyota"
+                  value={draftBrand}
+                  onChange={(e) => setDraftBrand(e.target.value)}
+                />
+              </div>
+              <div className="min-w-[8rem] flex-1 space-y-0.5">
+                <label className={extrasLabelCls} htmlFor={`${extrasFormId}-model`}>
+                  Modelo
+                </label>
+                <input
+                  id={`${extrasFormId}-model`}
+                  className="win98-input w-full"
+                  autoComplete="off"
+                  placeholder="Ej. Corolla"
+                  value={draftModel}
+                  onChange={(e) => setDraftModel(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-wrap gap-2 pb-0.5">
+                <button type="submit" className="win98-btn shrink-0">
+                  Añadir a la lista
+                </button>
+                <button type="button" className="win98-btn shrink-0" onClick={cancelAddVehicleLine}>
+                  Cerrar
+                </button>
+              </div>
+            </form>
+            {carroDraftError !== "" ? (
+              <p className="win98-muted m-0 mt-2 text-[0.85rem] text-[#800000]" role="alert">
+                {carroDraftError}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
         <div
           role="group"
           aria-labelledby="vehiculo-defecto-vehiculo-grupo"
@@ -407,13 +484,14 @@ export function VehicleDefaultPanel() {
               id="vehiculo-defecto-marca"
               className="win98-select win98-select--vehicle min-w-0 flex-1"
               value={
-                brandOptions.includes(parsedVehicle.brand)
+                parsedVehicle.brand && brandOptions.includes(parsedVehicle.brand)
                   ? parsedVehicle.brand
-                  : (brandOptions[0] ?? "")
+                  : ""
               }
               disabled={!hydrated || brandOptions.length === 0}
               onChange={(e) => onBrandChange(e.target.value)}
             >
+              <option value="">— Elige marca —</option>
               {brandOptions.map((name) => (
                 <option key={name} value={name}>
                   {name}
@@ -432,15 +510,18 @@ export function VehicleDefaultPanel() {
               id="vehiculo-defecto-modelo"
               className="win98-select win98-select--vehicle min-w-0 flex-1"
               value={
-                modelOptions.includes(parsedVehicle.model)
+                parsedVehicle.model && modelOptions.includes(parsedVehicle.model)
                   ? parsedVehicle.model
-                  : (modelOptions[0] ?? "")
+                  : ""
               }
               disabled={
                 !hydrated || modelOptions.length === 0 || !parsedVehicle.brand
               }
               onChange={(e) => onModelChange(e.target.value)}
             >
+              <option value="">
+                {parsedVehicle.brand ? "— Elige modelo —" : "— Marca primero —"}
+              </option>
               {modelOptions.map((name) => (
                 <option key={name} value={name}>
                   {name}
@@ -457,17 +538,26 @@ export function VehicleDefaultPanel() {
             <p className="win98-field-label" id="vehiculo-defecto-motor-grupo">
               2 · Selecciona el año y el motor
             </p>
-            <p className="win98-field-hint">
-              Años desde {MIN_VEHICLE_YEAR} hasta el año actual; primero el año y luego el cilindraje (ej.
-              2008 y 1.4). Va aparte del nombre del carro.
-            </p>
           </div>
           <button
             type="button"
             className="win98-btn-square win98-btn-square--motor"
-            onClick={addVariant}
-            title="Añadir otra versión motor · año"
-            aria-label="Añadir otra versión motor · año"
+            aria-expanded={addMotorOpen}
+            onClick={() => {
+              setAddCarroOpen(false);
+              setCarroDraftError("");
+              setAddMotorOpen((prev) => {
+                const next = !prev;
+                if (next) setVariantDraftError("");
+                else {
+                  setDraftVariantLabel("");
+                  setVariantDraftError("");
+                }
+                return next;
+              });
+            }}
+            title="Añadir cilindraje · año fuera del catálogo"
+            aria-label="Añadir combinación cilindraje y año fuera del catálogo"
           >
             <span className="win98-btn-square-plus" aria-hidden>
               +
@@ -475,6 +565,61 @@ export function VehicleDefaultPanel() {
             <span className="win98-btn-square-caption">Motor</span>
           </button>
         </div>
+        {addMotorOpen ? (
+          <div className="mb-3 rounded-sm border-2 border-[#808080] bg-white p-3 shadow-[inset_1px_1px_0_#fff,inset_-1px_-1px_0_#404040]">
+            <p className="m-0 text-[0.88rem] font-semibold text-[#000080]" id={`${extrasFormId}-motor-leg`}>
+              Nuevo motor · año
+            </p>
+            <form
+              className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end"
+              onSubmit={(e) => {
+                e.preventDefault();
+                confirmAddVariant();
+              }}
+            >
+              <div className="min-w-0 flex-[1_1_12rem] space-y-0.5">
+                <label className={extrasLabelCls} htmlFor={`${extrasFormId}-variant-all`}>
+                  Texto único <span className="font-normal lowercase">cilindraje</span>
+                  {" · "}
+                  <span className="font-normal lowercase">año</span>
+                </label>
+                <input
+                  id={`${extrasFormId}-variant-all`}
+                  className="win98-input w-full font-mono"
+                  autoComplete="off"
+                  placeholder="1.4 · 2008"
+                  value={draftVariantLabel}
+                  onChange={(e) => setDraftVariantLabel(e.target.value)}
+                  maxLength={80}
+                  aria-describedby={
+                    variantDraftError !== "" ? `${extrasFormId}-motor-err` : undefined
+                  }
+                />
+              </div>
+              <div className="flex flex-wrap gap-2 pb-0.5">
+                <button type="submit" className="win98-btn shrink-0">
+                  Añadir a la lista
+                </button>
+                <button
+                  type="button"
+                  className="win98-btn shrink-0"
+                  onClick={() => cancelAddVariant()}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </form>
+            {variantDraftError !== "" ? (
+              <p
+                className="win98-muted m-0 mt-2 text-[0.85rem] text-[#800000]"
+                id={`${extrasFormId}-motor-err`}
+                role="alert"
+              >
+                {variantDraftError}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
         <div
           role="group"
           aria-labelledby="vehiculo-defecto-motor-grupo"
@@ -494,6 +639,7 @@ export function VehicleDefaultPanel() {
               disabled={!hydrated || yearOptions.length === 0}
               onChange={(e) => onYearChange(e.target.value)}
             >
+              {!parsedVariant ? <option value="">— Elige año —</option> : null}
               {yearOptions.map((y) => (
                 <option
                   key={y}
@@ -515,10 +661,22 @@ export function VehicleDefaultPanel() {
             <select
               id="vehiculo-defecto-motor-select"
               className="win98-select win98-select--motor min-w-0 flex-1"
-              value={parsedVariant?.engine ?? ""}
+              value={
+                parsedVariant?.engine &&
+                motorOptions.includes(parsedVariant.engine)
+                  ? parsedVariant.engine
+                  : ""
+              }
               disabled={!hydrated || motorOptions.length === 0 || !parsedVariant}
               onChange={(e) => onMotorChange(e.target.value)}
             >
+              {motorOptions.length > 0 ? (
+                <option value="">— Elige cilindraje —</option>
+              ) : (
+                <option value="">
+                  {!parsedVariant ? "(elige año arriba)" : "Sin motores"}
+                </option>
+              )}
               {motorOptions.map((eng) => (
                 <option key={eng} value={eng}>
                   {eng}
@@ -530,18 +688,12 @@ export function VehicleDefaultPanel() {
       </div>
 
       <div className="win98-vehicle-resumen-box">
-        <p className="win98-vehicle-resumen-label">Combinación ahora</p>
+        <p className="win98-vehicle-resumen-label">Carro seleccionado</p>
         <p className="win98-vehicle-resumen" aria-live="polite">
-          {selectedLine} {selectedVariant}
+          {[selectedLine.trim(), selectedVariant.trim()].filter(Boolean).join(" ") ||
+            "— Todavía no elegiste carro ni versión —"}
         </p>
       </div>
-      <p className="win98-muted m-0 mt-2 max-w-none text-[0.88rem] leading-snug">
-        Cada cambio en las listas se guarda enseguida en este navegador:{" "}
-        <strong className="font-semibold text-[#303030]">no</strong> hace falta otro botón de
-        guardar. Si ya ves la combinación correcta arriba, puedes cerrar esta ventana con{" "}
-        <strong className="font-semibold text-[#303030]">Cerrar</strong> abajo y seguir usando la
-        app.
-      </p>
     </div>
   );
 }

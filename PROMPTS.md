@@ -499,3 +499,84 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `activity-contribution-grid.tsx`: grilla ~26 semanas × 7 días (Dom→Sáb), colores `#000080` / `#b35900` / `#1f6b3a` por tipo; mezcla el mismo día en franjas; solo datos de `loadUsageLog`/`loadFuelLog`/`loadMaintenanceLog`; leyenda; toggle «Usar info de base de datos» deshabilitado + texto «solo locales».
 
 ---
+
+## 2026-04-28 (50)
+
+**Prompt:**
+
+> put the button subtler; if notes empty, button to fill a quick 9 question questionnaire — new page in Spanish basic questions for current car state — model and year already from Mi Info; initial load nothing preselected in selectors; animate Mi Info so user fills first; gate data pages until Mi Info configured at least.
+
+**Outcome:** Primera selección sin prellenado en `VehicleDefaultPanel` (sin escritura LS automática hasta el usuario); `isVehicleProfileComplete()` + evento `mecanipana:vehicle`; `VehicleSetupGate` + tablero y pantallas datos bloqueadas; pulso `.mp-mi-info-pulse` en Mi Info; ruta `/datos-vehiculo/cuestionario` y `appendQuestionnaireParagraphToVehicleNotes`; «Volver a leer» como enlace discreto; util `vehicle-variant-parse.ts`.
+
+---
+
+## 2026-04-28 (51)
+
+**Prompt:**
+
+> remove that text and put cta to pick car
+
+**Outcome:** Quitado bloque «Empieza por tu carro»; botón azul «Escoger mi carro» que dispara `OPEN_MI_INFO_EVENT` (`mecanipana:open-mi-info`); `EsteEquipoModalControl` escucha y abre el modal en pestaña Carro.
+
+---
+
+## 2026-04-28 (52)
+
+**Prompt:**
+
+> esta raro este teexto, arregla los 3 puntos con algo mejor
+
+**Outcome:** En `home-page.tsx` los tres textos pasan a títulos breves («Tu carro», «Tus registros», «Este equipo primero») + copy más claro; primera viñeta depende de `canGo` (botón azul vs cambiar de vehículo).
+
+---
+
+## 2026-04-28 (53)
+
+**Prompt:**
+
+> why dont these add to local storage? (botones + Carro / + Motor en Mi Info)
+
+**Outcome:** Antes sólo funcionaban tras `window.prompt` (malo en Safari/móvil; cancelar no guardaba). Ahora `+ Carro` y `+ Motor` abren paneles Win98 con campos, validación visible y mismo guardado (`extraVehicleLines` / `extraVariantLabels`).
+
+---
+
+## 2026-04-28 (54)
+
+**Prompt:**
+
+> pon esto msa concise, deberian ser catchy phrases, simple
+
+**Outcome:** Tres viñetas de la home acortadas a frases directas («Atajo», «¿Otro carro?», «un toque un dato», «viene en camino» para sync) en `home-page.tsx`.
+
+---
+
+## 2026-04-28 (55)
+
+**Prompt:**
+
+> quita todo ese texto solo deja titulos y labels
+
+**Outcome:** En `vehicle-default-panel.tsx` se quitaron los párrafos de ayuda bajo «1· Marca y modelo» y «2· …», los textos bajo los formularios + Carro / + Motor (salvo errores), y el párrafo final sobre guardado automático; `aria-describedby` del campo motor solo cuando hay error.
+
+---
+
+## 2026-04-28 (56)
+
+**Prompt:**
+
+> sort reversed, latest year at the top
+
+**Outcome:** En `vehicle-default-panel.tsx`, `yearSelectRange()` rellena el array de año a año de mayor a menor (`maxY … minY`) para que el `<select>` «Año» muestre el año más reciente arriba.
+
+---
+
+## 2026-04-28 (57)
+
+**Prompt:**
+
+> Quitar «Resumen de lo guardado en localStorage (clave `mecanipana:*`)» del modal Carro seleccionado; que solo figure al hacer respaldo/restaurar.
+
+**Outcome:** El párrafo se eliminó de la pestaña «Datos» en `este-equipo-modal.tsx` y se añadió solo en Opciones (`opciones-screen.tsx`), bloque «Respaldo (copiar datos)».
+
+---
+

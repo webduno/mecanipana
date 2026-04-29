@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ReminderEntry } from "@/lib/mecanipana-types";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import {
   loadReminders,
   makeId,
@@ -64,7 +65,7 @@ export function RecordatoriosScreen() {
   }
 
   return (
-    <>
+    <VehicleSetupGate>
       <p className="m-0 text-pretty">
         Fechas importantes: revisión, papeles, repuesto pendiente, etc.
       </p>
@@ -136,6 +137,6 @@ export function RecordatoriosScreen() {
           ))}
         </ul>
       )}
-    </>
+    </VehicleSetupGate>
   );
 }

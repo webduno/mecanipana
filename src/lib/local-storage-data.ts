@@ -9,6 +9,7 @@ import {
   type UsageEntry,
 } from "@/lib/mecanipana-types";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
+import { parseVariantLabel } from "@/lib/vehicle-variant-parse";
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (raw == null) return fallback;
@@ -229,6 +230,19 @@ export function saveVehicleNotes(text: string) {
   window.localStorage.setItem(STORAGE_KEYS.vehicleNotes, text);
 }
 
+/** Añade texto al historial de notas (preguntas breves desde el cuestionario). */
+export function appendQuestionnaireParagraphToVehicleNotes(body: string): void {
+  const trimmed = body.trim();
+  if (!trimmed) return;
+  const cur = loadVehicleNotes().trimEnd();
+  const stamp = new Date().toLocaleString("es-VE", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+  const block = `\n\n--- Estado rápido del carro (${stamp}) ---\n${trimmed}\n`;
+  saveVehicleNotes(cur ? `${cur}${block}` : `${block.trim()}\n`);
+}
+
 function normalizeTheme(raw: unknown): ThemeId {
   if (
     typeof raw === "string" &&
@@ -261,6 +275,13 @@ export function readSelectedVehicle(): { line: string; variant: string } {
     line: window.localStorage.getItem(STORAGE_KEYS.selectedVehicleLine) ?? "",
     variant: window.localStorage.getItem(STORAGE_KEYS.selectedVariant) ?? "",
   };
+}
+
+/** Marca/modelo y versión `motor · año` guardados con formato válido. */
+export function isVehicleProfileComplete(): boolean {
+  const { line, variant } = readSelectedVehicle();
+  if (!line.trim()) return false;
+  return parseVariantLabel(variant) !== null;
 }
 
 export function buildHistoryRows(): HistoryRow[] {

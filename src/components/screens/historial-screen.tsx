@@ -1,6 +1,7 @@
 "use client";
 
 import type { HistoryRow } from "@/lib/mecanipana-types";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import { buildHistoryRows } from "@/lib/local-storage-data";
 
 function formatDisplayAt(iso: string) {
@@ -28,7 +29,7 @@ export function HistorialScreen() {
   const rows = buildHistoryRows();
 
   return (
-    <>
+    <VehicleSetupGate>
       <p className="m-0 text-pretty">
         Lista mezclada por fecha: usos del carro, gasolina y mantenimiento.
       </p>
@@ -48,6 +49,6 @@ export function HistorialScreen() {
           ))}
         </ul>
       )}
-    </>
+    </VehicleSetupGate>
   );
 }

@@ -181,6 +181,11 @@ export function OpcionesScreen() {
 
       <div className="win98-inset">
         <p className="win98-label m-0">Respaldo (copiar datos)</p>
+        <p className="mt-1 text-[0.92rem] leading-snug text-[#404040]">
+          Resumen de lo guardado en{" "}
+          <span className="font-semibold">localStorage</span> (clave{" "}
+          <code className="text-[0.85rem]">mecanipana:*</code>).
+        </p>
         <p className="win98-muted mt-1">
           Genera un texto con lo guardado. Guárdalo en una nota o archivo si quieres.
         </p>

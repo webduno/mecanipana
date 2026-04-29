@@ -12,10 +12,14 @@ import {
   loadReminders,
   loadUsageLog,
   loadVehicleNotes,
+  isVehicleProfileComplete,
 } from "@/lib/local-storage-data";
 import { VehicleDefaultPanel } from "@/components/vehicle-default-panel";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
 import { themeDisplayLabel } from "@/lib/theme-ui";
+
+/** Desde otros componentes (p. ej. inicio): `dispatchEvent(new CustomEvent(OPEN_MI_INFO_EVENT))`. */
+export const OPEN_MI_INFO_EVENT = "mecanipana:open-mi-info" as const;
 
 type TabId = "car" | "datos";
 
@@ -43,6 +47,25 @@ export function EsteEquipoModalControl() {
   const panelDatosId = `${baseId}-panel-datos`;
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
+  const [needsMiInfoGlow, setNeedsMiInfoGlow] = useState(true);
+
+  useEffect(() => {
+    const sync = () => setNeedsMiInfoGlow(!isVehicleProfileComplete());
+    sync();
+    const handler = () => sync();
+    window.addEventListener("mecanipana:vehicle", handler);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key?.startsWith("mecanipana:")) sync();
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("focus", handler);
+    return () => {
+      window.removeEventListener("mecanipana:vehicle", handler);
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("focus", handler);
+    };
+  }, []);
 
   useEffect(() => {
     setPortalReady(true);
@@ -83,11 +106,16 @@ export function EsteEquipoModalControl() {
     };
   }, [tick]);
 
-  const openModal = () => {
+  const openModal = useCallback(() => {
     refresh();
     setTab("car");
     dialogRef.current?.showModal();
-  };
+  }, [refresh]);
+
+  useEffect(() => {
+    window.addEventListener(OPEN_MI_INFO_EVENT, openModal);
+    return () => window.removeEventListener(OPEN_MI_INFO_EVENT, openModal);
+  }, [openModal]);
 
   const closeModalIfBackdrop = useCallback((e: React.MouseEvent<HTMLDialogElement>) => {
     if (e.target === e.currentTarget) {
@@ -115,7 +143,7 @@ export function EsteEquipoModalControl() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="win98-titlebar shrink-0 text-[clamp(0.95rem,3.5vw,1.15rem)]">
-          Este equipo
+          Carro Seleccionado
         </div>
 
         <div
@@ -179,12 +207,6 @@ export function EsteEquipoModalControl() {
             hidden={tab !== "datos"}
             className={tab === "datos" ? "flex shrink-0 flex-col gap-3" : "hidden"}
           >
-            <p className="m-0 text-[0.92rem] leading-snug text-[#404040]">
-              Resumen de lo guardado en{" "}
-              <span className="font-semibold">localStorage</span> (clave{" "}
-              <code className="text-[0.85rem]">mecanipana:*</code>).
-            </p>
-
             <div className="grid grid-cols-2 gap-2">
               <div className="flex min-h-[4.25rem] flex-col justify-between border-2 border-[#808080] bg-[#ffffcc] p-2 pt-2 shadow-[inset_1px_1px_0_#fff,inset_-1px_-1px_0_#404040]">
                 <span className="text-[0.72rem] font-extrabold leading-tight tracking-wide text-[#505050] uppercase">
@@ -276,8 +298,19 @@ export function EsteEquipoModalControl() {
       <div className="shrink-0">
         <button
           type="button"
-          className="win98-btn-square win98-btn-square--vehicle !min-h-[2.35rem] !min-w-[3rem] !gap-0.5 !py-0.5 !text-[0.65rem]"
-          title="Configurar vehículo por defecto y ver datos guardados en este equipo"
+          className={
+            [
+              "win98-btn-square win98-btn-square--vehicle !min-h-[2.35rem] !min-w-[3rem] !gap-0.5 !py-0.5 !text-[0.65rem]",
+              needsMiInfoGlow ? "mp-mi-info-pulse" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")
+          }
+          title={
+            needsMiInfoGlow
+              ? "Empieza aquí: elige marca, modelo, año y motor — luego el resto de la app se habilita."
+              : "Configurar vehículo por defecto y ver datos guardados en este equipo"
+          }
           aria-label="Abrir configuración de vehículo y datos del equipo"
           onClick={openModal}
         >

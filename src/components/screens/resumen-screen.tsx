@@ -4,6 +4,7 @@ import {
   ActivityContributionGrid,
   ActivityContributionLegend,
 } from "@/components/activity-contribution-grid";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import {
   buildHistoryRows,
   loadFuelLog,
@@ -29,7 +30,7 @@ export function ResumenScreen() {
   const timeline = buildHistoryRows().slice(0, 8);
 
   return (
-    <>
+    <VehicleSetupGate>
       <p className="m-0 text-pretty">
         Resumen de lo que llevas guardado en <strong>este equipo</strong>.
       </p>
@@ -114,6 +115,6 @@ export function ResumenScreen() {
           </ul>
         )}
       </div>
-    </>
+    </VehicleSetupGate>
   );
 }

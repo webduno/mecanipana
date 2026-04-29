@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import usageNotePresets from "@/data/defaults/usage-note-presets.json";
 import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
+import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import { urgenciaFromForm, type UrgenciaPreset, UrgenciaField } from "@/components/urgencia-field";
 import { useToast } from "@/components/toast-provider";
 import { appendUsage } from "@/lib/local-storage-data";
@@ -97,7 +98,7 @@ export function RegistroUsoScreen() {
   }
 
   return (
-    <>
+    <VehicleSetupGate>
       <p className="m-0 text-pretty">
         Anota un uso del carro: viaje al trabajo, recado, etc. Todo queda solo en este
         navegador.
@@ -206,6 +207,6 @@ export function RegistroUsoScreen() {
           </button>
         </div>
       </form>
-    </>
+    </VehicleSetupGate>
   );
 }
