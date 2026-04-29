@@ -12,8 +12,8 @@ import {
   loadReminders,
   loadUsageLog,
   loadVehicleNotes,
-  readSelectedVehicle,
 } from "@/lib/local-storage-data";
+import { VehicleDefaultPanel } from "@/components/vehicle-default-panel";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
 
 type TabId = "car" | "datos";
@@ -28,7 +28,11 @@ function mecanipanaStorageApproxChars(): number {
   return n;
 }
 
-export function ContainerShortcuts() {
+/**
+ * Botón «Mi Info» + modal «Este equipo» (vehículo por defecto + resumen localStorage).
+ * Usar dentro de `HeaderToolbar` o sola; el modal se monta en `document.body`.
+ */
+export function EsteEquipoModalControl() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [portalReady, setPortalReady] = useState(false);
   const [tick, setTick] = useState(0);
@@ -57,7 +61,6 @@ export function ContainerShortcuts() {
     return () => window.removeEventListener("focus", onFocus);
   }, [refresh]);
 
-  const vehicle = useMemo(() => readSelectedVehicle(), [tick]);
   const summary = useMemo(() => {
     const uso = loadUsageLog().length;
     const comb = loadFuelLog().length;
@@ -107,7 +110,7 @@ export function ContainerShortcuts() {
       onClose={refresh}
     >
       <div
-        className="win98-window flex max-h-[min(92vh,38rem)] w-[min(100vw-2rem,28rem)] max-w-[min(100vw-2rem,28rem)] flex-col overflow-hidden"
+        className="win98-window flex max-h-[min(92vh,44rem)] w-[min(100vw-1.25rem,34rem)] max-w-[min(100vw-1.25rem,34rem)] flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="win98-titlebar shrink-0 text-[clamp(0.95rem,3.5vw,1.15rem)]">
@@ -159,15 +162,7 @@ export function ContainerShortcuts() {
             hidden={tab !== "car"}
             className={tab === "car" ? "flex min-h-0 flex-col gap-3" : "hidden"}
           >
-            <p className="m-0 font-bold">
-              {vehicle.line.trim() || "(sin nombre)"}{" "}
-              <span className="font-semibold text-[#303030]">
-                {vehicle.variant.trim() || ""}
-              </span>
-            </p>
-            <p className="m-0 text-[0.95rem] leading-snug text-[#404040]">
-              Es la combinación guardada en este navegador para registros y resúmenes.
-            </p>
+            <VehicleDefaultPanel />
             <Link
               href="/datos-vehiculo"
               className="win98-btn inline-flex w-auto self-start no-underline"
@@ -271,19 +266,19 @@ export function ContainerShortcuts() {
 
   return (
     <>
-      <div className="flex shrink-0 justify-end">
+      <div className="shrink-0">
         <button
           type="button"
-          className="win98-btn-square win98-btn-square--vehicle !min-h-[2.65rem] !min-w-[3.35rem] !gap-0.5 !py-1 !text-[0.65rem]"
-          title="Vehículo actual y resumen de datos en este equipo"
-          aria-label="Abrir información del vehículo y datos guardados"
+          className="win98-btn-square win98-btn-square--vehicle !min-h-[2.35rem] !min-w-[3rem] !gap-0.5 !py-0.5 !text-[0.65rem]"
+          title="Configurar vehículo por defecto y ver datos guardados en este equipo"
+          aria-label="Abrir configuración de vehículo y datos del equipo"
           onClick={openModal}
         >
           <span className="flex items-center gap-0.5" aria-hidden>
             <IconVehiculo className="h-[1rem] w-[1rem]" />
             <IconResumen className="h-[1rem] w-[1rem]" />
           </span>
-          <span className="win98-btn-square-caption !mt-0 !text-[0.5rem]">Info</span>
+          <span className="win98-btn-square-caption !mt-0 !text-[0.5rem]">Mi Info</span>
         </button>
       </div>
 

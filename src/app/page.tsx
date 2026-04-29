@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ContainerShortcuts } from "@/components/container-shortcuts";
+import { AppWindowShell } from "@/components/app-window-shell";
 import {
   IconCombustible,
   IconCuenta,
@@ -11,81 +10,13 @@ import {
   IconResumen,
   IconVehiculo,
 } from "@/components/grid-action-icons";
-import { VehicleDefaultPanel } from "@/components/vehicle-default-panel";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex min-h-full flex-1 flex-col p-3 sm:p-6 lg:p-8">
-      <div className="win98-window mx-auto flex w-full max-w-lg flex-col lg:max-w-4xl lg:flex-row lg:gap-0">
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="win98-titlebar shrink-0 rounded-none">
-            <Link
-              href="/"
-              className="truncate font-bold text-white underline decoration-white underline-offset-2"
-            >
-              Mecanipana
-            </Link>
-          </header>
-          <div className="win98-body flex flex-col gap-4">
-            <ContainerShortcuts />
-            <p className="m-0 text-pretty text-[clamp(1rem,3.6vw,1.2rem)]">
-              Registro sencillo del uso del carro. Pensado para uso en Venezuela. Los
-              datos quedan en este equipo; más adelante, sincronización con una
-              cuenta.
-            </p>
-
-            <VehicleDefaultPanel />
-
-            <nav
-              aria-label="Acciones principales"
-              className="grid grid-cols-3 gap-2 sm:gap-3"
-            >
-              <Link
-                href="/registrar-uso"
-                className="win98-btn win98-btn-tile win98-btn--accent-blue"
-              >
-                <IconRegistrar className="win98-btn-icon" />
-                Registrar uso
-              </Link>
-              <Link
-                href="/historial"
-                className="win98-btn win98-btn-tile win98-btn--accent-green"
-              >
-                <IconHistorial className="win98-btn-icon" />
-                Ver historial
-              </Link>
-              <Link href="/resumen" className="win98-btn win98-btn-tile">
-                <IconResumen className="win98-btn-icon" />
-                Resumen
-              </Link>
-              <Link href="/combustible" className="win98-btn win98-btn-tile">
-                <IconCombustible className="win98-btn-icon" />
-                Combustible
-              </Link>
-              <Link href="/mantenimiento" className="win98-btn win98-btn-tile">
-                <IconMantenimiento className="win98-btn-icon" />
-                Mantenimiento
-              </Link>
-              <Link href="/recordatorios" className="win98-btn win98-btn-tile">
-                <IconRecordatorios className="win98-btn-icon" />
-                Recordatorios
-              </Link>
-              <Link href="/opciones" className="win98-btn win98-btn-tile">
-                <IconOpciones className="win98-btn-icon" />
-                Opciones (este equipo)
-              </Link>
-              <Link href="/datos-vehiculo" className="win98-btn win98-btn-tile">
-                <IconVehiculo className="win98-btn-icon" />
-                Datos del vehículo
-              </Link>
-              <button type="button" className="win98-btn win98-btn-tile" disabled>
-                <IconCuenta className="win98-btn-icon" />
-                Cuenta — próximamente
-              </button>
-            </nav>
-          </div>
-        </div>
-
+    <AppWindowShell
+      variant="landing"
+      aside={
         <aside className="win98-body hidden border-t-2 border-[#808080] bg-[#c0c0c0] lg:flex lg:w-[min(40%,20rem)] lg:flex-col lg:border-t-0 lg:border-l-2 lg:border-l-[#808080]">
           <p className="m-0 text-sm font-bold text-[#000080] lg:text-base">
             Pantalla ancha
@@ -96,7 +27,78 @@ export default function Home() {
             ayuda o recordatorios mientras armamos el resto.
           </p>
         </aside>
+      }
+    >
+      <div className="flex flex-col gap-3">
+        <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
+          <IconVehiculo className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
+          <span>
+            Pulsa <strong className="font-bold">Info</strong> en la barra azul para
+            vehículo superior, para <b>cambiar tu vehículo seleccionado</b>.
+          </span>
+        </p>
+        <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
+          <IconRegistrar
+            className="win98-label-icon mt-0.5 shrink-0"
+            aria-hidden
+          />
+          <span>Anota uso del carro (viajes, combustible, mantenimiento).</span>
+        </p>
+        <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
+          <IconOpciones className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
+          <span>
+            Todo queda guardado; más adelante, con cuentas para sincronizar.
+          </span>
+        </p>
       </div>
-    </div>
+
+      <nav
+        aria-label="Acciones principales"
+        className="grid grid-cols-3 gap-2 sm:gap-3"
+      >
+        <Link
+          href="/registrar-uso"
+          className="win98-btn win98-btn-tile win98-btn--accent-blue"
+        >
+          <IconRegistrar className="win98-btn-icon" />
+          Agregar Info
+        </Link>
+        <Link
+          href="/historial"
+          className="win98-btn win98-btn-tile win98-btn--accent-green"
+        >
+          <IconHistorial className="win98-btn-icon" />
+          Ver historial
+        </Link>
+        <Link href="/resumen" className="win98-btn win98-btn-tile">
+          <IconResumen className="win98-btn-icon" />
+          Resumen
+        </Link>
+        <Link href="/combustible" className="win98-btn win98-btn-tile">
+          <IconCombustible className="win98-btn-icon" />
+          Combustible
+        </Link>
+        <Link href="/mantenimiento" className="win98-btn win98-btn-tile">
+          <IconMantenimiento className="win98-btn-icon" />
+          Mantenimiento
+        </Link>
+        <Link href="/recordatorios" className="win98-btn win98-btn-tile">
+          <IconRecordatorios className="win98-btn-icon" />
+          Recordatorios
+        </Link>
+        <Link href="/opciones" className="win98-btn win98-btn-tile">
+          <IconOpciones className="win98-btn-icon" />
+          Opciones (este equipo)
+        </Link>
+        <Link href="/datos-vehiculo" className="win98-btn win98-btn-tile">
+          <IconVehiculo className="win98-btn-icon" />
+          Datos del vehículo
+        </Link>
+        <button type="button" className="win98-btn win98-btn-tile" disabled>
+          <IconCuenta className="win98-btn-icon" />
+          Cuenta — próximamente
+        </button>
+      </nav>
+    </AppWindowShell>
   );
 }

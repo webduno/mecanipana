@@ -177,3 +177,43 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Portal del `<dialog>` a `document.body` (`createPortal` tras montaje cliente); `globals.css` reglas `dialog.mp-overlay-dialog[open]` (`fixed inset:0`, flex centrado, sin tamaño heredado). Clic fuera del panel sigue cerrando.
 
 ---
+
+## 2026-04-28 (18)
+
+**Prompt:**
+
+> add this landing inner container into the modal i think, so its one single screen without scroll on landingpage
+
+**Outcome:** `VehicleDefaultPanel` dejó la landing (`page.tsx`) y vive en la pestaña **Carro** del modal Info (`container-shortcuts.tsx`), más enlace a datos del vehículo; texto intro menciona **Info**. Modal algo más ancho (`~34rem`) y más alto permitido (`max-h` ~92vh/44rem). Landing solo intro + rejilla + sidebar.
+
+---
+
+## 2026-04-28 (19)
+
+**Prompt:**
+
+> put button on top bar and put description concise in 3 sentences one each line, and with icons for easier understanding
+
+**Outcome:** Landing: botón **Info** en la barra azul (`justify-between`, título truncado + `ContainerShortcuts`); tres frases en líneas aparte con `IconRegistrar`, `IconOpciones`, `IconVehiculo` + clase `win98-label-icon`. Botón Info algo más compacto para la titlebar.
+
+---
+
+## 2026-04-28 (20)
+
+**Prompt:**
+
+> put mi info on top bar on other pages aswell
+
+**Outcome:** `page-shell.tsx`: `ContainerShortcuts` pasa del `win98-body` al `win98-titlebar`, a la derecha (`justify-between`): bloque izquierdo `Mecanipana` + título/página truncados, mismo patrón que la landing.
+
+---
+
+## 2026-04-28 (21)
+
+**Prompt:**
+
+> can you make sure all pages use the same header and initial button component of mi info with modal, and able to add more buttons to navbar with their own modals
+
+**Outcome:** `AppWindowShell` unifica landing + páginas internas (titlebar + `win98-body`). `HeaderToolbar` siempre monta `EsteEquipoModalControl` (`este-equipo-modal.tsx`) + prop `extra`. `PageShell` delega en `AppWindowShell variant="page"` con `headerActionsExtra`. Landing usa `AppWindowShell variant="landing"`. Eliminado `container-shortcuts.tsx`. `Win98ChromeModal`: helper para otro botón cuadrado + modal con portal y `mp-overlay-dialog`.
+
+---
