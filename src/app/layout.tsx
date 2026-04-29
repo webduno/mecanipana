@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   title: "Mecanipana — uso del auto",
   description:
     "Seguimiento del uso del vehículo en Venezuela (Fiat Siena 1.4 2008).",
+  icons: {
+    icon: "/mecanipanalogo.ico",
+    apple: "/mecanipanalogo.png",
+  },
 };
 
 export default function RootLayout({

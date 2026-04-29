@@ -8,11 +8,643 @@
           "id": "siena",
           "name": "Siena",
           "variants": [
-            {
-              "id": "siena-14-2008",
-              "engine": "1.4",
-              "year": 2008
-            }
+            { "id": "siena-14-2008", "engine": "1.4", "year": 2008 },
+            { "id": "siena-16-2012", "engine": "1.6", "year": 2012 }
+          ]
+        },
+        {
+          "id": "palio",
+          "name": "Palio",
+          "variants": [
+            { "id": "palio-13-2006", "engine": "1.3", "year": 2006 },
+            { "id": "palio-14-2010", "engine": "1.4", "year": 2010 }
+          ]
+        },
+        {
+          "id": "uno",
+          "name": "Uno",
+          "variants": [
+            { "id": "uno-10-2016", "engine": "1.0", "year": 2016 }
+          ]
+        },
+        {
+          "id": "idea",
+          "name": "Idea",
+          "variants": [
+            { "id": "idea-18-2009", "engine": "1.8", "year": 2009 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "byd",
+      "name": "BYD",
+      "models": [
+        {
+          "id": "yuan-plus",
+          "name": "Yuan Plus",
+          "variants": [
+            { "id": "yuan-plus-ev-2024", "engine": "EV", "year": 2024 }
+          ]
+        },
+        {
+          "id": "dolphin",
+          "name": "Dolphin",
+          "variants": [
+            { "id": "dolphin-ev-2024", "engine": "EV", "year": 2024 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "changan",
+      "name": "Changan",
+      "models": [
+        {
+          "id": "alsvin",
+          "name": "Alsvin",
+          "variants": [
+            { "id": "alsvin-15-2023", "engine": "1.5", "year": 2023 }
+          ]
+        },
+        {
+          "id": "cs35-plus",
+          "name": "CS35 Plus",
+          "variants": [
+            { "id": "cs35-plus-14t-2023", "engine": "1.4T", "year": 2023 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chery",
+      "name": "Chery",
+      "models": [
+        {
+          "id": "tiggo-4",
+          "name": "Tiggo 4",
+          "variants": [
+            { "id": "tiggo-4-15t-2023", "engine": "1.5T", "year": 2023 }
+          ]
+        },
+        {
+          "id": "arrizo-5",
+          "name": "Arrizo 5",
+          "variants": [
+            { "id": "arrizo-5-15t-2022", "engine": "1.5T", "year": 2022 }
+          ]
+        },
+        {
+          "id": "qq",
+          "name": "QQ",
+          "variants": [
+            { "id": "qq-10-2012", "engine": "1.0", "year": 2012 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chevrolet",
+      "name": "Chevrolet",
+      "models": [
+        {
+          "id": "aveo",
+          "name": "Aveo",
+          "variants": [
+            { "id": "aveo-16-2011", "engine": "1.6", "year": 2011 },
+            { "id": "aveo-14-2008", "engine": "1.4", "year": 2008 }
+          ]
+        },
+        {
+          "id": "optra",
+          "name": "Optra",
+          "variants": [
+            { "id": "optra-18-2007", "engine": "1.8", "year": 2007 }
+          ]
+        },
+        {
+          "id": "spark",
+          "name": "Spark",
+          "variants": [
+            { "id": "spark-10-2015", "engine": "1.0", "year": 2015 }
+          ]
+        },
+        {
+          "id": "corsa",
+          "name": "Corsa",
+          "variants": [
+            { "id": "corsa-16-2003", "engine": "1.6", "year": 2003 }
+          ]
+        },
+        {
+          "id": "luv-dmax",
+          "name": "Luv D-Max",
+          "variants": [
+            { "id": "dmax-25-2018", "engine": "2.5", "year": 2018 }
+          ]
+        },
+        {
+          "id": "silverado",
+          "name": "Silverado",
+          "variants": [
+            { "id": "silverado-53-2010", "engine": "5.3", "year": 2010 }
+          ]
+        },
+        {
+          "id": "c10",
+          "name": "C-10",
+          "variants": [
+            { "id": "c10-44-1985", "engine": "4.4", "year": 1985 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dongfeng",
+      "name": "Dongfeng",
+      "models": [
+        {
+          "id": "ax7",
+          "name": "AX7",
+          "variants": [
+            { "id": "ax7-16t-2023", "engine": "1.6T", "year": 2023 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ford",
+      "name": "Ford",
+      "models": [
+        {
+          "id": "fiesta",
+          "name": "Fiesta",
+          "variants": [
+            { "id": "fiesta-16-2011", "engine": "1.6", "year": 2011 }
+          ]
+        },
+        {
+          "id": "ecosport",
+          "name": "EcoSport",
+          "variants": [
+            { "id": "ecosport-20-2015", "engine": "2.0", "year": 2015 }
+          ]
+        },
+        {
+          "id": "explorer",
+          "name": "Explorer",
+          "variants": [
+            { "id": "explorer-35-2014", "engine": "3.5", "year": 2014 }
+          ]
+        },
+        {
+          "id": "f-150",
+          "name": "F-150",
+          "variants": [
+            { "id": "f150-50-2012", "engine": "5.0", "year": 2012 }
+          ]
+        },
+        {
+          "id": "ka",
+          "name": "Ka",
+          "variants": [
+            { "id": "ka-10-2019", "engine": "1.0", "year": 2019 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "great-wall",
+      "name": "Great Wall",
+      "models": [
+        {
+          "id": "wingle",
+          "name": "Wingle",
+          "variants": [
+            { "id": "wingle-20-2015", "engine": "2.0", "year": 2015 }
+          ]
+        },
+        {
+          "id": "poer",
+          "name": "Poer",
+          "variants": [
+            { "id": "poer-20-2022", "engine": "2.0", "year": 2022 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "honda",
+      "name": "Honda",
+      "models": [
+        {
+          "id": "civic",
+          "name": "Civic",
+          "variants": [
+            { "id": "civic-18-2014", "engine": "1.8", "year": 2014 }
+          ]
+        },
+        {
+          "id": "fit",
+          "name": "Fit",
+          "variants": [
+            { "id": "fit-15-2012", "engine": "1.5", "year": 2012 }
+          ]
+        },
+        {
+          "id": "cr-v",
+          "name": "CR-V",
+          "variants": [
+            { "id": "crv-24-2010", "engine": "2.4", "year": 2010 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hyundai",
+      "name": "Hyundai",
+      "models": [
+        {
+          "id": "accent",
+          "name": "Accent",
+          "variants": [
+            { "id": "accent-16-2013", "engine": "1.6", "year": 2013 }
+          ]
+        },
+        {
+          "id": "tucson",
+          "name": "Tucson",
+          "variants": [
+            { "id": "tucson-20-2018", "engine": "2.0", "year": 2018 }
+          ]
+        },
+        {
+          "id": "getz",
+          "name": "Getz",
+          "variants": [
+            { "id": "getz-14-2008", "engine": "1.4", "year": 2008 }
+          ]
+        },
+        {
+          "id": "elantra",
+          "name": "Elantra",
+          "variants": [
+            { "id": "elantra-20-2016", "engine": "2.0", "year": 2016 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jac",
+      "name": "JAC",
+      "models": [
+        {
+          "id": "js2-arena",
+          "name": "JS2 / Arena",
+          "variants": [
+            { "id": "js2-15-2024", "engine": "1.5", "year": 2024 }
+          ]
+        },
+        {
+          "id": "t6",
+          "name": "T6",
+          "variants": [
+            { "id": "t6-20-2023", "engine": "2.0", "year": 2023 }
+          ]
+        },
+        {
+          "id": "t8",
+          "name": "T8",
+          "variants": [
+            { "id": "t8-20-2024", "engine": "2.0", "year": 2024 }
+          ]
+        },
+        {
+          "id": "s2",
+          "name": "S2",
+          "variants": [
+            { "id": "s2-15-2018", "engine": "1.5", "year": 2018 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kia",
+      "name": "Kia",
+      "models": [
+        {
+          "id": "rio",
+          "name": "Rio",
+          "variants": [
+            { "id": "rio-14-2014", "engine": "1.4", "year": 2014 }
+          ]
+        },
+        {
+          "id": "sportage",
+          "name": "Sportage",
+          "variants": [
+            { "id": "sportage-20-2017", "engine": "2.0", "year": 2017 }
+          ]
+        },
+        {
+          "id": "picanto",
+          "name": "Picanto",
+          "variants": [
+            { "id": "picanto-11-2013", "engine": "1.1", "year": 2013 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mazda",
+      "name": "Mazda",
+      "models": [
+        {
+          "id": "3",
+          "name": "3",
+          "variants": [
+            { "id": "mazda3-20-2015", "engine": "2.0", "year": 2015 }
+          ]
+        },
+        {
+          "id": "bt-50",
+          "name": "BT-50",
+          "variants": [
+            { "id": "bt50-22-2014", "engine": "2.2", "year": 2014 }
+          ]
+        },
+        {
+          "id": "allegro",
+          "name": "Allegro",
+          "variants": [
+            { "id": "allegro-13-1998", "engine": "1.3", "year": 1998 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mitsubishi",
+      "name": "Mitsubishi",
+      "models": [
+        {
+          "id": "lancer",
+          "name": "Lancer",
+          "variants": [
+            { "id": "lancer-20-2011", "engine": "2.0", "year": 2011 }
+          ]
+        },
+        {
+          "id": "signo",
+          "name": "Signo",
+          "variants": [
+            { "id": "signo-13-2007", "engine": "1.3", "year": 2007 }
+          ]
+        },
+        {
+          "id": "montero-sport",
+          "name": "Montero Sport",
+          "variants": [
+            { "id": "montero-24-2010", "engine": "2.4", "year": 2010 }
+          ]
+        },
+        {
+          "id": "l200",
+          "name": "L200",
+          "variants": [
+            { "id": "l200-25-2018", "engine": "2.5", "year": 2018 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nissan",
+      "name": "Nissan",
+      "models": [
+        {
+          "id": "sentra",
+          "name": "Sentra",
+          "variants": [
+            { "id": "sentra-18-2014", "engine": "1.8", "year": 2014 },
+            { "id": "sentra-16-2008", "engine": "1.6", "year": 2008 }
+          ]
+        },
+        {
+          "id": "tiida",
+          "name": "Tiida",
+          "variants": [
+            { "id": "tiida-18-2010", "engine": "1.8", "year": 2010 }
+          ]
+        },
+        {
+          "id": "patrol",
+          "name": "Patrol",
+          "variants": [
+            { "id": "patrol-48-2008", "engine": "4.8", "year": 2008 }
+          ]
+        },
+        {
+          "id": "frontier",
+          "name": "Frontier",
+          "variants": [
+            { "id": "frontier-25-2015", "engine": "2.5", "year": 2015 }
+          ]
+        },
+        {
+          "id": "x-trail",
+          "name": "X-Trail",
+          "variants": [
+            { "id": "xtrail-25-2017", "engine": "2.5", "year": 2017 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "peugeot",
+      "name": "Peugeot",
+      "models": [
+        {
+          "id": "207",
+          "name": "207",
+          "variants": [
+            { "id": "207-14-2010", "engine": "1.4", "year": 2010 }
+          ]
+        },
+        {
+          "id": "307",
+          "name": "307",
+          "variants": [
+            { "id": "307-20-2006", "engine": "2.0", "year": 2006 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "renault",
+      "name": "Renault",
+      "models": [
+        {
+          "id": "logan",
+          "name": "Logan",
+          "variants": [
+            { "id": "logan-16-2012", "engine": "1.6", "year": 2012 }
+          ]
+        },
+        {
+          "id": "symbol",
+          "name": "Symbol",
+          "variants": [
+            { "id": "symbol-16-2010", "engine": "1.6", "year": 2010 }
+          ]
+        },
+        {
+          "id": "sandero",
+          "name": "Sandero",
+          "variants": [
+            { "id": "sandero-16-2016", "engine": "1.6", "year": 2016 }
+          ]
+        },
+        {
+          "id": "clio",
+          "name": "Clio",
+          "variants": [
+            { "id": "clio-16-2005", "engine": "1.6", "year": 2005 }
+          ]
+        },
+        {
+          "id": "oroch",
+          "name": "Oroch",
+          "variants": [
+            { "id": "oroch-20-2019", "engine": "2.0", "year": 2019 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "suzuki",
+      "name": "Suzuki",
+      "models": [
+        {
+          "id": "swift",
+          "name": "Swift",
+          "variants": [
+            { "id": "swift-14-2013", "engine": "1.4", "year": 2013 }
+          ]
+        },
+        {
+          "id": "grand-vitara",
+          "name": "Grand Vitara",
+          "variants": [
+            { "id": "gv-20-2011", "engine": "2.0", "year": 2011 }
+          ]
+        },
+        {
+          "id": "alto",
+          "name": "Alto",
+          "variants": [
+            { "id": "alto-10-2005", "engine": "1.0", "year": 2005 }
+          ]
+        },
+        {
+          "id": "vitara",
+          "name": "Vitara",
+          "variants": [
+            { "id": "vitara-16-2020", "engine": "1.6", "year": 2020 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toyota",
+      "name": "Toyota",
+      "models": [
+        {
+          "id": "corolla",
+          "name": "Corolla",
+          "variants": [
+            { "id": "corolla-18-2015", "engine": "1.8", "year": 2015 }
+          ]
+        },
+        {
+          "id": "yaris",
+          "name": "Yaris",
+          "variants": [
+            { "id": "yaris-15-2022", "engine": "1.5", "year": 2022 }
+          ]
+        },
+        {
+          "id": "agya",
+          "name": "Agya",
+          "variants": [
+            { "id": "agya-12-2024", "engine": "1.2", "year": 2024 }
+          ]
+        },
+        {
+          "id": "hilux",
+          "name": "Hilux",
+          "variants": [
+            { "id": "hilux-27-2021", "engine": "2.7", "year": 2021 }
+          ]
+        },
+        {
+          "id": "fortuner",
+          "name": "Fortuner",
+          "variants": [
+            { "id": "fortuner-27-2019", "engine": "2.7", "year": 2019 }
+          ]
+        },
+        {
+          "id": "terios",
+          "name": "Terios / Bego",
+          "variants": [
+            { "id": "terios-15-2008", "engine": "1.5", "year": 2008 }
+          ]
+        },
+        {
+          "id": "prado",
+          "name": "Land Cruiser Prado",
+          "variants": [
+            { "id": "prado-40-2012", "engine": "4.0", "year": 2012 }
+          ]
+        },
+        {
+          "id": "rav4",
+          "name": "RAV4",
+          "variants": [
+            { "id": "rav4-25-2018", "engine": "2.5", "year": 2018 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "volkswagen",
+      "name": "Volkswagen",
+      "models": [
+        {
+          "id": "gol",
+          "name": "Gol",
+          "variants": [
+            { "id": "gol-16-2014", "engine": "1.6", "year": 2014 }
+          ]
+        },
+        {
+          "id": "fox",
+          "name": "Fox",
+          "variants": [
+            { "id": "fox-16-2008", "engine": "1.6", "year": 2008 }
+          ]
+        },
+        {
+          "id": "jetta",
+          "name": "Jetta",
+          "variants": [
+            { "id": "jetta-25-2016", "engine": "2.5", "year": 2016 }
+          ]
+        },
+        {
+          "id": "amarok",
+          "name": "Amarok",
+          "variants": [
+            { "id": "amarok-20-2019", "engine": "2.0", "year": 2019 }
           ]
         }
       ]

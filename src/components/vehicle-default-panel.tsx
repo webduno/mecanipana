@@ -13,6 +13,37 @@ function catalogDefaults() {
   return { defaultLine, defaultVariant };
 }
 
+function catalogVehicleLines(): string[] {
+  const out: string[] = [];
+  for (const b of vehicleCatalog.brands) {
+    for (const m of b.models) {
+      out.push(`${b.name} ${m.name}`.trim());
+    }
+  }
+  return out;
+}
+
+function catalogVariantLabels(): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const b of vehicleCatalog.brands) {
+    for (const m of b.models) {
+      for (const v of m.variants) {
+        const label = `${v.engine} · ${v.year}`;
+        if (seen.has(label)) continue;
+        seen.add(label);
+        out.push(label);
+      }
+    }
+  }
+  return out;
+}
+
+function mergeUnique(base: string[], extra: string[]) {
+  const inBase = new Set(base);
+  return [...base, ...extra.filter((x) => !inBase.has(x))];
+}
+
 function readJsonArray(key: string): string[] {
   if (typeof window === "undefined") return [];
   try {
@@ -32,9 +63,11 @@ function writeJsonArray(key: string, value: string[]) {
 
 export function VehicleDefaultPanel() {
   const { defaultLine, defaultVariant } = useMemo(() => catalogDefaults(), []);
+  const catalogLines = useMemo(() => catalogVehicleLines(), []);
+  const catalogVarLabels = useMemo(() => catalogVariantLabels(), []);
 
-  const [vehicleLines, setVehicleLines] = useState<string[]>([defaultLine]);
-  const [variantLabels, setVariantLabels] = useState<string[]>([defaultVariant]);
+  const [vehicleLines, setVehicleLines] = useState<string[]>(catalogLines);
+  const [variantLabels, setVariantLabels] = useState<string[]>(catalogVarLabels);
   const [selectedLine, setSelectedLine] = useState(defaultLine);
   const [selectedVariant, setSelectedVariant] = useState(defaultVariant);
   const [hydrated, setHydrated] = useState(false);
@@ -43,11 +76,8 @@ export function VehicleDefaultPanel() {
     const extraLines = readJsonArray(STORAGE_KEYS.extraVehicleLines);
     const extraVariants = readJsonArray(STORAGE_KEYS.extraVariantLabels);
 
-    const lines = [defaultLine, ...extraLines.filter((x) => x !== defaultLine)];
-    const variants = [
-      defaultVariant,
-      ...extraVariants.filter((x) => x !== defaultVariant),
-    ];
+    const lines = mergeUnique(catalogLines, extraLines);
+    const variants = mergeUnique(catalogVarLabels, extraVariants);
 
     setVehicleLines(lines);
     setVariantLabels(variants);
@@ -59,7 +89,7 @@ export function VehicleDefaultPanel() {
       savedVariant && variants.includes(savedVariant) ? savedVariant : defaultVariant
     );
     setHydrated(true);
-  }, [defaultLine, defaultVariant]);
+  }, [catalogLines, catalogVarLabels, defaultLine, defaultVariant]);
 
   const persistLine = useCallback((line: string) => {
     window.localStorage.setItem(STORAGE_KEYS.selectedVehicleLine, line);
@@ -75,17 +105,16 @@ export function VehicleDefaultPanel() {
       ""
     );
     const next = raw?.trim();
-    if (!next || vehicleLines.includes(next)) return;
+    if (!next || catalogLines.includes(next)) return;
+    const stored = readJsonArray(STORAGE_KEYS.extraVehicleLines);
+    if (stored.includes(next)) return;
 
-    const extras = vehicleLines.filter((l) => l !== defaultLine);
-    const newExtras = [...extras, next];
+    const newExtras = [...stored, next];
     writeJsonArray(STORAGE_KEYS.extraVehicleLines, newExtras);
-
-    const merged = [defaultLine, ...newExtras];
-    setVehicleLines(merged);
+    setVehicleLines(mergeUnique(catalogLines, newExtras));
     setSelectedLine(next);
     persistLine(next);
-  }, [defaultLine, persistLine, vehicleLines]);
+  }, [catalogLines, persistLine]);
 
   const addVariant = useCallback(() => {
     const raw = window.prompt(
@@ -93,17 +122,16 @@ export function VehicleDefaultPanel() {
       ""
     );
     const next = raw?.trim();
-    if (!next || variantLabels.includes(next)) return;
+    if (!next || catalogVarLabels.includes(next)) return;
+    const stored = readJsonArray(STORAGE_KEYS.extraVariantLabels);
+    if (stored.includes(next)) return;
 
-    const extras = variantLabels.filter((v) => v !== defaultVariant);
-    const newExtras = [...extras, next];
+    const newExtras = [...stored, next];
     writeJsonArray(STORAGE_KEYS.extraVariantLabels, newExtras);
-
-    const merged = [defaultVariant, ...newExtras];
-    setVariantLabels(merged);
+    setVariantLabels(mergeUnique(catalogVarLabels, newExtras));
     setSelectedVariant(next);
     persistVariant(next);
-  }, [defaultVariant, persistVariant, variantLabels]);
+  }, [catalogVarLabels, persistVariant]);
 
   return (
     <div className="win98-inset win98-inset-vehicle">

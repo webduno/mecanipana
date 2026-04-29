@@ -10,4 +10,5 @@ export const STORAGE_KEYS = {
   reminders: "mecanipana:reminders",
   options: "mecanipana:options",
   vehicleNotes: "mecanipana:vehicleNotes",
+  extraUsageNotePresets: "mecanipana:extraUsageNotePresets",
 } as const;

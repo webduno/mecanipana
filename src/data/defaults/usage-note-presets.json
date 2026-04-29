@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "Viaje al trabajo",
+    "Mercado / abasto",
+    "Recados y trámites",
+    "Visita familiar",
+    "Doctor / consulta médica",
+    "Iglesia",
+    "Universidad o estudio",
+    "Salida recreativa",
+    "Aeropuerto o terminal",
+    "Compra repuestos / ir al taller"
+  ]
+}

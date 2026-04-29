@@ -227,3 +227,33 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** No era intencional: paneles de pestaña tenían `min-h-0` y podían encogerse en el flex del `win98-body`, con desbordamiento bajo el botón «Cerrar». Sustituido por `shrink-0` en ambos `tabpanel` en `este-equipo-modal.tsx` para que el scroll sea el del cuerpo del modal y no se tape el contenido.
 
 ---
+
+## 2026-04-28 (23)
+
+**Prompt:**
+
+> ok, add the normals car used in venezuela, research and add them to those jsons
+
+**Outcome:** `vehicle-catalog.json`: marcas/modelos frecuentes en Venezuela (flota clásica + Toyota/Chevrolet/Ford/Renault/etc. y entradas JAC/Changan/Chery/BYD). `vehicle-default-panel.tsx`: listas desplegables rellenan todas las líneas y variantes del catálogo; `localStorage` solo guarda extras; `mergeUnique` evita duplicados.
+
+---
+
+## 2026-04-28 (24)
+
+**Prompt:**
+
+> i put mecanipanalogo png and ico, use them
+
+**Outcome:** `public/mecanipanalogo.ico` copiado a `src/app/favicon.ico`; `layout.tsx`: `metadata.icons` (favicon + apple PNG). `app-window-shell.tsx`: logo PNG junto a «Mecanipana» en barra de título (landing e interior).
+
+---
+
+## 2026-04-28 (25)
+
+**Prompt:**
+
+> para nota agrega un boton a la derecha del label de "nota" que agregue una opcion predefenida, tambien ponla en un json y permite agregar a localstorage
+
+**Outcome:** `src/data/defaults/usage-note-presets.json` con frases por defecto; `STORAGE_KEYS.extraUsageNotePresets`; `registro-uso-screen.tsx`: fila del label Nota con `<select>` «Frases rápidas» (inserta texto en el área) y botón **+ Frase** (prompt → lista persistente). Datos del JSON solo lectura; extras solo en localStorage.
+
+---
