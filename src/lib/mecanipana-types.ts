@@ -28,8 +28,13 @@ export type ReminderEntry = {
   done: boolean;
 };
 
+/** Temas de interfaz (localStorage + futura sync Supabase `app_options.theme`). */
+export const THEME_IDS = ["win98", "neumorphism", "facephism"] as const;
+export type ThemeId = (typeof THEME_IDS)[number];
+
 export type AppOptions = {
   fuentesGrandes: boolean;
+  theme: ThemeId;
 };
 
 export type HistoryRow = {

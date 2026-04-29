@@ -1,10 +1,12 @@
-import type {
-  AppOptions,
-  FuelEntry,
-  HistoryRow,
-  MaintenanceEntry,
-  ReminderEntry,
-  UsageEntry,
+import {
+  THEME_IDS,
+  type AppOptions,
+  type FuelEntry,
+  type HistoryRow,
+  type MaintenanceEntry,
+  type ReminderEntry,
+  type ThemeId,
+  type UsageEntry,
 } from "@/lib/mecanipana-types";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
 
@@ -175,12 +177,25 @@ export function saveVehicleNotes(text: string) {
   window.localStorage.setItem(STORAGE_KEYS.vehicleNotes, text);
 }
 
+function normalizeTheme(raw: unknown): ThemeId {
+  if (
+    typeof raw === "string" &&
+    (THEME_IDS as readonly string[]).includes(raw)
+  ) {
+    return raw as ThemeId;
+  }
+  return "win98";
+}
+
 export function loadAppOptions(): AppOptions {
-  if (typeof window === "undefined") return { fuentesGrandes: false };
+  if (typeof window === "undefined") {
+    return { fuentesGrandes: false, theme: "win98" };
+  }
   const v = safeParse<unknown>(window.localStorage.getItem(STORAGE_KEYS.options), {});
-  if (!isObjectRecord(v)) return { fuentesGrandes: false };
+  if (!isObjectRecord(v)) return { fuentesGrandes: false, theme: "win98" };
   return {
     fuentesGrandes: v.fuentesGrandes === true,
+    theme: normalizeTheme(v.theme),
   };
 }
 

@@ -257,3 +257,43 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `src/data/defaults/usage-note-presets.json` con frases por defecto; `STORAGE_KEYS.extraUsageNotePresets`; `registro-uso-screen.tsx`: fila del label Nota con `<select>` «Frases rápidas» (inserta texto en el área) y botón **+ Frase** (prompt → lista persistente). Datos del JSON solo lectura; extras solo en localStorage.
 
 ---
+
+## 2026-04-28 (26)
+
+**Prompt:**
+
+> now generate what the initial script to create the database would be, make it idempotent, and ill then run it on supabase and then tell you waht to do
+
+**Outcome:** `supabase/migrations/20260428120000_initial_schema.sql`: tablas alineadas al modelo local (`profiles`, `vehicle_context`, `app_options`, logs, listas extra), RLS por `auth.uid()`, trigger `handle_new_user`, backfill idempotente para `auth.users` existentes, grants.
+
+---
+
+## 2026-04-28 (27)
+
+**Prompt:**
+
+> make sure to save not only the profile info, but the config like theme since it will be changable, language, custom options for almos each select like weve added, all that for initial migration
+
+**Outcome:** Migración inicial ampliada: `profiles` (display_name, avatar_url, updated_at); `app_options` (theme, locale, fuentes_grandes, preferences_extra jsonb); tabla `user_extra_usage_kinds`; `ALTER ADD COLUMN IF NOT EXISTS` para upgrades; política INSERT en profiles; comentarios SQL y notas al pie del script.
+
+---
+
+## 2026-04-28 (28)
+
+**Prompt:**
+
+> add an md that compares whats saved under wha key and under db how its saved to help people keep track, in another md please
+
+**Outcome:** `docs/storage-vs-database.md`: tablas clave `localStorage` ↔ Supabase, mapeo camelCase/snake_case por entidad, notas sobre datos solo local vs solo DB.
+
+---
+
+## 2026-04-28 (29)
+
+**Prompt:**
+
+> add 2 more themes, neumorphism, and facephism (like facebook ui), implement them on css and add the toggle on menu and save on localstorage and add to db init migration if necesary, and remember to add this to prompts.md
+
+**Outcome:** `THEME_IDS` + `theme` en `AppOptions`; `src/app/themes.css` + import en layout; `theme-ui.ts` (`applyThemeToDocument`, etiquetas); Opciones: radios de tema + persistencia; `MecanipanaBodyClass` aplica tema; `mp-floating-nav` para estilos; migración: `COMMENT` de `app_options.theme` con valores permitidos; modal Mi Info muestra tema; `docs/storage-vs-database.md` actualizado.
+
+---

@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { clearAllMecanipanaKeys, exportAllLocalPayload, loadAppOptions, saveAppOptions } from "@/lib/local-storage-data";
+import {
+  clearAllMecanipanaKeys,
+  exportAllLocalPayload,
+  loadAppOptions,
+  saveAppOptions,
+} from "@/lib/local-storage-data";
+import { THEME_IDS, type ThemeId } from "@/lib/mecanipana-types";
+import { applyThemeToDocument, themeDisplayLabel } from "@/lib/theme-ui";
 
 function applyFontClass(fuentesGrandes: boolean) {
   if (fuentesGrandes) document.body.classList.add("mp-font-lg");
@@ -19,6 +26,15 @@ export function OpcionesScreen() {
     setOpts(next);
     applyFontClass(checked);
     setMsg(checked ? "Letra más grande en esta pantalla." : "Letra normal.");
+    setTimeout(() => setMsg(null), 2500);
+  }
+
+  function onThemeChange(theme: ThemeId) {
+    const next = { ...opts, theme };
+    saveAppOptions(next);
+    setOpts(next);
+    applyThemeToDocument(theme);
+    setMsg(`Tema: ${themeDisplayLabel(theme)}`);
     setTimeout(() => setMsg(null), 2500);
   }
 
@@ -50,9 +66,11 @@ export function OpcionesScreen() {
       return;
     }
     clearAllMecanipanaKeys();
-    saveAppOptions({ fuentesGrandes: false });
-    setOpts({ fuentesGrandes: false });
+    const defaults = { fuentesGrandes: false, theme: "win98" as const };
+    saveAppOptions(defaults);
+    setOpts(defaults);
     applyFontClass(false);
+    applyThemeToDocument("win98");
     setExportText(null);
     setMsg("Listo. Recarga la página o vuelve al inicio.");
   }
@@ -62,6 +80,48 @@ export function OpcionesScreen() {
       <p className="m-0 text-pretty">
         Opciones solo de <strong>este equipo</strong>. Nada sale a internet todavía.
       </p>
+
+      <div className="win98-inset">
+        <p className="win98-label m-0">Tema visual</p>
+        <p className="win98-muted mt-1 mb-3">
+          Cambia la apariencia de botones y paneles (se guarda en este navegador).
+        </p>
+        <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+          <legend className="sr-only">Elegir tema visual</legend>
+          {THEME_IDS.map((id) => (
+            <label
+              key={id}
+              className="flex cursor-pointer items-start gap-3 rounded-sm py-0.5"
+            >
+              <input
+                type="radio"
+                name="mp-theme"
+                className="mt-1 h-5 w-5 shrink-0"
+                checked={opts.theme === id}
+                onChange={() => onThemeChange(id)}
+              />
+              <span>
+                <span className="font-bold">{themeDisplayLabel(id)}</span>
+                {id === "win98" ? (
+                  <span className="win98-muted block">
+                    Bordes clásicos estilo ventana antigua.
+                  </span>
+                ) : null}
+                {id === "neumorphism" ? (
+                  <span className="win98-muted block">
+                    Superficies blandas y sombras suaves.
+                  </span>
+                ) : null}
+                {id === "facephism" ? (
+                  <span className="win98-muted block">
+                    Colores tipo app popular (gris, azul, tarjetas).
+                  </span>
+                ) : null}
+              </span>
+            </label>
+          ))}
+        </fieldset>
+      </div>
 
       <div className="win98-inset">
         <label className="flex cursor-pointer items-start gap-3">

@@ -128,7 +128,7 @@ export function FloatingNav() {
   return (
     <nav
       aria-label="Acceso rápido"
-      className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] z-[90] flex flex-col gap-0.5 rounded-sm border-2 border-[#808080] bg-[#c0c0c0] p-1 shadow-[2px_2px_0_#000]"
+      className="mp-floating-nav fixed bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] z-[90] flex flex-col gap-0.5 rounded-sm border-2 border-[#808080] bg-[#c0c0c0] p-1 shadow-[2px_2px_0_#000]"
     >
       <Link
         href="/"

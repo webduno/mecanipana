@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FloatingNav } from "@/components/floating-nav";
 import { MecanipanaBodyClass } from "@/components/mecanipana-body-class";
 import "./globals.css";
+import "./themes.css";
 
 export const metadata: Metadata = {
   title: "Mecanipana — uso del auto",

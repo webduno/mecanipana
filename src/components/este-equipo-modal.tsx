@@ -15,6 +15,7 @@ import {
 } from "@/lib/local-storage-data";
 import { VehicleDefaultPanel } from "@/components/vehicle-default-panel";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
+import { themeDisplayLabel } from "@/lib/theme-ui";
 
 type TabId = "car" | "datos";
 
@@ -235,6 +236,12 @@ export function EsteEquipoModalControl() {
                   <span className="text-[0.78rem] font-semibold text-[#505050]">
                     car.
                   </span>
+                </dd>
+              </div>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-[#808080] px-2.5 py-2 text-[0.92rem] leading-snug">
+                <dt className="m-0 min-w-0 font-semibold">Tema visual</dt>
+                <dd className="m-0 shrink-0 text-right text-[1.05rem] font-bold">
+                  {themeDisplayLabel(summary.opts.theme)}
                 </dd>
               </div>
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 px-2.5 py-2 text-[0.92rem] leading-snug">

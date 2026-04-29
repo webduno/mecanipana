@@ -1,0 +1,296 @@
+/* Temas alternativos (Win98 permanece en :root / sin data-theme). */
+
+/* --- Neumorfismo: superficies suaves, sombras gemelas --- */
+[data-theme="neumorphism"] body {
+  background: #d1d9e6;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-theme="neumorphism"] .win98-window {
+  background: #e4e9f0;
+  border: none;
+  border-radius: 1.25rem;
+  box-shadow:
+    10px 10px 22px rgb(163 177 198 / 0.65),
+    -9px -9px 20px rgb(255 255 255 / 0.95);
+}
+
+[data-theme="neumorphism"] .win98-titlebar {
+  min-height: 2.65rem;
+  padding: 0.55rem 1rem;
+  border-radius: 1.25rem 1.25rem 0 0;
+  background: linear-gradient(145deg, #e8ecf3 0%, #d8dde8 100%);
+  color: #2d3748;
+  border-bottom: 1px solid rgb(255 255 255 / 0.6);
+  box-shadow: inset 0 -2px 4px rgb(163 177 198 / 0.25);
+}
+
+[data-theme="neumorphism"] .win98-body {
+  padding: 1.1rem;
+}
+
+[data-theme="neumorphism"] .win98-inset {
+  background: #eef1f7;
+  border: none;
+  border-radius: 0.9rem;
+  box-shadow:
+    inset 5px 5px 10px rgb(163 177 198 / 0.45),
+    inset -4px -4px 10px rgb(255 255 255 / 0.85);
+}
+
+[data-theme="neumorphism"] .win98-field-group {
+  border-radius: 0.85rem;
+  border: none;
+  background: #e4e9f0;
+  box-shadow:
+    inset 3px 3px 8px rgb(163 177 198 / 0.35),
+    inset -2px -2px 8px rgb(255 255 255 / 0.75);
+}
+
+[data-theme="neumorphism"] .win98-field-group--vehicle {
+  box-shadow:
+    inset 4px 0 0 #4c63d2,
+    inset 3px 3px 8px rgb(163 177 198 / 0.35),
+    inset -2px -2px 8px rgb(255 255 255 / 0.75);
+}
+
+[data-theme="neumorphism"] .win98-field-group--motor {
+  box-shadow:
+    inset 4px 0 0 #2f855a,
+    inset 3px 3px 8px rgb(163 177 198 / 0.35),
+    inset -2px -2px 8px rgb(255 255 255 / 0.75);
+}
+
+[data-theme="neumorphism"] .win98-btn {
+  border: none;
+  border-radius: 0.85rem;
+  background: #e4e9f0;
+  box-shadow:
+    5px 5px 12px rgb(163 177 198 / 0.55),
+    -4px -4px 12px rgb(255 255 255 / 0.9);
+}
+
+[data-theme="neumorphism"] .win98-btn:active {
+  box-shadow:
+    inset 4px 4px 10px rgb(163 177 198 / 0.55),
+    inset -3px -3px 9px rgb(255 255 255 / 0.85);
+  padding-top: calc(0.85rem + 1px);
+}
+
+[data-theme="neumorphism"] .win98-btn--accent-blue {
+  background: linear-gradient(145deg, #4c63d2 0%, #3c51b8 100%);
+  color: #fff;
+  box-shadow:
+    5px 5px 14px rgb(76 99 210 / 0.45),
+    -3px -3px 10px rgb(255 255 255 / 0.35);
+}
+
+[data-theme="neumorphism"] .win98-btn--accent-green {
+  background: linear-gradient(145deg, #38a169 0%, #2f855a 100%);
+  color: #fff;
+  box-shadow:
+    5px 5px 14px rgb(56 161 105 / 0.45),
+    -3px -3px 10px rgb(255 255 255 / 0.25);
+}
+
+[data-theme="neumorphism"] .win98-btn-square {
+  border: none;
+  border-radius: 0.75rem;
+  background: #e4e9f0;
+  box-shadow:
+    4px 4px 10px rgb(163 177 198 / 0.55),
+    -3px -3px 10px rgb(255 255 255 / 0.85);
+}
+
+[data-theme="neumorphism"] .win98-btn-square:active {
+  box-shadow:
+    inset 3px 3px 8px rgb(163 177 198 / 0.55),
+    inset -2px -2px 8px rgb(255 255 255 / 0.75);
+}
+
+[data-theme="neumorphism"] .win98-btn-square--vehicle {
+  background: linear-gradient(145deg, #4c63d2 0%, #3730a3 100%);
+  box-shadow:
+    4px 4px 12px rgb(76 99 210 / 0.45),
+    -2px -2px 8px rgb(255 255 255 / 0.2);
+}
+
+[data-theme="neumorphism"] .win98-btn-square--motor {
+  background: linear-gradient(145deg, #38a169 0%, #276749 100%);
+  box-shadow:
+    4px 4px 12px rgb(56 161 105 / 0.45),
+    -2px -2px 8px rgb(255 255 255 / 0.2);
+}
+
+[data-theme="neumorphism"] .win98-input,
+[data-theme="neumorphism"] .win98-textarea,
+[data-theme="neumorphism"] .win98-select {
+  border: none;
+  border-radius: 0.65rem;
+  background: #eef1f7;
+  box-shadow:
+    inset 4px 4px 10px rgb(163 177 198 / 0.45),
+    inset -3px -3px 10px rgb(255 255 255 / 0.95);
+}
+
+[data-theme="neumorphism"] .win98-banner-ok {
+  border: none;
+  border-radius: 0.65rem;
+  background: #fefcbf;
+  box-shadow:
+    3px 3px 8px rgb(163 177 198 / 0.35),
+    -2px -2px 8px rgb(255 255 255 / 0.8);
+}
+
+[data-theme="neumorphism"] .win98-muted {
+  color: #4a5568;
+}
+
+[data-theme="neumorphism"] .mp-floating-nav {
+  border: none !important;
+  border-radius: 0.85rem;
+  background: #e4e9f0 !important;
+  box-shadow:
+    6px 6px 14px rgb(163 177 198 / 0.55),
+    -4px -4px 14px rgb(255 255 255 / 0.9) !important;
+}
+
+/* --- Facephism: fondo gris feed, tarjetas blancas, azul primario --- */
+[data-theme="facephism"] body {
+  background: #f0f2f5;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+[data-theme="facephism"] .win98-window {
+  background: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+[data-theme="facephism"] .win98-titlebar {
+  min-height: 2.65rem;
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: #1877f2;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+[data-theme="facephism"] .win98-body {
+  padding: 1rem;
+}
+
+[data-theme="facephism"] .win98-inset {
+  background: #ffffff;
+  border: 1px solid #e4e6eb;
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+[data-theme="facephism"] .win98-field-group {
+  border-radius: 0.5rem;
+  border: 1px solid #e4e6eb;
+  background: #fafbfc;
+  box-shadow: none;
+}
+
+[data-theme="facephism"] .win98-field-group--vehicle {
+  box-shadow: inset 4px 0 0 #1877f2;
+}
+
+[data-theme="facephism"] .win98-field-group--motor {
+  box-shadow: inset 4px 0 0 #42b72a;
+}
+
+[data-theme="facephism"] .win98-btn {
+  border: none;
+  border-radius: 0.375rem;
+  background: #e4e6eb;
+  color: #050505;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+[data-theme="facephism"] .win98-btn:active {
+  background: #d8dadf;
+  padding-top: calc(0.85rem + 1px);
+}
+
+[data-theme="facephism"] .win98-btn--accent-blue {
+  background: #1877f2;
+  color: #ffffff;
+}
+
+[data-theme="facephism"] .win98-btn--accent-blue:active {
+  background: #166fe5;
+}
+
+[data-theme="facephism"] .win98-btn--accent-green {
+  background: #42b72a;
+  color: #ffffff;
+}
+
+[data-theme="facephism"] .win98-btn--accent-green:active {
+  background: #36a420;
+}
+
+[data-theme="facephism"] .win98-btn-square {
+  border: none;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+[data-theme="facephism"] .win98-btn-square:active {
+  background: #f0f2f5;
+}
+
+[data-theme="facephism"] .win98-btn-square--vehicle {
+  background: #1877f2;
+  color: #fff;
+}
+
+[data-theme="facephism"] .win98-btn-square--motor {
+  background: #42b72a;
+  color: #fff;
+}
+
+[data-theme="facephism"] .win98-input,
+[data-theme="facephism"] .win98-textarea,
+[data-theme="facephism"] .win98-select {
+  border: 1px solid #ccd0d5;
+  border-radius: 0.375rem;
+  background: #ffffff;
+}
+
+[data-theme="facephism"] .win98-banner-ok {
+  border: 1px solid #e4e6eb;
+  border-radius: 0.375rem;
+  background: #fff9d9;
+}
+
+[data-theme="facephism"] .win98-muted {
+  color: #65676b;
+}
+
+[data-theme="facephism"] .win98-label-icon {
+  color: #1877f2;
+}
+
+[data-theme="facephism"] .mp-floating-nav {
+  border: none !important;
+  border-radius: 0.5rem !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15) !important;
+}

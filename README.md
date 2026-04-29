@@ -8,6 +8,7 @@ Web app (Next.js) para anotar **uso del carro**: viajes, combustible, mantenimie
 | -------- | ---------- |
 | [PROJECT.md](PROJECT.md) | Visión, alcance v1, UI/UX, stack (JSON + localStorage, Supabase más adelante). |
 | [PROMPTS.md](PROMPTS.md) | Historial de prompts y resultados (decisiones y cambios). |
+| [docs/storage-vs-database.md](docs/storage-vs-database.md) | Equivalencias `localStorage` ↔ tablas Supabase y nombres de campos. |
 
 En Cursor, la regla [`.cursor/rules/prompts-history.mdc`](.cursor/rules/prompts-history.mdc) pide actualizar `PROMPTS.md` tras trabajo sustantivo pedido por el usuario.
 
