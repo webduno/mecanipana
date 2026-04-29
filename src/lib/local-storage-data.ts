@@ -175,6 +175,259 @@ export function appendMaintenance(entry: Omit<MaintenanceEntry, "id">): Maintena
   return row;
 }
 
+/** Heurística: entradas que cuentan como cambio o filtro de aceite (incl. etiquetas personalizadas). */
+function isOilChangeWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  if (!w.includes("aceite")) return false;
+  if (w.includes("presión") || w.includes("presion") || w.includes("testigo")) return false;
+  return (
+    w.includes("cambio") || w.includes("filtro") || w === "aceite" || /^aceite\b/.test(w)
+  );
+}
+
+export type OilChangeReminderSuggestion =
+  | { kind: "register_first" }
+  | { kind: "older_than_three_months"; lastAt: string; what: string };
+
+function startOfLocalDay(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function addCalendarMonths(base: Date, months: number): Date {
+  const d = new Date(base.getTime());
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+function lastMaintenanceMatch(
+  entries: MaintenanceEntry[],
+  pred: (what: string) => boolean,
+): { at: string; what: string } | null {
+  let best: { at: string; what: string } | null = null;
+  let bestMs = -Infinity;
+  for (const e of entries) {
+    if (!pred(e.what)) continue;
+    const t = new Date(e.at).getTime();
+    if (!Number.isFinite(t)) continue;
+    if (t > bestMs) {
+      bestMs = t;
+      best = { at: e.at, what: e.what };
+    }
+  }
+  return best;
+}
+
+export function getLastOilChangeFromMaintenanceLog(
+  entries: MaintenanceEntry[],
+): { at: string; what: string } | null {
+  return lastMaintenanceMatch(entries, isOilChangeWhat);
+}
+
+type LogRecency = "none" | "stale" | "ok";
+
+function logRecency(
+  entries: MaintenanceEntry[],
+  pred: (what: string) => boolean,
+  staleAfterMonths: number,
+): LogRecency {
+  const last = lastMaintenanceMatch(entries, pred);
+  if (!last) return "none";
+  const lastDate = new Date(last.at);
+  if (Number.isNaN(lastDate.getTime())) return "none";
+  const threshold = addCalendarMonths(lastDate, staleAfterMonths);
+  const todayStart = startOfLocalDay(new Date()).getTime();
+  const thresholdStart = startOfLocalDay(threshold).getTime();
+  if (todayStart <= thresholdStart) return "ok";
+  return "stale";
+}
+
+function isCauchoWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  return (
+    w.includes("caucho") ||
+    w.includes("llanta") ||
+    w.includes("neumático") ||
+    w.includes("neumatico") ||
+    w.includes("alineación") ||
+    w.includes("alineacion") ||
+    w.includes("balanceo")
+  );
+}
+
+function isFrenoWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  return (
+    w.includes("freno") ||
+    w.includes("frenos") ||
+    w.includes("pastilla") ||
+    w.includes("disco")
+  );
+}
+
+function isBateriaWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  return w.includes("batería") || w.includes("bateria");
+}
+
+function isRefrigeranteWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  return (
+    w.includes("refrigerante") ||
+    w.includes("coolant") ||
+    w.includes("anticongelante") ||
+    w.includes("enfriamiento") ||
+    w.includes("radiador")
+  );
+}
+
+/** Filtros que no sean ya cubiertos por cambio/filtro de aceite. */
+function isFiltroNoAceiteWhat(what: string): boolean {
+  if (isOilChangeWhat(what)) return false;
+  const w = what.trim().toLowerCase();
+  return w.includes("filtro");
+}
+
+function isLucesWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  return (
+    w.includes("luz") ||
+    w.includes("luces") ||
+    w.includes("foco") ||
+    w.includes("faro") ||
+    w.includes("bomillo") ||
+    w.includes("direccional") ||
+    w.includes("stop")
+  );
+}
+
+function isVidrioWhat(what: string): boolean {
+  const w = what.trim().toLowerCase();
+  return (
+    w.includes("vidrio") ||
+    w.includes("cristal") ||
+    w.includes("parabrisas") ||
+    w.includes("luneta")
+  );
+}
+
+function hasPaperReminderPending(reminders: ReminderEntry[]): boolean {
+  const re =
+    /seguro|póliza|poliza|ordenanza|certificado|licencia|circulaci[oó]n|titulo|título|papeles|vehicular/i;
+  return reminders.some((r) => !r.done && re.test(r.text));
+}
+
+export type MaintenanceSuggestionTile = {
+  id: string;
+  emoji: string;
+  title: string;
+  subtitle: string;
+  tone: "ok" | "attention" | "tip";
+  href: "/mantenimiento" | "/recordatorios";
+};
+
+/**
+ * Tarjetas compactas para Resumen (VE): heurística por `what` en el log local
+ * y recordatorios pendientes para papeles. Aceite 3 meses; el resto del taller 6 meses;
+ * luces/vidrios sin registro se muestran como tip suave.
+ */
+export function getMaintenanceSuggestionTiles(
+  entries: MaintenanceEntry[],
+  reminders: ReminderEntry[],
+): MaintenanceSuggestionTile[] {
+  const tiles: MaintenanceSuggestionTile[] = [];
+
+  const pushLogTile = (
+    id: string,
+    emoji: string,
+    title: string,
+    months: number,
+    pred: (what: string) => boolean,
+    softNever: boolean,
+  ) => {
+    const r = logRecency(entries, pred, months);
+    if (r === "none") {
+      tiles.push({
+        id,
+        emoji,
+        title,
+        subtitle: softNever ? "Revisar" : "Anotar",
+        tone: softNever ? "tip" : "attention",
+        href: "/mantenimiento",
+      });
+      return;
+    }
+    if (r === "stale") {
+      tiles.push({
+        id,
+        emoji,
+        title,
+        subtitle: "Ya toca",
+        tone: "attention",
+        href: "/mantenimiento",
+      });
+      return;
+    }
+    tiles.push({
+      id,
+      emoji,
+      title,
+      subtitle: "Al día",
+      tone: "ok",
+      href: "/mantenimiento",
+    });
+  };
+
+  pushLogTile("caucho", "🛞", "Cauchos", 6, isCauchoWhat, false);
+  pushLogTile("freno", "🛑", "Frenos", 6, isFrenoWhat, false);
+  pushLogTile("bateria", "🔋", "Batería", 6, isBateriaWhat, false);
+  pushLogTile("refrigerante", "🌡️", "Refrigerante", 6, isRefrigeranteWhat, false);
+  pushLogTile("filtro", "🔧", "Filtros", 6, isFiltroNoAceiteWhat, false);
+
+  if (hasPaperReminderPending(reminders)) {
+    tiles.push({
+      id: "papeles",
+      emoji: "📄",
+      title: "Papeles",
+      subtitle: "En lista",
+      tone: "ok",
+      href: "/recordatorios",
+    });
+  } else {
+    tiles.push({
+      id: "papeles",
+      emoji: "📄",
+      title: "Papeles",
+      subtitle: "Anótalo",
+      tone: "attention",
+      href: "/recordatorios",
+    });
+  }
+
+  pushLogTile("luces", "💡", "Luces", 6, isLucesWhat, true);
+  pushLogTile("vidrios", "🪟", "Vidrios", 6, isVidrioWhat, true);
+  pushLogTile("aceite", "🛢️", "Aceite", 3, isOilChangeWhat, false);
+
+  return tiles;
+}
+
+/**
+ * Para Resumen: sugerir registrar aceite o planear cambio si el último en el log local tiene más de 3 meses.
+ * `null` si hay un cambio registrado y la fecha aún no supera ese umbral (mismo día del 3.er mes inclusive).
+ */
+export function getOilChangeReminderSuggestion(
+  entries: MaintenanceEntry[],
+): OilChangeReminderSuggestion | null {
+  const last = getLastOilChangeFromMaintenanceLog(entries);
+  if (!last) return { kind: "register_first" };
+  const lastDate = new Date(last.at);
+  if (Number.isNaN(lastDate.getTime())) return { kind: "register_first" };
+  const threeMonthsAfter = addCalendarMonths(lastDate, 3);
+  const todayStart = startOfLocalDay(new Date()).getTime();
+  const thresholdStart = startOfLocalDay(threeMonthsAfter).getTime();
+  if (todayStart <= thresholdStart) return null;
+  return { kind: "older_than_three_months", lastAt: last.at, what: last.what };
+}
+
 function isNonEmptyTrimmedString(x: unknown): x is string {
   return typeof x === "string" && x.trim() !== "";
 }

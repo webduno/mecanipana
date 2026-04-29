@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { HeaderToolbar } from "@/components/header-toolbar";
+import { MecanipanaNavbarBrand } from "@/components/mecanipana-navbar-brand";
 
 export type AppWindowShellProps = {
   children: React.ReactNode;
@@ -30,39 +30,15 @@ export function AppWindowShell({
 
   const header = isLanding ? (
     <header className="win98-titlebar flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-none pr-1.5 sm:pr-2">
-      <Link
-        href="/"
-        className="flex min-w-0 flex-1 items-center gap-2 truncate font-bold underline decoration-[currentColor] underline-offset-2 decoration-2 transition-colors text-inherit"
-      >
-        <img
-          src="/mecanipanalogo.png"
-          alt=""
-          width={22}
-          height={22}
-          className="h-[1.35rem] w-[1.35rem] shrink-0 object-contain"
-          aria-hidden
-        />
-        Mecanipana
-      </Link>
+      <div className="flex min-w-0 flex-1 items-center">
+        <MecanipanaNavbarBrand />
+      </div>
       <HeaderToolbar extra={headerActionsExtra} />
     </header>
   ) : (
     <header className="win98-titlebar flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 pr-1.5 sm:pr-2">
       <div className="flex min-w-0 flex-1 items-center gap-x-3 gap-y-1">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2 font-bold underline decoration-[currentColor] underline-offset-2 decoration-2 text-inherit"
-        >
-          <img
-            src="/mecanipanalogo.png"
-            alt=""
-            width={22}
-            height={22}
-            className="h-[1.35rem] w-[1.35rem] shrink-0 object-contain"
-            aria-hidden
-          />
-          Mecanipana
-        </Link>
+        <MecanipanaNavbarBrand />
         <span className="flex min-w-0 flex-1 items-center gap-2">
           {titleIcon ? <span className="shrink-0">{titleIcon}</span> : null}
           <span className="min-w-0 truncate" title={title}>

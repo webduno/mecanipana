@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import type { ReminderEntry } from "@/lib/mecanipana-types";
 import {
   ActivityContributionGrid,
   ActivityContributionLegend,
@@ -7,10 +9,13 @@ import {
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import {
   buildHistoryRows,
+  getMaintenanceSuggestionTiles,
   loadFuelLog,
   loadMaintenanceLog,
+  loadReminders,
   loadUsageLog,
   readSelectedVehicle,
+  type MaintenanceSuggestionTile,
 } from "@/lib/local-storage-data";
 
 function formatDisplayAt(iso: string) {
@@ -22,11 +27,54 @@ function formatDisplayAt(iso: string) {
   }
 }
 
+function formatDueDay(iso: string) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString("es-VE", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function startOfLocalDayMs(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
+function dueBucket(dueIso: string): "overdue" | "today" | "upcoming" {
+  const dueDay = startOfLocalDayMs(new Date(dueIso));
+  const today = startOfLocalDayMs(new Date());
+  if (dueDay < today) return "overdue";
+  if (dueDay === today) return "today";
+  return "upcoming";
+}
+
+function pendingRemindersSorted(list: ReminderEntry[]) {
+  return list
+    .filter((r) => !r.done)
+    .sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime());
+}
+
+function suggestionTileClass(tone: MaintenanceSuggestionTile["tone"]) {
+  const base =
+    "flex min-h-[5.25rem] flex-col items-center justify-center gap-0.5 rounded border-2 px-2 py-2.5 text-center no-underline outline-offset-2 transition-colors hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#303030]";
+  if (tone === "attention") return `${base} border-[#b54545] bg-[#fff6f6]`;
+  if (tone === "ok") return `${base} border-[#5a9e5a] bg-[#f3faf3]`;
+  return `${base} border-dashed border-[#888] bg-[#f7f7f7]`;
+}
+
 export function ResumenScreen() {
   const vehicle = readSelectedVehicle();
   const usage = loadUsageLog();
   const fuel = loadFuelLog();
+  const reminders = loadReminders();
+  const upcoming = pendingRemindersSorted(reminders);
   const maint = loadMaintenanceLog();
+  const suggestionTiles = getMaintenanceSuggestionTiles(maint, reminders);
   const timeline = buildHistoryRows().slice(0, 8);
 
   return (
@@ -54,6 +102,82 @@ export function ResumenScreen() {
         <div>
           <p className="win98-muted m-0">Mantenimiento</p>
           <p className="m-1 text-2xl font-extrabold">{maint.length}</p>
+        </div>
+      </div>
+
+      <div className="win98-inset">
+        <p className="win98-label m-0">Próximos mantenimientos</p>
+        <p className="win98-muted m-0 mt-1 text-[0.88rem] leading-snug text-pretty">
+          Fechas pendientes que registraste en{" "}
+          <Link href="/recordatorios" className="font-semibold text-[#303030] underline underline-offset-2">
+            Recordatorios
+          </Link>
+          {" "}(revisiones, papeles, repuestos…).
+        </p>
+        {upcoming.length === 0 ? (
+          <p className="win98-muted m-2 mb-0 text-sm leading-snug">
+            No hay recordatorios pendientes. Cuando añadas uno con fecha, aparecerá aquí ordenado
+            por lo más próximo.
+          </p>
+        ) : (
+          <ul className="win98-list m-2 mb-0">
+            {upcoming.map((r) => {
+              const bucket = dueBucket(r.dueAt);
+              const tag =
+                bucket === "overdue"
+                  ? "Vencido"
+                  : bucket === "today"
+                    ? "Hoy"
+                    : null;
+              return (
+                <li key={r.id} className="win98-list-item">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <strong className="shrink-0">{formatDueDay(r.dueAt)}</strong>
+                    {tag ? (
+                      <span
+                        className={
+                          bucket === "overdue"
+                            ? "text-[0.72rem] font-extrabold uppercase tracking-wide text-[#8b0000]"
+                            : "text-[0.72rem] font-extrabold uppercase tracking-wide text-[#006400]"
+                        }
+                      >
+                        {tag}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="text-pretty">{r.text}</div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <div className="m-2 mt-4 border-t border-[#c0c0c0] pt-4">
+          <p className="win98-label m-0">Recordatorios sugeridos</p>
+          <p className="win98-muted m-0 mt-1 text-[0.82rem] leading-snug">
+            Resumen local: aceite ~3 meses; lo demás ~6. Papeles si hay palabra clave en recordatorios pendientes.
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5">
+            {suggestionTiles.map((tile) => (
+              <Link
+                key={tile.id}
+                href={tile.href}
+                className={suggestionTileClass(tile.tone)}
+                title={
+                  tile.href === "/mantenimiento"
+                    ? "Abrir registro de mantenimiento"
+                    : "Abrir recordatorios"
+                }
+              >
+                <span className="text-[1.6rem] leading-none" aria-hidden>
+                  {tile.emoji}
+                </span>
+                <span className="font-extrabold text-[#202020]">{tile.title}</span>
+                <span className="win98-muted text-[0.72rem] font-semibold leading-snug">
+                  {tile.subtitle}
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 

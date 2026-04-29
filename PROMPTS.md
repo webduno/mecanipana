@@ -600,3 +600,62 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 
 ---
 
+## 2026-04-28 (60)
+
+**Prompt:**
+
+> en el questionario agrega mas opciones al select de luces encendidas
+
+**Outcome:** En `cuestionario-vehiculo-screen.tsx`, pregunta 5: más opciones de testigo (motor, aceite, batería, temperatura, ABS/ESP, airbag, TPMS, frenos, EPB, varias/intermitentes, solo testigos al encender).
+
+---
+
+## 2026-04-28 (61)
+
+**Prompt:**
+
+> y la de vibraciones pon un select tambien, todos deberian ser select con opciones y posibilidad de escribir libre
+
+**Outcome:** En `cuestionario-vehiculo-screen.tsx`, todas las preguntas con `<select>` + campo libre debajo; ruidos/vibraciones con opciones propias; odómetro, aceite y clima pasan a select + texto; `buildBody` concatena opción · detalle con `withOptionalLibre`.
+
+---
+
+## 2026-04-28 (62)
+
+**Prompt:**
+
+> en resumen deberia aparecer proximos mantenimientos a hacer
+
+**Outcome:** En `resumen-screen.tsx`, bloque «Próximos mantenimientos»: lista de `loadReminders()` sin `done`, orden por `dueAt`, etiquetas Vencido/Hoy; enlace a `/recordatorios`; vacío con texto guía.
+
+---
+
+## 2026-04-28 (63)
+
+**Prompt:**
+
+> esta bueno los recordatorios , pero agrega tipo si no se tiene ultimo cambio de aceite, agregar uno, y si se tiene, y es de mas de 3 mese, deberia aparecer como "recordatorio sugeridos" ahi en resumen
+
+**Outcome:** `getOilChangeReminderSuggestion` / heurística de aceite en `local-storage-data.ts` (último del log por `what`); Resumen: subbloque «Recordatorios sugeridos» con registro faltante o más de 3 meses, enlaces a `/mantenimiento` y `/recordatorios`.
+
+---
+
+## 2026-04-28 (64)
+
+**Prompt:**
+
+> agrega esos, caucho freno bateria refirgerante filtro y papele luces y vidrios, y ponlo mas como icono y un par de word, no tanto texto en los sugeridos
+
+**Outcome:** `getMaintenanceSuggestionTiles` en `local-storage-data.ts` (categorías por `what`, aceite 3m / resto 6m, papeles por recordatorios pendientes con regex VE); Resumen: rejilla compacta emoji + título + subtítulo corto (Anotar / Ya toca / Al día / Revisar / En lista), tonos por borde.
+
+---
+
+## 2026-04-28 (65)
+
+**Prompt:**
+
+> add dropdown menu to main title of navbar, logo still goes to home, but text opens submenues, and put first level (main level pages) with icons
+
+**Outcome:** `mecanipana-navbar-brand.tsx`: solo el logo enlaza al inicio; «Mecanipana» abre menú estilo Win98 con rutas principales e íconos (`grid-action-icons`). `app-window-shell.tsx` usa el componente en landing y página.
+
+---
