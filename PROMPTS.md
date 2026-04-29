@@ -97,3 +97,83 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `mantenimiento-screen.tsx`: `<select>` de atajos (hoy, ayer, 1/2 semanas, 1/3 meses, “Otra fecha y hora…”) que actualiza `datetime-local`; edición manual fuerza modo personalizado.
 
 ---
+
+## 2026-04-28 (10)
+
+**Prompt:**
+
+> add that to the cursor permanent rules of this project
+
+**Outcome:** Regla `.cursor/rules/prompts-history.mdc` (`alwaysApply: true`): mantener `PROMPTS.md` tras trabajo sustantivo, formato y excepciones.
+
+---
+
+## 2026-04-28 (11)
+
+**Prompt:**
+
+> now update readmemd
+
+**Outcome:** `README.md` específico del proyecto: qué es Mecanipana, tabla a `PROJECT.md` / `PROMPTS.md`, `npm` scripts, estructura `src/`, enlace a la regla Cursor.
+
+---
+
+## 2026-04-28 (12)
+
+**Prompt:**
+
+> always keep title to go back to home, but put navigation buttons floating on bottom right for easier access, and add shortcut buttons on top right corner of container, with info of current car, summary of data on localstorage
+
+**Outcome:** `FloatingNav` (layout): iconos anclados abajo-derecha con enlaces a todas las pantallas. `ContainerShortcuts` en `page.tsx` y `page-shell.tsx`: dos botones estilo Win98 que abren diálogos con vehículo actual (`readSelectedVehicle`) y conteos/resumen de `localStorage`. Título **Mecanipana** enlaza a `/` en inicio y en barra de ventana interna; `body` con `pb-28` para no tapar contenido con la nave flotante.
+
+---
+
+## 2026-04-28 (13)
+
+**Prompt:**
+
+> on bottom right floating bar only add like back home and an action button related to the current page
+
+**Outcome:** `floating-nav.tsx`: solo dos botones (Inicio + acción según ruta con `usePathname`). Ej.: inicio → Registrar uso; registrar-uso → Historial; combustible → Resumen; mantenimiento ↔ recordatorios; opciones ↔ datos vehículo. `body` `pb-20` al ser más baja la barra.
+
+---
+
+## 2026-04-28 (14)
+
+**Prompt:**
+
+> datos del equipo are not well aligned, and also put it in grid for better ui ux
+
+**Outcome:** Diálogo «Datos en este equipo» en `container-shortcuts.tsx`: cuadrícula 2×2 de fichas para los cuatro conteos principales (etiquetas arriba, número grande alineado a la derecha); debajo tabla tipo lista con `grid` etiqueta/valor alineados (tipos personalizados, notas, fuentes grandes); pie en recuadro; scroll interno y ancho máximo ~28rem.
+
+---
+
+## 2026-04-28 (15)
+
+**Prompt:**
+
+> aca mejor unifica en un solo boton con 1 modal, con tabs
+
+**Outcome:** `container-shortcuts.tsx`: un solo botón azul (iconos carro + gráfico, leyenda «Info») abre un modal «Este equipo» con pestañas **Carro** / **Datos** (`role="tablist"` / `tabpanel`), contenido anterior repartido; al abrir vuelve a la pestaña Carro.
+
+---
+
+## 2026-04-28 (16)
+
+**Prompt:**
+
+> this modal is not in the middle of screen, also, blur out with css the background
+
+**Outcome:** `dialog` del modal «Este equipo»: `fixed` + `top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2` + `z-[150]`; clase `globals.css` `dialog.mp-overlay-dialog::backdrop` con `backdrop-filter`/`-webkit-backdrop-filter` blur 8px y overlay ~45% negro.
+
+---
+
+## 2026-04-28 (17)
+
+**Prompt:**
+
+> same for this one (modal still top-left / no blur — screenshot)
+
+**Outcome:** Portal del `<dialog>` a `document.body` (`createPortal` tras montaje cliente); `globals.css` reglas `dialog.mp-overlay-dialog[open]` (`fixed inset:0`, flex centrado, sin tamaño heredado). Clic fuera del panel sigue cerrando.
+
+---

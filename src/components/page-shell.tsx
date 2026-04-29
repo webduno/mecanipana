@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ContainerShortcuts } from "@/components/container-shortcuts";
 
 export function PageShell({
   title,
@@ -16,16 +17,19 @@ export function PageShell({
         <header className="win98-titlebar shrink-0 flex flex-wrap items-center gap-x-3 gap-y-1">
           <Link
             href="/"
-            className="text-white underline decoration-white underline-offset-2 shrink-0"
+            className="shrink-0 font-bold text-white underline decoration-white underline-offset-2"
           >
-            ← Inicio
+            Mecanipana
           </Link>
           <span className="flex min-w-0 flex-1 items-center gap-2">
             {titleIcon ? <span className="shrink-0">{titleIcon}</span> : null}
             <span className="min-w-0 truncate">{title}</span>
           </span>
         </header>
-        <div className="win98-body flex flex-col gap-4">{children}</div>
+        <div className="win98-body flex flex-col gap-4">
+          <ContainerShortcuts />
+          {children}
+        </div>
       </div>
     </div>
   );

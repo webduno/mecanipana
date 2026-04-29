@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FloatingNav } from "@/components/floating-nav";
 import { MecanipanaBodyClass } from "@/components/mecanipana-body-class";
 import "./globals.css";
 
@@ -15,9 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="h-full">
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col pb-20">
         <MecanipanaBodyClass />
         {children}
+        <FloatingNav />
       </body>
     </html>
   );

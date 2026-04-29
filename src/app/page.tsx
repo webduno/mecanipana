@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContainerShortcuts } from "@/components/container-shortcuts";
 import {
   IconCombustible,
   IconCuenta,
@@ -18,9 +19,15 @@ export default function Home() {
       <div className="win98-window mx-auto flex w-full max-w-lg flex-col lg:max-w-4xl lg:flex-row lg:gap-0">
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="win98-titlebar shrink-0 rounded-none">
-            <span className="truncate">Mecanipana</span>
+            <Link
+              href="/"
+              className="truncate font-bold text-white underline decoration-white underline-offset-2"
+            >
+              Mecanipana
+            </Link>
           </header>
           <div className="win98-body flex flex-col gap-4">
+            <ContainerShortcuts />
             <p className="m-0 text-pretty text-[clamp(1rem,3.6vw,1.2rem)]">
               Registro sencillo del uso del carro. Pensado para uso en Venezuela. Los
               datos quedan en este equipo; más adelante, sincronización con una
