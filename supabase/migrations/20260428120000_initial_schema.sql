@@ -61,6 +61,10 @@ CREATE TABLE IF NOT EXISTS public.maintenance_entries (
   urgencia smallint NOT NULL DEFAULT 50 CHECK (urgencia >= 1 AND urgencia <= 100),
   what text NOT NULL DEFAULT '',
   note text NOT NULL DEFAULT '',
+  location_label text NOT NULL DEFAULT '',
+  location_lat double precision,
+  location_lon double precision,
+  paid_bs text NOT NULL DEFAULT '',
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -70,11 +74,15 @@ CREATE TABLE IF NOT EXISTS public.reminders (
   due_at timestamptz NOT NULL,
   text text NOT NULL DEFAULT '',
   done boolean NOT NULL DEFAULT false,
+  location_label text NOT NULL DEFAULT '',
+  location_lat double precision,
+  location_lon double precision,
+  estimated_cost_bs text NOT NULL DEFAULT '',
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
 COMMENT ON TABLE public.reminders IS
-  'Recordatorios (ReminderEntry local). Solo se persisten due_at + text + done; params URL ?tema= / ?texto= son UX en cliente para prellenar el formulario, no columnas aquí.';
+  'Recordatorios (ReminderEntry local). due_at + text + done; location_* opcional (Nominatim/OSM en cliente). Params URL ?tema= / ?texto= solo prellenan el formulario.';
 
 -- Listas personalizadas por usuario (extras en desplegables / prompts), una fila por ítem
 CREATE TABLE IF NOT EXISTS public.user_extra_vehicle_lines (
@@ -161,6 +169,28 @@ END $$;
 
 COMMENT ON COLUMN public.usage_entries.urgencia IS 'Prioridad 1–100 para tablero (típico 75/50/25).';
 COMMENT ON COLUMN public.maintenance_entries.urgencia IS 'Prioridad 1–100 para tablero (típico 75/50/25).';
+
+ALTER TABLE public.maintenance_entries ADD COLUMN IF NOT EXISTS location_label text NOT NULL DEFAULT '';
+ALTER TABLE public.maintenance_entries ADD COLUMN IF NOT EXISTS location_lat double precision;
+ALTER TABLE public.maintenance_entries ADD COLUMN IF NOT EXISTS location_lon double precision;
+
+ALTER TABLE public.reminders ADD COLUMN IF NOT EXISTS location_label text NOT NULL DEFAULT '';
+ALTER TABLE public.reminders ADD COLUMN IF NOT EXISTS location_lat double precision;
+ALTER TABLE public.reminders ADD COLUMN IF NOT EXISTS location_lon double precision;
+
+COMMENT ON COLUMN public.maintenance_entries.location_label IS 'Ubicación opcional (texto; puede venir de búsqueda Nominatim).';
+COMMENT ON COLUMN public.maintenance_entries.location_lat IS 'Latitud WGS84 si hay punto en mapa; NULL si solo texto.';
+COMMENT ON COLUMN public.maintenance_entries.location_lon IS 'Longitud WGS84 si hay punto en mapa; NULL si solo texto.';
+
+COMMENT ON COLUMN public.reminders.location_label IS 'Ubicación opcional (Nominatim / OpenStreetMap en cliente).';
+COMMENT ON COLUMN public.reminders.location_lat IS 'Latitud WGS84 opcional.';
+COMMENT ON COLUMN public.reminders.location_lon IS 'Longitud WGS84 opcional.';
+
+ALTER TABLE public.maintenance_entries ADD COLUMN IF NOT EXISTS paid_bs text NOT NULL DEFAULT '';
+ALTER TABLE public.reminders ADD COLUMN IF NOT EXISTS estimated_cost_bs text NOT NULL DEFAULT '';
+
+COMMENT ON COLUMN public.maintenance_entries.paid_bs IS 'Monto pagado, texto libre (cualquier moneda); opcional.';
+COMMENT ON COLUMN public.reminders.estimated_cost_bs IS 'Costo estimado, texto libre (cualquier moneda); opcional.';
 
 -- -----------------------------------------------------------------------------
 -- 3. Índices (consultas por usuario + orden temporal)
@@ -301,7 +331,7 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, service_role;
 -- - Perfil: profiles.display_name / avatar_url (metadatos opcionales para UI).
 -- - Config sincronizable: app_options.theme, .locale, .fuentes_grandes, .preferences_extra (JSON).
 -- - vehicle_line / variant_label / vehicle_notes → vehicle_context.
--- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders (fecha objetivo en due_at; texto libre en text).
+-- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders (due_at, text, location_* y costos opcionales).
 -- - admin_emails: correos con rol admin UI (crear el mismo correo en Authentication con contraseña de prueba).
 -- - Opciones extra por desplegable / lista:
 --     user_extra_vehicle_lines, user_extra_variant_labels,

@@ -899,3 +899,34 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** `datos-vehiculo-screen.tsx`: enlace «Ir al resumen» (`/resumen`) al **final** de la pantalla (debajo de notas), `win98-btn` y `mt-3`; título vuelve a una sola línea arriba.
 
 ---
+
+## 2026-05-02 (21)
+
+**Prompt:**
+
+> for recordatorios and mantenimiento, add a location input as optional, use openstreet map and update initial migration script aswell
+
+**Outcome:** Campos opcionales `locationLabel` / `locationLat` / `locationLon` en tipos, localStorage y sync; UI `LocationOsmField` (Nominatim vía `GET /api/osm/search`, enlace a openstreetmap.org); migración inicial: columnas `location_*` en `maintenance_entries` y `reminders`.
+
+---
+
+## 2026-05-02 (22)
+
+**Prompt:**
+
+> for recordatorio, add estimate cost, and for mantenimiento, put a payed input
+
+**Outcome:** Recordatorios: `estimatedCostBs` + campo en formulario y resumen; mantenimiento: `paidBs` + input «Pagado (Bs)», historial y últimos registros; migración y APIs/sync con `estimated_cost_bs` y `paid_bs`.
+
+---
+
+## 2026-05-02 (23)
+
+**Prompt:**
+
+> dont force (Bs) it should be an open input, cuz payments can be on $ aswell,
+
+**Outcome:** Etiquetas y textos sin imponer Bs: «Costo estimado» / «Pagado», placeholders con ejemplo multi-moneda; listas y resumen muestran el texto tal cual; comentarios SQL/Tipos/docs alineados (nombres de columna `*_bs` se mantienen por compatibilidad).
+
+---
+

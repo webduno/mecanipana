@@ -107,6 +107,10 @@ export function CuestionarioVehiculoScreen() {
         at: new Date().toISOString(),
         what: "Aceite motor (dato cuestionario)",
         note: aceiteQuestionnaireMaintenanceNote(form),
+        locationLabel: "",
+        locationLat: null,
+        locationLon: null,
+        paidBs: "",
       });
       void pushMaintenanceEntryRemote(row);
     }

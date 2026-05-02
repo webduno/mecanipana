@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getLogInsertContext } from "@/lib/api/log-insert-context";
+import { normalizeLocationFieldsFromRecord } from "@/lib/location-fields";
 import { isLikelyUuidString } from "@/lib/supabase-service";
 
 function clampUrgencia(n: unknown): number | null {
@@ -57,6 +58,13 @@ export async function POST(request: Request) {
   if (ctx.kind === "error") return ctx.response;
 
   const whatFinal = what || "Mantenimiento";
+  const loc = normalizeLocationFieldsFromRecord(body);
+  const paidBs =
+    typeof body.paid_bs === "string"
+      ? body.paid_bs.trim().slice(0, 64)
+      : typeof body.paidBs === "string"
+        ? body.paidBs.trim().slice(0, 64)
+        : "";
 
   const { error } = await ctx.client.from("maintenance_entries").insert({
     id,
@@ -65,6 +73,10 @@ export async function POST(request: Request) {
     urgencia,
     what: whatFinal,
     note,
+    location_label: loc.locationLabel,
+    location_lat: loc.locationLat,
+    location_lon: loc.locationLon,
+    paid_bs: paidBs,
   });
 
   if (error) {

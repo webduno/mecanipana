@@ -57,6 +57,10 @@ Constantes TypeScript: ver `src/lib/storage-keys.ts`.
 | `urgencia` | `urgencia` (smallint 1–100) |
 | `what` | `what` |
 | `note` | `note` |
+| `locationLabel` | `location_label` |
+| `locationLat` | `location_lat` (double precision, nullable) |
+| `locationLon` | `location_lon` (double precision, nullable) |
+| `paidBs` | `paid_bs` (texto libre; moneda la escribe el usuario) |
 
 ### `ReminderEntry` → `reminders`
 
@@ -66,6 +70,10 @@ Constantes TypeScript: ver `src/lib/storage-keys.ts`.
 | `dueAt` | `due_at` |
 | `text` | `text` |
 | `done` | `done` |
+| `locationLabel` | `location_label` |
+| `locationLat` | `location_lat` |
+| `locationLon` | `location_lon` |
+| `estimatedCostBs` | `estimated_cost_bs` (texto libre; moneda la escribe el usuario) |
 
 Los query params `?tema=` / `?texto=` en `/recordatorios` solo prellenan el formulario en el navegador; **no** se guardan en filas (el texto sugerido termina en `text` solo si el usuario envía el formulario). La etiqueta del día de la semana junto a la fecha es solo presentación.
 
@@ -100,4 +108,4 @@ El respaldo en Opciones serializa **todas** las claves que empiezan por `mecanip
 - Claves: `src/lib/storage-keys.ts`
 - Tipos de filas: `src/lib/mecanipana-types.ts`
 - Migración Postgres: `supabase/migrations/20260428120000_initial_schema.sql`
-- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders` — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`.
+- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders` — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`. Búsqueda de lugar (Nominatim, uso político): `GET /api/osm/search?q=`.

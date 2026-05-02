@@ -18,6 +18,7 @@ import {
   readSelectedVehicle,
   type MaintenanceSuggestionTile,
 } from "@/lib/local-storage-data";
+import { openStreetMapMarkerUrl } from "@/lib/osm";
 
 function formatDisplayAt(iso: string) {
   try {
@@ -160,6 +161,35 @@ export function ResumenScreen() {
                     ) : null}
                   </div>
                   <div className="text-pretty">{r.text}</div>
+                  {r.estimatedCostBs.trim() ? (
+                    <div className="win98-muted mt-1 text-[0.82rem] leading-snug">
+                      ~ {r.estimatedCostBs.trim()} (estim.)
+                    </div>
+                  ) : null}
+                  {r.locationLabel.trim() ? (
+                    <div className="win98-muted mt-1 text-[0.82rem] leading-snug">
+                      {r.locationLabel.trim()}
+                      {r.locationLat != null &&
+                      r.locationLon != null &&
+                      Number.isFinite(r.locationLat) &&
+                      Number.isFinite(r.locationLon) ? (
+                        <>
+                          {" · "}
+                          <a
+                            className="font-semibold text-[#0000cc] underline underline-offset-2"
+                            href={openStreetMapMarkerUrl(
+                              r.locationLat,
+                              r.locationLon
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Mapa
+                          </a>
+                        </>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </li>
               );
             })}

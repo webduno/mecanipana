@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getLogInsertContext } from "@/lib/api/log-insert-context";
+import { normalizeLocationFieldsFromRecord } from "@/lib/location-fields";
 import { isLikelyUuidString } from "@/lib/supabase-service";
 
 /** POST — `reminders` (RLS / fallback como uso y mantenimiento). */
@@ -45,6 +46,13 @@ export async function POST(request: Request) {
   }
 
   const done = body.done === true;
+  const loc = normalizeLocationFieldsFromRecord(body);
+  const estimatedCostBs =
+    typeof body.estimated_cost_bs === "string"
+      ? body.estimated_cost_bs.trim().slice(0, 64)
+      : typeof body.estimatedCostBs === "string"
+        ? body.estimatedCostBs.trim().slice(0, 64)
+        : "";
 
   const ctx = await getLogInsertContext();
   if (ctx.kind === "error") return ctx.response;
@@ -55,6 +63,10 @@ export async function POST(request: Request) {
     due_at: dueIso,
     text,
     done,
+    location_label: loc.locationLabel,
+    location_lat: loc.locationLat,
+    location_lon: loc.locationLon,
+    estimated_cost_bs: estimatedCostBs,
   });
 
   if (error) {

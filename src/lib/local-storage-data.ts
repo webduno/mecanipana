@@ -8,6 +8,7 @@ import {
   type ThemeId,
   type UsageEntry,
 } from "@/lib/mecanipana-types";
+import { normalizeLocationFieldsFromRecord } from "@/lib/location-fields";
 import { STORAGE_KEYS } from "@/lib/storage-keys";
 import { parseVariantLabel } from "@/lib/vehicle-variant-parse";
 
@@ -22,6 +23,16 @@ function safeParse<T>(raw: string | null, fallback: T): T {
 
 function isObjectRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null && !Array.isArray(x);
+}
+
+function optionalMoneyTextFromRecord(
+  x: Record<string, unknown>,
+  camelKey: string,
+  snakeKey: string,
+): string {
+  const raw = x[camelKey] ?? x[snakeKey];
+  if (typeof raw !== "string") return "";
+  return raw.trim().slice(0, 64);
 }
 
 export function makeId(): string {
@@ -154,12 +165,15 @@ function parseMaintenanceEntry(x: unknown): MaintenanceEntry | null {
   ) {
     return null;
   }
+  const loc = normalizeLocationFieldsFromRecord(x);
   return {
     id: x.id,
     at: x.at,
     what: x.what,
     note: x.note,
     urgencia: normalizeUrgencia(x.urgencia),
+    paidBs: optionalMoneyTextFromRecord(x, "paidBs", "paid_bs"),
+    ...loc,
   };
 }
 
@@ -466,17 +480,34 @@ export function loadReminders(): ReminderEntry[] {
   if (typeof window === "undefined") return [];
   const v = safeParse<unknown>(window.localStorage.getItem(STORAGE_KEYS.reminders), []);
   if (!Array.isArray(v)) return [];
-  return v.filter(isReminderEntry);
+  return v
+    .map(parseReminderEntry)
+    .filter((e): e is ReminderEntry => e !== null);
 }
 
-function isReminderEntry(x: unknown): x is ReminderEntry {
-  if (!isObjectRecord(x)) return false;
-  return (
-    typeof x.id === "string" &&
-    typeof x.dueAt === "string" &&
-    typeof x.text === "string" &&
-    typeof x.done === "boolean"
-  );
+function parseReminderEntry(x: unknown): ReminderEntry | null {
+  if (!isObjectRecord(x)) return null;
+  if (
+    typeof x.id !== "string" ||
+    typeof x.dueAt !== "string" ||
+    typeof x.text !== "string" ||
+    typeof x.done !== "boolean"
+  ) {
+    return null;
+  }
+  const loc = normalizeLocationFieldsFromRecord(x);
+  return {
+    id: x.id,
+    dueAt: x.dueAt,
+    text: x.text,
+    done: x.done,
+    estimatedCostBs: optionalMoneyTextFromRecord(
+      x,
+      "estimatedCostBs",
+      "estimated_cost_bs"
+    ),
+    ...loc,
+  };
 }
 
 export function saveReminders(entries: ReminderEntry[]) {
@@ -582,7 +613,14 @@ export function buildHistoryRows(): HistoryRow[] {
       kind: "mantenimiento",
       title: e.what || "Mantenimiento",
       urgencia: e.urgencia,
-      detail: [`urg. ${e.urgencia}`, e.note].filter(Boolean).join(" · "),
+      detail: [
+        `urg. ${e.urgencia}`,
+        e.note,
+        e.paidBs.trim() ? `pagado ${e.paidBs.trim()}` : "",
+        e.locationLabel.trim() ? e.locationLabel.trim() : "",
+      ]
+        .filter(Boolean)
+        .join(" · "),
     });
   }
   rows.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));

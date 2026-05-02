@@ -66,6 +66,10 @@ export async function pushMaintenanceEntryRemote(
         urgencia: entry.urgencia,
         what: entry.what ?? "",
         note: entry.note ?? "",
+        location_label: entry.locationLabel ?? "",
+        location_lat: entry.locationLat,
+        location_lon: entry.locationLon,
+        paid_bs: entry.paidBs ?? "",
       }),
     });
     let bodyJson: unknown;
@@ -96,6 +100,10 @@ export async function pushReminderEntryRemote(
         due_at: entry.dueAt,
         text: entry.text ?? "",
         done: Boolean(entry.done),
+        location_label: entry.locationLabel ?? "",
+        location_lat: entry.locationLat,
+        location_lon: entry.locationLon,
+        estimated_cost_bs: entry.estimatedCostBs ?? "",
       }),
     });
     let bodyJson: unknown;

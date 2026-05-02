@@ -23,6 +23,12 @@ export type MaintenanceEntry = {
   urgencia: number;
   what: string;
   note: string;
+  /** Ubicación opcional (texto libre o resultado de Nominatim / OpenStreetMap). */
+  locationLabel: string;
+  locationLat: number | null;
+  locationLon: number | null;
+  /** Monto pagado (texto libre: usuario indica moneda; opcional). */
+  paidBs: string;
 };
 
 export type ReminderEntry = {
@@ -30,6 +36,12 @@ export type ReminderEntry = {
   dueAt: string;
   text: string;
   done: boolean;
+  /** Ubicación opcional (OpenStreetMap vía Nominatim en la app). */
+  locationLabel: string;
+  locationLat: number | null;
+  locationLon: number | null;
+  /** Costo estimado (texto libre: usuario indica moneda; opcional). */
+  estimatedCostBs: string;
 };
 
 /** Temas de interfaz (localStorage + futura sync Supabase `app_options.theme`). */

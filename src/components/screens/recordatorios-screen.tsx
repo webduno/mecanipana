@@ -4,11 +4,13 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { ReminderEntry } from "@/lib/mecanipana-types";
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
+import { LocationOsmField, type LocationOsmValue } from "@/components/location-osm-field";
 import {
   loadReminders,
   makeId,
   saveReminders,
 } from "@/lib/local-storage-data";
+import { openStreetMapMarkerUrl } from "@/lib/osm";
 import { pushReminderEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 
 /** Si la URL solo trae `tema`, prellenamos con el mismo rótulo que en Resumen */
@@ -64,6 +66,12 @@ function RecordatoriosScreenInner() {
   const [items, setItems] = useState<ReminderEntry[]>(() => loadReminders());
   const [dueAt, setDueAt] = useState(() => defaultDueDateInputValue());
   const [text, setText] = useState("");
+  const [location, setLocation] = useState<LocationOsmValue>({
+    locationLabel: "",
+    locationLat: null,
+    locationLon: null,
+  });
+  const [estimatedCostBs, setEstimatedCostBs] = useState("");
 
   const qsKey = searchParams.toString();
 
@@ -93,10 +101,16 @@ function RecordatoriosScreenInner() {
       dueAt: day.toISOString(),
       text: t,
       done: false,
+      locationLabel: location.locationLabel.trim().slice(0, 500),
+      locationLat: location.locationLat,
+      locationLon: location.locationLon,
+      estimatedCostBs: estimatedCostBs.trim().slice(0, 64),
     };
     persist([row, ...items]);
     void pushReminderEntryRemote(row);
     setText("");
+    setEstimatedCostBs("");
+    setLocation({ locationLabel: "", locationLat: null, locationLon: null });
     setDueAt(defaultDueDateInputValue());
   }
 
@@ -153,6 +167,23 @@ function RecordatoriosScreenInner() {
             maxLength={2000}
           />
         </div>
+        <div className="win98-form-row">
+          <label className="win98-label" htmlFor="rec-costo">
+            Costo estimado
+          </label>
+          <input
+            id="rec-costo"
+            className="win98-input"
+            type="text"
+            inputMode="text"
+            value={estimatedCostBs}
+            onChange={(e) => setEstimatedCostBs(e.target.value)}
+            placeholder="Opcional — ej. 80 $ · 1200 Bs"
+            maxLength={64}
+            autoComplete="off"
+          />
+        </div>
+        <LocationOsmField idPrefix="rec-loc" value={location} onChange={setLocation} />
         <div className="win98-form-actions">
           <button type="submit" className="win98-btn win98-btn--accent-blue">
             Añadir
@@ -178,6 +209,48 @@ function RecordatoriosScreenInner() {
                   <div className={r.done ? "line-through opacity-70" : ""}>
                     {r.text}
                   </div>
+                  {r.estimatedCostBs.trim() ? (
+                    <div
+                      className={
+                        r.done
+                          ? "win98-muted mt-0.5 text-[0.82rem] line-through opacity-70"
+                          : "win98-muted mt-0.5 text-[0.82rem]"
+                      }
+                    >
+                      ~ {r.estimatedCostBs.trim()} (estim.)
+                    </div>
+                  ) : null}
+                  {r.locationLabel.trim() ? (
+                    <div
+                      className={
+                        r.done
+                          ? "win98-muted mt-0.5 text-[0.82rem] line-through opacity-70"
+                          : "win98-muted mt-0.5 text-[0.82rem]"
+                      }
+                    >
+                      {r.locationLabel.trim()}
+                      {r.locationLat != null &&
+                      r.locationLon != null &&
+                      Number.isFinite(r.locationLat) &&
+                      Number.isFinite(r.locationLon) ? (
+                        <>
+                          {" · "}
+                          <a
+                            className="font-semibold text-[#0000cc] underline underline-offset-2"
+                            href={openStreetMapMarkerUrl(
+                              r.locationLat,
+                              r.locationLon
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Mapa
+                          </a>
+                        </>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </span>
               </label>
               <div className="win98-form-actions mt-2">

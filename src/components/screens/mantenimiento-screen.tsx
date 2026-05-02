@@ -19,8 +19,10 @@ import {
   loadMaintenanceLog,
   loadMaintenanceWhatCustom,
 } from "@/lib/local-storage-data";
+import { openStreetMapMarkerUrl } from "@/lib/osm";
 import { pushMaintenanceEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
+import { LocationOsmField, type LocationOsmValue } from "@/components/location-osm-field";
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 
 const PREDEFINED_MAINTENANCE_WHAT = [
@@ -52,6 +54,12 @@ export function MantenimientoScreen() {
   const [customWhat, setCustomWhat] = useState<string[]>([]);
   const [what, setWhat] = useState<string>(PREDEFINED_MAINTENANCE_WHAT[0]!);
   const [note, setNote] = useState("");
+  const [paidBs, setPaidBs] = useState("");
+  const [location, setLocation] = useState<LocationOsmValue>({
+    locationLabel: "",
+    locationLat: null,
+    locationLon: null,
+  });
   const [, bump] = useState(0);
   const recent = loadMaintenanceLog().slice(0, 12);
 
@@ -98,10 +106,16 @@ export function MantenimientoScreen() {
       at: iso,
       what: whatSaved,
       note: note.trim(),
+      locationLabel: location.locationLabel.trim().slice(0, 500),
+      locationLat: location.locationLat,
+      locationLon: location.locationLon,
+      paidBs: paidBs.trim().slice(0, 64),
     });
     void pushMaintenanceEntryRemote(row);
     setWhat(PREDEFINED_MAINTENANCE_WHAT[0]!);
     setNote("");
+    setPaidBs("");
+    setLocation({ locationLabel: "", locationLat: null, locationLon: null });
     bump((n) => n + 1);
     showToast("Guardado en este equipo.");
   }
@@ -187,6 +201,23 @@ export function MantenimientoScreen() {
             maxLength={2000}
           />
         </div>
+        <div className="win98-form-row">
+          <label className="win98-label" htmlFor="mant-pago">
+            Pagado
+          </label>
+          <input
+            id="mant-pago"
+            className="win98-input"
+            type="text"
+            inputMode="text"
+            value={paidBs}
+            onChange={(e) => setPaidBs(e.target.value)}
+            placeholder="Opcional — monto y moneda (ej. 45 $ · 900)"
+            maxLength={64}
+            autoComplete="off"
+          />
+        </div>
+        <LocationOsmField idPrefix="mant-loc" value={location} onChange={setLocation} />
         <div className="win98-form-actions">
           <button type="submit" className="win98-btn win98-btn--accent-blue">
             Guardar
@@ -209,7 +240,24 @@ export function MantenimientoScreen() {
                 <div className="win98-muted">
                   Urg. {r.urgencia}
                   {r.note ? ` · ${r.note}` : ""}
+                  {r.paidBs.trim() ? ` · pagado ${r.paidBs.trim()}` : ""}
+                  {r.locationLabel.trim()
+                    ? ` · ${r.locationLabel.trim()}`
+                    : ""}
                 </div>
+                {r.locationLat != null &&
+                r.locationLon != null &&
+                Number.isFinite(r.locationLat) &&
+                Number.isFinite(r.locationLon) ? (
+                  <a
+                    className="inline-block text-[0.82rem] font-semibold text-[#0000cc] underline underline-offset-2"
+                    href={openStreetMapMarkerUrl(r.locationLat, r.locationLon)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ver en OpenStreetMap
+                  </a>
+                ) : null}
               </li>
             ))}
           </ul>
