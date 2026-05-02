@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   clearAllMecanipanaKeys,
@@ -116,9 +117,14 @@ export function OpcionesScreen() {
 
   return (
     <>
-      <p className="m-0 text-pretty">
-        Opciones solo de <strong>este equipo</strong>. Nada sale a internet todavía.
-      </p>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-2">
+        <p className="col-start-1 m-0 min-w-0 text-pretty">
+          Opciones de <strong>configuración</strong>. 
+        </p>
+        <Link href="/" className="win98-btn !w-auto shrink-0 justify-self-end">
+          Volver
+        </Link>
+      </div>
 
       <div className="win98-inset">
         <p className="win98-label m-0">Tema visual</p>

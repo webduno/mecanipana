@@ -3,16 +3,24 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { appendQuestionnaireParagraphToVehicleNotes, readSelectedVehicle } from "@/lib/local-storage-data";
+import {
+  appendMaintenance,
+  appendQuestionnaireParagraphToVehicleNotes,
+  readSelectedVehicle,
+} from "@/lib/local-storage-data";
+import { pushMaintenanceEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 
-type KM = "" | "<50k" | "50-120k" | "120-200k" | "200k+";
+/** Valor interno de la última opción (captura abierta tipo “Other”); la etiqueta visible es {@link OPT_OTHER_LABEL}. */
+const OPT_TEXT = "__mp_text__";
+/** Equivalente habitual en español a “Other (please specify)” en formularios y encuestas. */
+const OPT_OTHER_LABEL = "Otro (especificar)";
+
+type KM = "" | "<50k" | "50-120k" | "120-200k" | "200k+" | typeof OPT_TEXT;
 
 type FormState = {
   kmBanda: KM;
   kmLibre: string;
-  odometroModo: string;
-  odometroLibre: string;
   uso: string;
   usoLibre: string;
   frenos: string;
@@ -32,8 +40,6 @@ type FormState = {
 const EMPTY_FORM: FormState = {
   kmBanda: "",
   kmLibre: "",
-  odometroModo: "",
-  odometroLibre: "",
   uso: "",
   usoLibre: "",
   frenos: "",
@@ -50,28 +56,37 @@ const EMPTY_FORM: FormState = {
   climaLibre: "",
 };
 
-function withOptionalLibre(choice: string, libre: string): string {
-  const c = choice || "—";
-  const t = libre.trim();
-  if (!t) return c;
-  return `${c} · ${t}`;
+function lineTextoOEleccion(choice: string, libre: string): string {
+  if (choice === OPT_TEXT) return libre.trim() || "—";
+  return choice || "—";
+}
+
+/** Nota del mantenimiento; el campo `what` en submit usa texto que encaja con la heurística de aceite en local-storage-data. */
+function aceiteQuestionnaireMaintenanceNote(f: FormState): string {
+  const detail =
+    f.aceite === OPT_TEXT
+      ? f.aceiteLibre.trim() || "(sin detalle)"
+      : f.aceite.trim();
+  return `Cuestionario vehículo · último aceite/revisión: ${detail}`;
 }
 
 function buildBody(f: FormState): string {
   const lines = [
-    "1 · Kilometraje (rango rápido): " + withOptionalLibre(f.kmBanda || "", f.kmLibre),
-    "2 · Odómetro: " + withOptionalLibre(f.odometroModo || "", f.odometroLibre),
-    "3 · Uso principal: " + withOptionalLibre(f.uso || "", f.usoLibre),
-    "4 · Frenos (sensación al frenar): " + withOptionalLibre(f.frenos || "", f.frenosLibre),
-    "5 · Luces/check en tablero: " + withOptionalLibre(f.luces || "", f.lucesLibre),
-    "6 · Ruidos o vibraciones raras nuevas: " + withOptionalLibre(f.ruidos || "", f.ruidosLibre),
-    "7 · Llantas/cauchos percibidos: " + withOptionalLibre(f.cauchos || "", f.cauchosLibre),
-    "8 · Último aceite o última revisión importante (fecha aprox.): " +
-      withOptionalLibre(f.aceite || "", f.aceiteLibre),
-    "9 · Climatización y arranque/batería hoy (frío/calor, síntomas…): " +
-      withOptionalLibre(f.climaArranque || "", f.climaLibre),
+    "1 · Kilometraje (rango rápido): " + lineTextoOEleccion(f.kmBanda || "", f.kmLibre),
+    "2 · Uso principal: " + lineTextoOEleccion(f.uso || "", f.usoLibre),
+    "3 · Frenos (sensación al frenar): " + lineTextoOEleccion(f.frenos || "", f.frenosLibre),
+    "4 · Luces/check en tablero: " + lineTextoOEleccion(f.luces || "", f.lucesLibre),
+    "5 · Ruidos o vibraciones raras nuevas: " + lineTextoOEleccion(f.ruidos || "", f.ruidosLibre),
+    "6 · Llantas/cauchos percibidos: " + lineTextoOEleccion(f.cauchos || "", f.cauchosLibre),
+    "7 · Último aceite o última revisión importante (fecha aprox.): " +
+      lineTextoOEleccion(f.aceite || "", f.aceiteLibre),
+    "8 · Estado de la batería: " + lineTextoOEleccion(f.climaArranque || "", f.climaLibre),
   ];
   return lines.join("\n");
+}
+
+function showDetailKm(f: FormState): boolean {
+  return f.kmBanda === OPT_TEXT;
 }
 
 const detailLabelClass =
@@ -86,6 +101,15 @@ export function CuestionarioVehiculoScreen() {
   function submit(e: FormEvent) {
     e.preventDefault();
     appendQuestionnaireParagraphToVehicleNotes(buildBody(form));
+    if (form.aceite.trim() !== "") {
+      const row = appendMaintenance({
+        urgencia: 50,
+        at: new Date().toISOString(),
+        what: "Aceite motor (dato cuestionario)",
+        note: aceiteQuestionnaireMaintenanceNote(form),
+      });
+      void pushMaintenanceEntryRemote(row);
+    }
     router.push("/datos-vehiculo");
   }
 
@@ -100,12 +124,8 @@ export function CuestionarioVehiculoScreen() {
           <p className="m-2 mb-0 text-lg font-bold leading-snug text-pretty">
             {modeloLine}
           </p>
-          <p className="win98-muted m-0 text-sm leading-snug">
-            No repetimos marca, modelo ni año: vienen de <strong>Mi Info</strong>. Este cuestionario
-            solo registra cómo anda el vehículo ahora.
-          </p>
           <p className="win98-muted m-2 mb-0 text-sm leading-snug">
-            En cada pregunta elige una opción y, si quieres, amplía abajo en texto libre.
+            Completa las 8 preguntas para guardar en las notas del vehículo.
           </p>
         </div>
 
@@ -129,56 +149,30 @@ export function CuestionarioVehiculoScreen() {
               <option value="50-120k">50 000 a 120 000 km</option>
               <option value="120-200k">120 000 a 200 000 km</option>
               <option value="200k+">Más de 200 000 km</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-km-libre">
-              Detalle opcional
-            </label>
-            <input
-              id="q-km-libre"
-              type="text"
-              className="win98-input mt-1 max-w-xl"
-              autoComplete="off"
-              placeholder="Ej. no estoy seguro del odómetro — solo referencia"
-              maxLength={120}
-              value={form.kmLibre}
-              onChange={(e) => setForm((f) => ({ ...f, kmLibre: e.target.value }))}
-            />
-          </div>
-
-          <div className="win98-field-group">
-            <label className={labelClass} htmlFor="q-odo-mod">
-              2. Odómetro o referencia en km
-            </label>
-            <select
-              id="q-odo-mod"
-              className="win98-select mt-1 max-w-xl w-full"
-              value={form.odometroModo}
-              onChange={(e) => setForm((f) => ({ ...f, odometroModo: e.target.value }))}
-            >
-              <option value="">— Elige —</option>
-              <option value="No tengo el dato a mano">No tengo el dato a mano</option>
-              <option value="Lo sé aproximado">Lo sé aproximado</option>
-              <option value="Lo tengo exacto (tablero)">Lo tengo exacto (tablero)</option>
-              <option value="Prefiero solo el comentario de abajo">Prefiero solo el comentario de abajo</option>
-            </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-odo-libre">
-              Número o aclaración (opcional)
-            </label>
-            <input
-              id="q-odo-libre"
-              type="text"
-              className="win98-input mt-1 max-w-md"
-              autoComplete="off"
-              placeholder="Ej. 187 420 km — o déjalo vacío"
-              maxLength={80}
-              value={form.odometroLibre}
-              onChange={(e) => setForm((f) => ({ ...f, odometroLibre: e.target.value }))}
-            />
+            {showDetailKm(form) ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-km-libre">
+                  Tu respuesta
+                </label>
+                <input
+                  id="q-km-libre"
+                  type="text"
+                  className="win98-input mt-1 max-w-xl"
+                  autoComplete="off"
+                  placeholder="Describe el kilometraje o lo que aplique"
+                  maxLength={120}
+                  value={form.kmLibre}
+                  onChange={(e) => setForm((f) => ({ ...f, kmLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
             <label className={labelClass} htmlFor="q-uso">
-              3. Uso principal del día a día
+              2. Uso principal del día a día
             </label>
             <select
               id="q-uso"
@@ -192,25 +186,30 @@ export function CuestionarioVehiculoScreen() {
               <option value="Mucha carretera o viajes largos">
                 Mucha carretera o viajes largos
               </option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-uso-libre">
-              Detalle opcional
-            </label>
-            <input
-              id="q-uso-libre"
-              type="text"
-              className="win98-input mt-1 max-w-xl"
-              autoComplete="off"
-              placeholder="Ej. trabajo + fines de semana fuera"
-              maxLength={120}
-              value={form.usoLibre}
-              onChange={(e) => setForm((f) => ({ ...f, usoLibre: e.target.value }))}
-            />
+            {form.uso === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-uso-libre">
+                  Tu respuesta
+                </label>
+                <input
+                  id="q-uso-libre"
+                  type="text"
+                  className="win98-input mt-1 max-w-xl"
+                  autoComplete="off"
+                  placeholder="Ej. trabajo + fines de semana fuera"
+                  maxLength={120}
+                  value={form.usoLibre}
+                  onChange={(e) => setForm((f) => ({ ...f, usoLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
             <label className={labelClass} htmlFor="q-fren">
-              4. ¿Cómo sientes los frenos al frenar?
+              3. ¿Cómo sientes los frenos al frenar?
             </label>
             <select
               id="q-fren"
@@ -222,25 +221,30 @@ export function CuestionarioVehiculoScreen() {
               <option value="Normales">Normales</option>
               <option value="Algo raro (ruido o pedal…)">Algo raro (ruido o pedal…)</option>
               <option value="Mejor revisarlos ya">Mejor revisarlos ya</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-fren-libre">
-              Detalle opcional
-            </label>
-            <input
-              id="q-fren-libre"
-              type="text"
-              className="win98-input mt-1 max-w-xl"
-              autoComplete="off"
-              placeholder="Ej. vibra el pedal en bajada"
-              maxLength={160}
-              value={form.frenosLibre}
-              onChange={(e) => setForm((f) => ({ ...f, frenosLibre: e.target.value }))}
-            />
+            {form.frenos === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-fren-libre">
+                  Tu respuesta
+                </label>
+                <input
+                  id="q-fren-libre"
+                  type="text"
+                  className="win98-input mt-1 max-w-xl"
+                  autoComplete="off"
+                  placeholder="Ej. vibra el pedal en bajada"
+                  maxLength={160}
+                  value={form.frenosLibre}
+                  onChange={(e) => setForm((f) => ({ ...f, frenosLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
             <label className={labelClass} htmlFor="q-luces">
-              5. ¿Luces/check encendidas en tablero?
+              4. ¿Luces/check encendidas en tablero?
             </label>
             <select
               id="q-luces"
@@ -265,25 +269,30 @@ export function CuestionarioVehiculoScreen() {
               <option value="Varias encendidas o no identifico cuál">Varias encendidas o no identifico cuál</option>
               <option value="Intermitentes o van y vienen">Intermitentes o van y vienen</option>
               <option value="No sé / no revisé">No sé / no revisé</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-luces-libre">
-              Detalle opcional
-            </label>
-            <input
-              id="q-luces-libre"
-              type="text"
-              className="win98-input mt-1 max-w-xl"
-              autoComplete="off"
-              placeholder="Ej. amarilla de motor desde ayer"
-              maxLength={160}
-              value={form.lucesLibre}
-              onChange={(e) => setForm((f) => ({ ...f, lucesLibre: e.target.value }))}
-            />
+            {form.luces === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-luces-libre">
+                  Tu respuesta
+                </label>
+                <input
+                  id="q-luces-libre"
+                  type="text"
+                  className="win98-input mt-1 max-w-xl"
+                  autoComplete="off"
+                  placeholder="Ej. amarilla de motor desde ayer"
+                  maxLength={160}
+                  value={form.lucesLibre}
+                  onChange={(e) => setForm((f) => ({ ...f, lucesLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
             <label className={labelClass} htmlFor="q-ruidos">
-              6. Ruidos o vibraciones nuevas que no pasaban antes
+              5. Ruidos o vibraciones
             </label>
             <select
               id="q-ruidos"
@@ -304,23 +313,28 @@ export function CuestionarioVehiculoScreen() {
               <option value="Varias cosas / no ubico el origen">Varias cosas / no ubico el origen</option>
               <option value="Solo en frío o recién arrancado">Solo en frío o recién arrancado</option>
               <option value="No sé / no lo he notado bien">No sé / no lo he notado bien</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-ruidos-libre">
-              Detalle opcional
-            </label>
-            <textarea
-              id="q-ruidos-libre"
-              className="win98-textarea mt-1 min-h-[3.5rem]"
-              maxLength={800}
-              value={form.ruidosLibre}
-              placeholder="Ej. cruje solo al girar derecha; empezó hace una semana"
-              onChange={(e) => setForm((f) => ({ ...f, ruidosLibre: e.target.value }))}
-            />
+            {form.ruidos === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-ruidos-libre">
+                  Tu respuesta
+                </label>
+                <textarea
+                  id="q-ruidos-libre"
+                  className="win98-textarea mt-1 min-h-[3.5rem]"
+                  maxLength={800}
+                  value={form.ruidosLibre}
+                  placeholder="Ej. cruje solo al girar derecha; empezó hace una semana"
+                  onChange={(e) => setForm((f) => ({ ...f, ruidosLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
             <label className={labelClass} htmlFor="q-cauchos">
-              7. Estado general percibido de llantas/cauchos
+              6. Estado general de llantas/cauchos
             </label>
             <select
               id="q-cauchos"
@@ -332,25 +346,30 @@ export function CuestionarioVehiculoScreen() {
               <option value="En buen estado">En buen estado</option>
               <option value="Desgaste visible">Desgaste visible</option>
               <option value="Conviene cambiar pronto">Conviene cambiar pronto</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-cauchos-libre">
-              Detalle opcional
-            </label>
-            <input
-              id="q-cauchos-libre"
-              type="text"
-              className="win98-input mt-1 max-w-xl"
-              autoComplete="off"
-              placeholder="Ej. delanteros más gastados; un pinchazo reciente"
-              maxLength={160}
-              value={form.cauchosLibre}
-              onChange={(e) => setForm((f) => ({ ...f, cauchosLibre: e.target.value }))}
-            />
+            {form.cauchos === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-cauchos-libre">
+                  Tu respuesta
+                </label>
+                <input
+                  id="q-cauchos-libre"
+                  type="text"
+                  className="win98-input mt-1 max-w-xl"
+                  autoComplete="off"
+                  placeholder="Ej. delanteros más gastados; un pinchazo reciente"
+                  maxLength={160}
+                  value={form.cauchosLibre}
+                  onChange={(e) => setForm((f) => ({ ...f, cauchosLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
             <label className={labelClass} htmlFor="q-ace">
-              8. Último aceite motor o última revisión importante
+              7. Último aceite motor o última revisión importante
             </label>
             <select
               id="q-ace"
@@ -367,52 +386,57 @@ export function CuestionarioVehiculoScreen() {
                 Lo llevo al taller con cierta frecuencia (sin fecha clara)
               </option>
               <option value="Nunca me ha tocado con este carro">Nunca me ha tocado con este carro</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-ace-libre">
-              Fecha, taller o aclaración (opcional)
-            </label>
-            <textarea
-              id="q-ace-libre"
-              className="win98-textarea mt-1 min-h-[3.5rem]"
-              maxLength={800}
-              value={form.aceiteLibre}
-              placeholder="Ej. aceite mayo 2024 — taller X"
-              onChange={(e) => setForm((f) => ({ ...f, aceiteLibre: e.target.value }))}
-            />
+            {form.aceite === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-ace-libre">
+                  Tu respuesta
+                </label>
+                <textarea
+                  id="q-ace-libre"
+                  className="win98-textarea mt-1 min-h-[3.5rem]"
+                  maxLength={800}
+                  value={form.aceiteLibre}
+                  placeholder="Ej. aceite mayo 2024 — taller X"
+                  onChange={(e) => setForm((f) => ({ ...f, aceiteLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="win98-field-group">
-            <label className={labelClass} htmlFor="q-clima">
-              9. Climatización (calor/frío) y arranque o batería
+            <label className={labelClass} htmlFor="q-bateria">
+              8. Estado de la batería
             </label>
             <select
-              id="q-clima"
+              id="q-bateria"
               className="win98-select mt-1 max-w-xl w-full"
               value={form.climaArranque}
               onChange={(e) => setForm((f) => ({ ...f, climaArranque: e.target.value }))}
             >
               <option value="">— Elige —</option>
-              <option value="Todo bien (clima y arranque)">Todo bien (clima y arranque)</option>
-              <option value="A/C enfría poco o nada">A/C enfría poco o nada</option>
-              <option value="Calefacción calienta poco o nada">Calefacción calienta poco o nada</option>
-              <option value="Arranque lento o cuesta arrancar">Arranque lento o cuesta arrancar</option>
-              <option value="Batería nueva o dudosa (luces débiles, etc.)">
-                Batería nueva o dudosa (luces débiles, etc.)
-              </option>
-              <option value="Varias cosas a la vez">Varias cosas a la vez</option>
-              <option value="Prefiero detallar abajo">Prefiero detallar abajo</option>
+              <option value="Nueva">Nueva</option>
+              <option value="Usada">Usada</option>
+              <option value="Dañada">Dañada</option>
+              <option value="No estoy seguro">No estoy seguro</option>
+              <option value={OPT_TEXT}>{OPT_OTHER_LABEL}</option>
             </select>
-            <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-clima-libre">
-              Detalle opcional
-            </label>
-            <textarea
-              id="q-clima-libre"
-              className="win98-textarea mt-1 min-h-[4rem]"
-              maxLength={1200}
-              value={form.climaLibre}
-              placeholder="Ej. A/C enfría poco desde hace meses; batería con 3 años"
-              onChange={(e) => setForm((f) => ({ ...f, climaLibre: e.target.value }))}
-            />
+            {form.climaArranque === OPT_TEXT ? (
+              <>
+                <label className={`${detailLabelClass} mt-2 block`} htmlFor="q-bateria-libre">
+                  Tu respuesta
+                </label>
+                <textarea
+                  id="q-bateria-libre"
+                  className="win98-textarea mt-1 min-h-[4rem]"
+                  maxLength={1200}
+                  value={form.climaLibre}
+                  placeholder="Ej. reconstruida, no arranca en frío, la cambié en…"
+                  onChange={(e) => setForm((f) => ({ ...f, climaLibre: e.target.value }))}
+                />
+              </>
+            ) : null}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

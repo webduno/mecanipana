@@ -273,8 +273,8 @@ dialog.mp-overlay-dialog::backdrop {
 }
 
 .win98-select:focus-visible {
-  outline: 2px dotted #000000;
-  outline-offset: 1px;
+  outline: 2px solid #000080;
+  outline-offset: 2px;
 }
 
 .win98-vehicle-resumen-box {

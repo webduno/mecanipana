@@ -90,7 +90,7 @@ export function ResumenScreen() {
           aria-label="Empezar el Quiz de estado del vehículo"
         >
           <IconNota className="h-7 w-7 shrink-0" aria-hidden />
-          Empezar Quiz (9 preguntas)
+          Empezar Quiz (8 preguntas)
         </Link>
       ) : null}
       <p className="m-0 text-pretty">

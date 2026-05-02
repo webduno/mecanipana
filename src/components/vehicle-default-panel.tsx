@@ -153,7 +153,12 @@ function writeJsonArray(key: string, value: string[]) {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
-export function VehicleDefaultPanel() {
+type VehicleDefaultPanelProps = {
+  /** Llamado tras guardar marca/modelo/motor con éxito (p. ej. cerrar el modal). */
+  onAfterSave?: () => void;
+};
+
+export function VehicleDefaultPanel({ onAfterSave }: VehicleDefaultPanelProps) {
   const catalogLines = useMemo(() => catalogVehicleLines(), []);
   const catalogVarLabels = useMemo(() => catalogVariantLabels(), []);
 
@@ -317,12 +322,14 @@ export function VehicleDefaultPanel() {
     persistVariant(selectedVariant);
     setCommittedLine(selectedLine);
     setCommittedVariant(selectedVariant);
+    onAfterSave?.();
   }, [
     canSaveSelection,
     selectedLine,
     selectedVariant,
     persistLine,
     persistVariant,
+    onAfterSave,
   ]);
 
   const cancelVehicleSelection = useCallback(() => {

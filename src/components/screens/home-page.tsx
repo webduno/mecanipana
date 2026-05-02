@@ -108,48 +108,35 @@ export function HomePageClient() {
             aria-label="Empezar el Quiz de estado del vehículo"
           >
             <IconNota className="h-7 w-7 shrink-0" aria-hidden />
-            Empezar Quiz (9 preguntas)
+            Empezar Quiz (8 preguntas)
           </Link>
         ) : null}
-        <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
-          <IconVehiculo className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
-          <span>
-            <strong className="font-semibold text-[#000080]">Tu carro.</strong>{" "}
-            Escoge tu carro en {" "}
-            <strong className="font-semibold">Mi Info</strong> →{" "}
-            <strong className="font-semibold">Carro</strong>: marca, modelo, año, motor.
-            {!canGo ? (
-              <>
-                {" "}
-                O usa el atajo: botón naranja «Escoger mi carro».
-              </>
-            ) : onlyVehicleNoLogs ? (
-              <>
-                {" "}
-                O el atajo: botón naranja «Empezar Quiz».
-              </>
-            ) : (
-              <>
-                {" "}
-                ¿Otro carro? Cambias ahí mismo.
-              </>
-            )}
-          </span>
-        </p>
+        {!canGo ? (
+          <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
+            <IconVehiculo className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
+            <span>
+              <strong className="font-semibold text-[#000080]">Tu carro.</strong>{" "}
+              Escoge tu carro en{" "}
+              <strong className="font-semibold">Mi Info</strong> →{" "}
+              <strong className="font-semibold">Carro</strong>: marca, modelo, año, motor. O usa el
+              atajo: botón naranja «Escoger mi carro».
+            </span>
+          </p>
+        ) : null}
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
           <IconRegistrar
             className="win98-label-icon mt-0.5 shrink-0"
             aria-hidden
           />
           <span>
-            <strong className="font-semibold text-[#000080]">Tus registros por categoría:</strong>
+            <strong className="font-semibold text-[#000080]">Tus registros por categoría: </strong>
             viajes, gasolina, taller, recordatorios… un toque, un dato.
           </span>
         </p>
         <p className="m-0 flex items-start gap-2.5 text-pretty text-[clamp(1rem,3.6vw,1.12rem)] leading-snug">
           <IconOpciones className="win98-label-icon mt-0.5 shrink-0" aria-hidden />
           <span>
-            <strong className="font-semibold text-[#000080]">Este equipo primero.</strong> Todo vive primero offline y luego se sincroniza con el servidor. Letra y tema en{" "}
+            <strong className="font-semibold text-[#000080]">Sincronizacion continua: </strong> Todo vive primero offline y luego se sincroniza con el servidor. Letra y tema en{" "}
             <strong className="font-semibold">Opciones</strong>. 
           </span>
         </p>
@@ -160,11 +147,13 @@ export function HomePageClient() {
           aria-label="Acciones principales"
           className="grid grid-cols-3 gap-2 sm:gap-3"
         >
-          <LandingTile href="/resumen" complete={canGo}>
-            <IconResumen className="win98-btn-icon" />
-            Resumen
-          </LandingTile>
-          <LandingTile href="/datos-vehiculo" complete={canGo}>
+          {canGo ? (
+            <LandingTile href="/resumen" complete>
+              <IconResumen className="win98-btn-icon" />
+              Resumen
+            </LandingTile>
+          ) : null}
+          <LandingTile href="/datos-vehiculo" complete>
             <IconVehiculo className="win98-btn-icon" />
             Datos del vehículo
           </LandingTile>
@@ -172,46 +161,54 @@ export function HomePageClient() {
             <IconCuenta className="win98-btn-icon" />
             Cuenta — próximamente
           </button>
-          <LandingTile
-            href="/combustible"
-            complete={canGo}
-            className="win98-btn-tile--mid-frame-combustible"
-          >
-            <IconCombustible className="win98-btn-icon" />
-            Combustible
-          </LandingTile>
-          <LandingTile
-            href="/mantenimiento"
-            complete={canGo}
-            className="win98-btn-tile--mid-frame-mantenimiento"
-          >
-            <IconMantenimiento className="win98-btn-icon" />
-            Mantenimiento
-          </LandingTile>
-          <LandingTile
-            href="/recordatorios"
-            complete={canGo}
-            className="win98-btn-tile--mid-frame-recordatorios"
-          >
-            <IconRecordatorios className="win98-btn-icon" />
-            Recordatorios
-          </LandingTile>
+          {canGo ? (
+            <>
+              <LandingTile
+                href="/combustible"
+                complete
+                className="win98-btn-tile--mid-frame-combustible"
+              >
+                <IconCombustible className="win98-btn-icon" />
+                Combustible
+              </LandingTile>
+              <LandingTile
+                href="/mantenimiento"
+                complete
+                className="win98-btn-tile--mid-frame-mantenimiento"
+              >
+                <IconMantenimiento className="win98-btn-icon" />
+                Mantenimiento
+              </LandingTile>
+              <LandingTile
+                href="/recordatorios"
+                complete
+                className="win98-btn-tile--mid-frame-recordatorios"
+              >
+                <IconRecordatorios className="win98-btn-icon" />
+                Recordatorios
+              </LandingTile>
+            </>
+          ) : null}
           <Link href="/opciones" className="win98-btn win98-btn-tile win98-btn--accent-red">
             <IconOpciones className="win98-btn-icon" />
             Opciones de Tema
           </Link>
-          <LandingTile
-            href="/historial"
-            complete={canGo}
-            className="win98-btn--accent-green"
-          >
-            <IconHistorial className="win98-btn-icon" />
-            Ver historial
-          </LandingTile>
-          <LandingTile href="/registrar-uso" complete={canGo} className="win98-btn--accent-blue">
-            <IconRegistrar className="win98-btn-icon" />
-            Agregar Info
-          </LandingTile>
+          {canGo ? (
+            <>
+              <LandingTile href="/historial" complete className="win98-btn--accent-green">
+                <IconHistorial className="win98-btn-icon" />
+                Ver historial
+              </LandingTile>
+              <LandingTile
+                href="/registrar-uso"
+                complete
+                className="win98-btn--accent-blue"
+              >
+                <IconRegistrar className="win98-btn-icon" />
+                Agregar Info
+              </LandingTile>
+            </>
+          ) : null}
         </nav>
 
         {showAdminBtn ? (

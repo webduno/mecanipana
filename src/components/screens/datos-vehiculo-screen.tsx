@@ -88,14 +88,14 @@ export function DatosVehiculoScreen() {
         <div className="win98-inset">
           <p className="m-0 text-pretty font-semibold">Estado del carro (opcional)</p>
           <p className="win98-muted mt-1 mb-2 text-[0.95rem]">
-            Si todavía no escribiste nada, puedes contestar 9 preguntas breves (sin repetir modelo ni
+            Si todavía no escribiste nada, puedes contestar 8 preguntas breves (sin repetir modelo ni
             año) y te lo volcamos a las notas.
           </p>
           <Link
             href="/datos-vehiculo/cuestionario"
             className="win98-btn inline-flex max-w-full items-center justify-center text-center"
           >
-            Rellenar cuestionario rápido (9 preguntas)
+            Rellenar cuestionario rápido (8 preguntas)
           </Link>
         </div>
       ) : null}

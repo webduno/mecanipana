@@ -699,3 +699,123 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Clase `.win98-btn--accent-amber` en `globals.css` (borde estilo Win98); variantes en `themes.css` (neumorphism gradient amarillo/naranja, facephism naranja). Landing y resumen: «Escoger mi carro» y «Empezar cuestionario básico» usan amber; ayuda en landing dice «botón naranja».
 
 ---
+
+## 2026-05-02
+
+**Prompt:**
+
+> hide these buttons if hasnt picked car yet
+
+**Outcome:** En `home-page.tsx`, la cuadrícula principal solo muestra «Datos del vehículo», «Cuenta — próximamente» y «Opciones de Tema» hasta que `useVehicleSetupReady()` marca perfil completo; Resumen, Combustible, Mantenimiento, Recordatorios, Ver historial y Agregar Info se omiten; «Datos del vehículo» queda siempre como enlace (`complete`), no botón bloqueado.
+
+---
+
+## 2026-05-02 (2)
+
+**Prompt:**
+
+> add button here to go back
+
+**Outcome:** Barra superior en `opciones-screen.tsx`: texto introductorio + enlace «Volver» (`win98-btn`, `href="/"`) arriba a la derecha vía flex `justify-between`.
+
+---
+
+## 2026-05-02 (3)
+
+**Prompt:**
+
+> on the corner, not like this
+
+**Outcome:** `.win98-btn` lleva `width:100%`, al envolver la fila el enlace ocupaba todo el ancho; se reemplaza el bloque intro por rejilla `1fr / auto`, `Volver` con `!w-auto` para ancho al contenido y esquina superior derecha estable en móvil.
+
+---
+
+## 2026-05-02 (4)
+
+**Prompt:**
+
+> after guardar, it should close modal
+
+**Outcome:** `VehicleDefaultPanel` acepta `onAfterSave?` y lo invoca al final de `saveVehicleSelection`; `EsteEquipoModalControl` pasa `() => dialogRef.current?.close()` para cerrar «Carro Seleccionado» tras Guardar.
+
+---
+
+## 2026-05-02 (5)
+
+**Prompt:**
+
+> after car is picked, hide this first point
+
+**Outcome:** En `home-page.tsx`, el párrafo de ayuda «Tu carro / Mi Info / Carro» solo se muestra cuando `!canGo`; con perfil completo desaparece (el quiz naranja sigue cuando aplica).
+
+---
+
+## 2026-05-02 (6)
+
+**Prompt:**
+
+> Add texto as last opción on select to be able to enter text, don't show them all as opcional in quiz page
+
+**Outcome:** `cuestionario-vehiculo-screen.tsx`: constante `OPT_TEXT` como última opción «Texto» en cada select; campo de texto/textarea solo si aplica (`Texto` o, en odómetro, aprox/exacto con etiqueta «Kilometraje o referencia»). Notas guardadas sin el literal mágico. Eliminadas etiquetas repetidas «Detalle opcional» / «(opcional)»; párrafo intro actualizado.
+
+---
+
+## 2026-05-02 (7)
+
+**Prompt:**
+
+> "Texto" is not clear at all, consider other labels, search for a standard
+
+**Outcome:** Última opción renombrada a **«Otro (especificar)»** (`OPT_OTHER_LABEL`), patrón alineado con “Other (please specify)” en inglés y uso corriente de **Otro** + indicación en formularios en español; intro y todas las opciones `<select>` usan la misma constante.
+
+---
+
+## 2026-05-02 (8)
+
+**Prompt:**
+
+> remove 2nd question
+
+**Outcome:** Eliminada la pregunta «Odómetro o referencia en km» en `cuestionario-vehiculo-screen.tsx` (estado, UI, `buildBody` 1–8); copy actualizado a 8 preguntas en `home-page.tsx`, `resumen-screen.tsx`, `datos-vehiculo-screen.tsx`. Quitado `withOptionalLibre` al dejar de usarse.
+
+---
+
+## 2026-05-02 (9)
+
+**Prompt:**
+
+> if selected a "ultimo aceite motor" do also add the maintance element when finishing the form
+
+**Outcome:** Al guardar el cuestionario, si la pregunta 7 tiene opción elegida, se llama a `appendMaintenance` con `what` «Aceite motor (dato cuestionario)» (compatible con heurística de aceite), nota con el texto elegido y sync remota como en Mantenimiento; si sigue en «— Elige —», no se añade fila.
+
+---
+
+## 2026-05-02 (10)
+
+**Prompt:**
+
+> last question doesnt make sense
+
+**Outcome:** Opción confusa «Batería nueva o dudosa…» en pregunta 8 (clima/arranque) sustituida por **«Batería débil o dudosa (luces débiles, etc.)»** en `cuestionario-vehiculo-screen.tsx`; coherencia con síntomas eléctricos sin contradecir «batería nueva».
+
+---
+
+## 2026-05-02 (11)
+
+**Prompt:**
+
+> do just batery then... simplify it
+
+**Outcome:** Pregunta 8 pasa a ser solo **Batería**; opciones reducidas a «Todo bien», **«Batería»** y **«Otro (especificar)»** (`cuestionario-vehiculo-screen.tsx`). `buildBody` y ids de campo (`q-bateria`) alineados; clima/A-C/calefacción/arranque ya no están en el select (quedan vía Otro si aplica).
+
+---
+
+## 2026-05-02 (12)
+
+**Prompt:**
+
+> FOCUS, OPTIONS DONT MAKE SENSE… IT SHOULD BE LIKE NEW, USED, DAMAGED AND STUF LIKE THAT
+
+**Outcome:** Pregunta 8 renombrada a **Estado de la batería**; opciones **Nueva**, **Usada**, **Dañada**, **No estoy seguro** y **Otro (especificar)**; `buildBody` y placeholder del detalle alineados.
+
+---

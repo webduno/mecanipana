@@ -191,7 +191,7 @@ export function EsteEquipoModalControl() {
             hidden={tab !== "car"}
             className={tab === "car" ? "flex shrink-0 flex-col gap-3" : "hidden"}
           >
-            <VehicleDefaultPanel />
+            <VehicleDefaultPanel onAfterSave={() => dialogRef.current?.close()} />
           </div>
 
           <div
