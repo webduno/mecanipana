@@ -42,8 +42,7 @@ export function CombustibleScreen() {
   return (
     <VehicleSetupGate>
       <p className="m-0 text-pretty">
-        Registra cada vez que echas gasolina o gas. Monto en bolívares (Bs) como tú lo
-        tengas a mano.
+        Registra cada vez que echas gasolina o gas. 
       </p>
       <form onSubmit={onSubmit} className="win98-inset">
         <DatePresetField
@@ -71,7 +70,7 @@ export function CombustibleScreen() {
         </div>
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="comb-bs">
-            Monto (Bs)
+            Monto
           </label>
           <input
             id="comb-bs"

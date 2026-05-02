@@ -51,6 +51,7 @@ export function ContactPickerField({
 
   function submitContact(e: React.FormEvent) {
     e.preventDefault();
+    e.stopPropagation();
     const n = name.trim();
     if (!n) return;
     const row = appendContact({
@@ -61,7 +62,10 @@ export function ContactPickerField({
     void pushContactEntryRemote(row);
     refreshContacts();
     onChange(row.id);
-    closeModal();
+    // Avoid <dialog> click-through onto the page submit button.
+    window.setTimeout(() => {
+      dialogRef.current?.close();
+    }, 0);
   }
 
   const selectId = `${idPrefix}-contact-select`;
@@ -118,7 +122,10 @@ export function ContactPickerField({
                 onClick={(ev) => ev.stopPropagation()}
               >
                 <div className="win98-titlebar shrink-0">Nuevo contacto</div>
-                <form onSubmit={submitContact} className="win98-body flex flex-col gap-3">
+                <form
+                  onSubmit={submitContact}
+                  className="win98-body flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto"
+                >
                   <div className="win98-form-row flex-col sm:flex-row">
                     <label className="win98-label" htmlFor={`${baseId}-cn`}>
                       Nombre

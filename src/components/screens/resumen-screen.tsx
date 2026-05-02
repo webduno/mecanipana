@@ -204,7 +204,7 @@ export function ResumenScreen() {
         <div className="m-2 mt-4 border-t border-[#c0c0c0] pt-4">
           <p className="win98-label m-0">Recordatorios sugeridos</p>
           <p className="win98-muted m-0 mt-1 text-[0.82rem] leading-snug">
-            Resumen local: aceite ~3 meses; lo demás ~6. Papeles si hay palabra clave en recordatorios pendientes.
+            Solo si falta registro, conviene revisar o pasó el plazo (aceite ~3 meses; taller ~6). Papeles: anótalo o «En lista» con palabra clave en pendientes.
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5">
             {suggestionTiles.map((tile) => (

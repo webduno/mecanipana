@@ -950,3 +950,53 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 
 ---
 
+## 2026-05-02 (26)
+
+**Prompt:**
+
+> nuevo contacto modal is hiding save button cuz window size, fix it
+
+**Outcome:** Modal «Nuevo contacto» (`contact-picker-field.tsx`): el `win98-window` ya tenía `max-h` + `overflow-hidden`; el `<form>` pasa a `min-h-0 flex-1 overflow-y-auto` como en otros modales (`este-equipo-modal`) para que el cuerpo haga scroll y «Guardar» no quede recortado.
+
+---
+
+## 2026-05-02 (27)
+
+**Prompt:**
+
+> after new contact is created on the fly, it immediately creates it and the texto is cleared out, it shouldn't happen, create contact should only add contact
+
+**Outcome:** `contact-picker-field.tsx`: en `submitContact` se llama `stopPropagation()` para que el `submit` del modal no suba por el árbol de React hasta el `<form>` padre (portal); cierre del `dialog` diferido con `setTimeout(0)` por si acaso hay click-through al botón «Añadir».
+
+---
+
+## 2026-05-02 (28)
+
+**Prompt:**
+
+> if already hav reminder for caucho, it shouldnt appear in the suggested
+
+**Outcome:** `getMaintenanceSuggestionTiles` (`local-storage-data.ts`): `hasPendingReminderMatchingCategory` omite cada tarjeta de `pushLogTile` cuando algún recordatorio pendiente coincide con el mismo predicado de texto (p. ej. cauchos); «Papeles» sin cambio (sigue mostrando En lista / Anótalo).
+
+---
+
+## 2026-05-02 (29)
+
+**Prompt:**
+
+> and why would oil appear if its up to date?
+
+**Outcome:** `pushLogTile` ya no añade tarjeta cuando `logRecency` es «ok» (antes subtítulo «Al día»); Resumen: texto aclaratorio bajo «Recordatorios sugeridos».
+
+---
+
+## 2026-05-02 (30)
+
+**Prompt:**
+
+> do the same for the future then please (date shortcuts like tomorrow/next week)
+
+**Outcome:** `date-preset-field.tsx`: `toDateInputValue`, `FutureDatePresetId`, `FUTURE_DATE_PRESET_OPTIONS` (Hoy, Mañana, En 1/2 semanas, En 1/3 meses, Otra fecha…), `dateForFuturePreset`, `useFutureDatePresetState`, `FutureDatePresetField`. Recordatorios: select + fecha + día de la semana; tras añadir vuelve a «En 1 semana».
+
+---
+

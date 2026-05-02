@@ -7,6 +7,12 @@ import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import { ContactPickerField } from "@/components/contact-picker-field";
 import { LocationOsmField, type LocationOsmValue } from "@/components/location-osm-field";
 import {
+  dateForFuturePreset,
+  FutureDatePresetField,
+  toDateInputValue,
+  useFutureDatePresetState,
+} from "@/components/date-preset-field";
+import {
   formatContactOneLine,
   loadReminders,
   makeId,
@@ -27,18 +33,6 @@ const TEXTO_POR_TEMA: Record<string, string> = {
   vidrios: "Vidrios",
   aceite: "Aceite",
 };
-
-function toDateInputValue(d: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-}
-
-/** Fecha por defecto del formulario: dentro de 7 días (calendario local). */
-function defaultDueDateInputValue() {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  return toDateInputValue(d);
-}
 
 /** Día de la semana legible para `YYYY-MM-DD` (mediodía local, es-VE). */
 function weekdayFromDateInputValue(yyyyMmDd: string): string {
@@ -66,7 +60,14 @@ function formatDue(iso: string) {
 function RecordatoriosScreenInner() {
   const searchParams = useSearchParams();
   const [items, setItems] = useState<ReminderEntry[]>(() => loadReminders());
-  const [dueAt, setDueAt] = useState(() => defaultDueDateInputValue());
+  const {
+    dueDate: dueAt,
+    setDueDate: setDueAt,
+    datePreset: dueDatePreset,
+    setDatePreset: setDueDatePreset,
+    onDatePresetChange: onDueDatePresetChange,
+    onDateChange: onDueDateChange,
+  } = useFutureDatePresetState("nextWeek");
   const [text, setText] = useState("");
   const [location, setLocation] = useState<LocationOsmValue>({
     locationLabel: "",
@@ -116,7 +117,8 @@ function RecordatoriosScreenInner() {
     setEstimatedCostBs("");
     setContactId(null);
     setLocation({ locationLabel: "", locationLat: null, locationLon: null });
-    setDueAt(defaultDueDateInputValue());
+    setDueDatePreset("nextWeek");
+    setDueAt(toDateInputValue(dateForFuturePreset("nextWeek")));
   }
 
   function toggle(id: string) {
@@ -138,26 +140,25 @@ function RecordatoriosScreenInner() {
         Añade un recordatorio para un mantenimiento en específico.
       </p>
       <form onSubmit={onAdd} className="win98-inset">
-        <div className="win98-form-row">
-          <label className="win98-label" htmlFor="rec-fecha">
-            Fecha objetivo
-          </label>
-          <div className="min-w-0 flex flex-col gap-1">
-            <input
-              id="rec-fecha"
-              className="win98-input"
-              type="date"
-              value={dueAt}
-              onChange={(e) => setDueAt(e.target.value)}
-              required
-            />
-            {dueWeekdayLabel ? (
-              <span className="win98-muted text-[0.82rem] leading-snug" aria-live="polite">
+        <FutureDatePresetField
+          presetSelectId="rec-fecha-preset"
+          dateInputId="rec-fecha"
+          label="Fecha objetivo"
+          dueDate={dueAt}
+          datePreset={dueDatePreset}
+          onDatePresetChange={onDueDatePresetChange}
+          onDateChange={onDueDateChange}
+          footer={
+            dueWeekdayLabel ? (
+              <span
+                className="win98-muted text-[0.82rem] leading-snug"
+                aria-live="polite"
+              >
                 {dueWeekdayLabel}
               </span>
-            ) : null}
-          </div>
-        </div>
+            ) : null
+          }
+        />
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="rec-texto">
             Texto

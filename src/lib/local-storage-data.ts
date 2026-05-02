@@ -340,6 +340,14 @@ function hasPaperReminderPending(reminders: ReminderEntry[]): boolean {
   return reminders.some((r) => !r.done && re.test(r.text));
 }
 
+/** Evita duplicar en «sugeridos» una categoría que ya está en recordatorios pendientes. */
+function hasPendingReminderMatchingCategory(
+  reminders: ReminderEntry[],
+  pred: (text: string) => boolean,
+): boolean {
+  return reminders.some((r) => !r.done && pred(r.text));
+}
+
 export type MaintenanceSuggestionTile = {
   id: string;
   emoji: string;
@@ -362,6 +370,8 @@ export function recordatoriosSuggestionHref(tema: string, texto: string): string
  * Tarjetas compactas para Resumen (VE): heurística por `what` en el log local
  * y recordatorios pendientes para papeles. Aceite 3 meses; el resto del taller 6 meses;
  * luces/vidrios sin registro se muestran como tip suave.
+ * Si ya hay un recordatorio pendiente cuyo texto encaja en la misma categoría, no se muestra esa tarjeta (salvo «Papeles», que sigue indicando estado En lista / Anótalo).
+ * Categorías «al día» según el log (último servicio dentro del plazo) no se listan: no hay nada que sugerir.
  */
 export function getMaintenanceSuggestionTiles(
   entries: MaintenanceEntry[],
@@ -377,6 +387,7 @@ export function getMaintenanceSuggestionTiles(
     pred: (what: string) => boolean,
     softNever: boolean,
   ) => {
+    if (hasPendingReminderMatchingCategory(reminders, pred)) return;
     const r = logRecency(entries, pred, months);
     if (r === "none") {
       tiles.push({
@@ -400,14 +411,7 @@ export function getMaintenanceSuggestionTiles(
       });
       return;
     }
-    tiles.push({
-      id,
-      emoji,
-      title,
-      subtitle: "Al día",
-      tone: "ok",
-      href: recordatoriosSuggestionHref(id, title),
-    });
+    return;
   };
 
   pushLogTile("caucho", "🛞", "Cauchos", 6, isCauchoWhat, false);
