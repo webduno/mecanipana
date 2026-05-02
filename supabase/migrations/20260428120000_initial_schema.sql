@@ -73,6 +73,9 @@ CREATE TABLE IF NOT EXISTS public.reminders (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
+COMMENT ON TABLE public.reminders IS
+  'Recordatorios (ReminderEntry local). Solo se persisten due_at + text + done; params URL ?tema= / ?texto= son UX en cliente para prellenar el formulario, no columnas aquí.';
+
 -- Listas personalizadas por usuario (extras en desplegables / prompts), una fila por ítem
 CREATE TABLE IF NOT EXISTS public.user_extra_vehicle_lines (
   user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
@@ -298,7 +301,7 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, service_role;
 -- - Perfil: profiles.display_name / avatar_url (metadatos opcionales para UI).
 -- - Config sincronizable: app_options.theme, .locale, .fuentes_grandes, .preferences_extra (JSON).
 -- - vehicle_line / variant_label / vehicle_notes → vehicle_context.
--- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders.
+-- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders (fecha objetivo en due_at; texto libre en text).
 -- - admin_emails: correos con rol admin UI (crear el mismo correo en Authentication con contraseña de prueba).
 -- - Opciones extra por desplegable / lista:
 --     user_extra_vehicle_lines, user_extra_variant_labels,

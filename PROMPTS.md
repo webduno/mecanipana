@@ -859,3 +859,43 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Bajo el `<input type="date">` de Recordatorios se muestra el **día de la semana** (`weekdayFromDateInputValue`, `es-VE`, nombre largo capitalizado) con `aria-live="polite"`; el control de fecha no cambia.
 
 ---
+
+## 2026-05-02 (17)
+
+**Prompt:**
+
+> ok, do all changes on forms were reflected on the initial migration script? it hasnt been run yet and it has to match so the sync can happen
+
+**Outcome:** Revisión: los cambios recientes de Recordatorios (params URL, +7 días, día de la semana) **no** añaden columnas; `ReminderEntry` sigue alineado con `public.reminders`. Migración inicial ya cubre uso/mantenimiento (incl. `urgencia`), combustible, etc. Se añadió `COMMENT ON TABLE public.reminders` y nota al pie en la migración; `docs/storage-vs-database.md` actualizado con mapeos completos (`urgencia`, recordatorio, nota sobre query params).
+
+---
+
+## 2026-05-02 (18)
+
+**Prompt:**
+
+> well then add the missing endpoint
+
+**Outcome:** `POST /api/reminders` (`src/app/api/reminders/route.ts`): insert en `public.reminders` vía `getLogInsertContext`, valida UUID, `due_at`/`dueAt`, `text`, `done`. `pushReminderEntryRemote` en `sync-log-entries-remote.ts`; `recordatorios-screen` lo llama al añadir. Doc `storage-vs-database.md`: línea sobre rutas API.
+
+---
+
+## 2026-05-02 (19)
+
+**Prompt:**
+
+> make notas de vehicle taller
+
+**Outcome:** `globals.css`: clase `.win98-textarea--vehicle-notes` con `min-height: 14rem`; `datos-vehiculo-screen.tsx`: el textarea de notas usa esa clase (el `min-height` global de `win98-textarea` no cambia en otras pantallas).
+
+---
+
+## 2026-05-02 (20)
+
+**Prompt:**
+
+> add a button to go to resumen page in datos del vehicle
+
+**Outcome:** `datos-vehiculo-screen.tsx`: enlace «Ir al resumen» (`/resumen`) al **final** de la pantalla (debajo de notas), `win98-btn` y `mt-3`; título vuelve a una sola línea arriba.
+
+---

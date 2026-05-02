@@ -1,4 +1,8 @@
-import type { MaintenanceEntry, UsageEntry } from "@/lib/mecanipana-types";
+import type {
+  MaintenanceEntry,
+  ReminderEntry,
+  UsageEntry,
+} from "@/lib/mecanipana-types";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 /** Valores coincidentes con columnas Postgres (solo strings / números; sin prefijos ni claves localStorage). */
@@ -73,5 +77,35 @@ export async function pushMaintenanceEntryRemote(
     if (!res.ok) logSyncFail("mantenimiento", res.status, bodyJson);
   } catch (e) {
     console.log("[Mecanipana] Supabase sync mantenimiento (fetch):", e);
+  }
+}
+
+/** Igual que uso: solo con sesión de login. */
+export async function pushReminderEntryRemote(
+  entry: ReminderEntry
+): Promise<void> {
+  try {
+    if (!(await hasAuthSession())) return;
+
+    const res = await fetch("/api/reminders", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: entry.id,
+        due_at: entry.dueAt,
+        text: entry.text ?? "",
+        done: Boolean(entry.done),
+      }),
+    });
+    let bodyJson: unknown;
+    try {
+      bodyJson = await res.json();
+    } catch {
+      bodyJson = await res.text().catch(() => null);
+    }
+    if (!res.ok) logSyncFail("recordatorio", res.status, bodyJson);
+  } catch (e) {
+    console.log("[Mecanipana] Supabase sync recordatorio (fetch):", e);
   }
 }

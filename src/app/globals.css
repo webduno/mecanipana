@@ -486,6 +486,10 @@ body.mp-font-lg {
   resize: vertical;
 }
 
+.win98-textarea--vehicle-notes {
+  min-height: 14rem;
+}
+
 .win98-form-row {
   display: flex;
   flex-direction: column;

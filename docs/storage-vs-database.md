@@ -35,6 +35,7 @@ Constantes TypeScript: ver `src/lib/storage-keys.ts`.
 |------------|------------|
 | `id` | `id` (uuid) |
 | `at` | `at` (timestamptz; ISO string desde cliente) |
+| `urgencia` | `urgencia` (smallint 1–100) |
 | `kind` | `kind` |
 | `note` | `note` |
 | `odometerKm` | `odometer_km` |
@@ -51,13 +52,22 @@ Constantes TypeScript: ver `src/lib/storage-keys.ts`.
 
 | Campo JSON | Columna DB |
 |------------|------------|
+| `id` | `id` (uuid) |
+| `at` | `at` |
+| `urgencia` | `urgencia` (smallint 1–100) |
 | `what` | `what` |
+| `note` | `note` |
 
 ### `ReminderEntry` → `reminders`
 
 | Campo JSON | Columna DB |
 |------------|------------|
+| `id` | `id` (uuid) |
 | `dueAt` | `due_at` |
+| `text` | `text` |
+| `done` | `done` |
+
+Los query params `?tema=` / `?texto=` en `/recordatorios` solo prellenan el formulario en el navegador; **no** se guardan en filas (el texto sugerido termina en `text` solo si el usuario envía el formulario). La etiqueta del día de la semana junto a la fecha es solo presentación.
 
 ### Opciones de app → `app_options`
 
@@ -90,3 +100,4 @@ El respaldo en Opciones serializa **todas** las claves que empiezan por `mecanip
 - Claves: `src/lib/storage-keys.ts`
 - Tipos de filas: `src/lib/mecanipana-types.ts`
 - Migración Postgres: `supabase/migrations/20260428120000_initial_schema.sql`
+- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders` — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`.

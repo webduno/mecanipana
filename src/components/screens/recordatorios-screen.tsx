@@ -9,6 +9,7 @@ import {
   makeId,
   saveReminders,
 } from "@/lib/local-storage-data";
+import { pushReminderEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 
 /** Si la URL solo trae `tema`, prellenamos con el mismo rótulo que en Resumen */
 const TEXTO_POR_TEMA: Record<string, string> = {
@@ -94,6 +95,7 @@ function RecordatoriosScreenInner() {
       done: false,
     };
     persist([row, ...items]);
+    void pushReminderEntryRemote(row);
     setText("");
     setDueAt(defaultDueDateInputValue());
   }
