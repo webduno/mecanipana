@@ -3,6 +3,16 @@ import { getLogInsertContext } from "@/lib/api/log-insert-context";
 import { normalizeLocationFieldsFromRecord } from "@/lib/location-fields";
 import { isLikelyUuidString } from "@/lib/supabase-service";
 
+function parseOptionalContactId(body: Record<string, unknown>): string | null {
+  const raw = body.contact_id ?? body.contactId;
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== "string") return null;
+  const t = raw.trim();
+  if (t === "") return null;
+  if (!isLikelyUuidString(t)) return null;
+  return t;
+}
+
 /** POST — `reminders` (RLS / fallback como uso y mantenimiento). */
 export async function POST(request: Request) {
   let raw: unknown;
@@ -57,6 +67,8 @@ export async function POST(request: Request) {
   const ctx = await getLogInsertContext();
   if (ctx.kind === "error") return ctx.response;
 
+  const contactId = parseOptionalContactId(body);
+
   const { error } = await ctx.client.from("reminders").insert({
     id,
     user_id: ctx.userId,
@@ -67,6 +79,7 @@ export async function POST(request: Request) {
     location_lat: loc.locationLat,
     location_lon: loc.locationLon,
     estimated_cost_bs: estimatedCostBs,
+    contact_id: contactId,
   });
 
   if (error) {

@@ -4,8 +4,10 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { ReminderEntry } from "@/lib/mecanipana-types";
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
+import { ContactPickerField } from "@/components/contact-picker-field";
 import { LocationOsmField, type LocationOsmValue } from "@/components/location-osm-field";
 import {
+  formatContactOneLine,
   loadReminders,
   makeId,
   saveReminders,
@@ -72,6 +74,7 @@ function RecordatoriosScreenInner() {
     locationLon: null,
   });
   const [estimatedCostBs, setEstimatedCostBs] = useState("");
+  const [contactId, setContactId] = useState<string | null>(null);
 
   const qsKey = searchParams.toString();
 
@@ -105,11 +108,13 @@ function RecordatoriosScreenInner() {
       locationLat: location.locationLat,
       locationLon: location.locationLon,
       estimatedCostBs: estimatedCostBs.trim().slice(0, 64),
+      contactId,
     };
     persist([row, ...items]);
     void pushReminderEntryRemote(row);
     setText("");
     setEstimatedCostBs("");
+    setContactId(null);
     setLocation({ locationLabel: "", locationLat: null, locationLon: null });
     setDueAt(defaultDueDateInputValue());
   }
@@ -183,6 +188,7 @@ function RecordatoriosScreenInner() {
             autoComplete="off"
           />
         </div>
+        <ContactPickerField idPrefix="rec" value={contactId} onChange={setContactId} />
         <LocationOsmField idPrefix="rec-loc" value={location} onChange={setLocation} />
         <div className="win98-form-actions">
           <button type="submit" className="win98-btn win98-btn--accent-blue">
@@ -218,6 +224,17 @@ function RecordatoriosScreenInner() {
                       }
                     >
                       ~ {r.estimatedCostBs.trim()} (estim.)
+                    </div>
+                  ) : null}
+                  {r.contactId ? (
+                    <div
+                      className={
+                        r.done
+                          ? "win98-muted mt-0.5 text-[0.82rem] line-through opacity-70"
+                          : "win98-muted mt-0.5 text-[0.82rem]"
+                      }
+                    >
+                      {formatContactOneLine(r.contactId) || "Contacto (sin datos en agenda)"}
                     </div>
                   ) : null}
                   {r.locationLabel.trim() ? (

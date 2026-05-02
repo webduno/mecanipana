@@ -111,6 +111,7 @@ export function CuestionarioVehiculoScreen() {
         locationLat: null,
         locationLon: null,
         paidBs: "",
+        contactId: null,
       });
       void pushMaintenanceEntryRemote(row);
     }

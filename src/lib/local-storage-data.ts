@@ -1,6 +1,7 @@
 import {
   THEME_IDS,
   type AppOptions,
+  type ContactEntry,
   type FuelEntry,
   type HistoryRow,
   type MaintenanceEntry,
@@ -33,6 +34,14 @@ function optionalMoneyTextFromRecord(
   const raw = x[camelKey] ?? x[snakeKey];
   if (typeof raw !== "string") return "";
   return raw.trim().slice(0, 64);
+}
+
+function optionalContactIdFromRecord(x: Record<string, unknown>): string | null {
+  const raw = x.contactId ?? x.contact_id;
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== "string") return null;
+  const t = raw.trim();
+  return t === "" ? null : t;
 }
 
 export function makeId(): string {
@@ -173,6 +182,7 @@ function parseMaintenanceEntry(x: unknown): MaintenanceEntry | null {
     note: x.note,
     urgencia: normalizeUrgencia(x.urgencia),
     paidBs: optionalMoneyTextFromRecord(x, "paidBs", "paid_bs"),
+    contactId: optionalContactIdFromRecord(x),
     ...loc,
   };
 }
@@ -476,6 +486,54 @@ export function appendMaintenanceWhatCustom(label: string): string[] {
   return next;
 }
 
+function parseContactEntry(x: unknown): ContactEntry | null {
+  if (!isObjectRecord(x)) return null;
+  if (typeof x.id !== "string" || typeof x.name !== "string") return null;
+  return {
+    id: x.id,
+    name: x.name,
+    phone: typeof x.phone === "string" ? x.phone : "",
+    location: typeof x.location === "string" ? x.location : "",
+  };
+}
+
+export function loadContacts(): ContactEntry[] {
+  if (typeof window === "undefined") return [];
+  const v = safeParse<unknown>(window.localStorage.getItem(STORAGE_KEYS.contacts), []);
+  if (!Array.isArray(v)) return [];
+  return v.map(parseContactEntry).filter((e): e is ContactEntry => e !== null);
+}
+
+export function saveContacts(entries: ContactEntry[]) {
+  window.localStorage.setItem(STORAGE_KEYS.contacts, JSON.stringify(entries));
+}
+
+export function appendContact(entry: Omit<ContactEntry, "id">): ContactEntry {
+  const row: ContactEntry = {
+    id: makeId(),
+    name: entry.name.trim().slice(0, 200),
+    phone: entry.phone.trim().slice(0, 64),
+    location: entry.location.trim().slice(0, 500),
+  };
+  const list = loadContacts();
+  list.unshift(row);
+  saveContacts(list);
+  return row;
+}
+
+export function getContactById(id: string | null | undefined): ContactEntry | null {
+  if (id == null || String(id).trim() === "") return null;
+  return loadContacts().find((c) => c.id === id) ?? null;
+}
+
+/** Una línea para historial o listas (nombre · tel · lugar). */
+export function formatContactOneLine(contactId: string | null | undefined): string {
+  const c = getContactById(contactId);
+  if (!c) return "";
+  const parts = [c.name.trim(), c.phone.trim(), c.location.trim()].filter(Boolean);
+  return parts.join(" · ");
+}
+
 export function loadReminders(): ReminderEntry[] {
   if (typeof window === "undefined") return [];
   const v = safeParse<unknown>(window.localStorage.getItem(STORAGE_KEYS.reminders), []);
@@ -506,6 +564,7 @@ function parseReminderEntry(x: unknown): ReminderEntry | null {
       "estimatedCostBs",
       "estimated_cost_bs"
     ),
+    contactId: optionalContactIdFromRecord(x),
     ...loc,
   };
 }
@@ -617,6 +676,9 @@ export function buildHistoryRows(): HistoryRow[] {
         `urg. ${e.urgencia}`,
         e.note,
         e.paidBs.trim() ? `pagado ${e.paidBs.trim()}` : "",
+        formatContactOneLine(e.contactId)
+          ? `contacto: ${formatContactOneLine(e.contactId)}`
+          : "",
         e.locationLabel.trim() ? e.locationLabel.trim() : "",
       ]
         .filter(Boolean)

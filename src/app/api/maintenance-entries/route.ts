@@ -3,6 +3,16 @@ import { getLogInsertContext } from "@/lib/api/log-insert-context";
 import { normalizeLocationFieldsFromRecord } from "@/lib/location-fields";
 import { isLikelyUuidString } from "@/lib/supabase-service";
 
+function parseOptionalContactId(body: Record<string, unknown>): string | null {
+  const raw = body.contact_id ?? body.contactId;
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== "string") return null;
+  const t = raw.trim();
+  if (t === "") return null;
+  if (!isLikelyUuidString(t)) return null;
+  return t;
+}
+
 function clampUrgencia(n: unknown): number | null {
   const v =
     typeof n === "number"
@@ -66,6 +76,8 @@ export async function POST(request: Request) {
         ? body.paidBs.trim().slice(0, 64)
         : "";
 
+  const contactId = parseOptionalContactId(body);
+
   const { error } = await ctx.client.from("maintenance_entries").insert({
     id,
     user_id: ctx.userId,
@@ -77,6 +89,7 @@ export async function POST(request: Request) {
     location_lat: loc.locationLat,
     location_lon: loc.locationLon,
     paid_bs: paidBs,
+    contact_id: contactId,
   });
 
   if (error) {

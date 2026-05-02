@@ -16,6 +16,14 @@ export type FuelEntry = {
   note: string;
 };
 
+/** Contacto de agenda (taller / persona); `location` es dirección o taller en texto. */
+export type ContactEntry = {
+  id: string;
+  name: string;
+  phone: string;
+  location: string;
+};
+
 export type MaintenanceEntry = {
   id: string;
   at: string;
@@ -29,6 +37,8 @@ export type MaintenanceEntry = {
   locationLon: number | null;
   /** Monto pagado (texto libre: usuario indica moneda; opcional). */
   paidBs: string;
+  /** Contacto de agenda opcional (`ContactEntry.id`). */
+  contactId: string | null;
 };
 
 export type ReminderEntry = {
@@ -42,6 +52,8 @@ export type ReminderEntry = {
   locationLon: number | null;
   /** Costo estimado (texto libre: usuario indica moneda; opcional). */
   estimatedCostBs: string;
+  /** Contacto de agenda opcional (`ContactEntry.id`). */
+  contactId: string | null;
 };
 
 /** Temas de interfaz (localStorage + futura sync Supabase `app_options.theme`). */

@@ -54,6 +54,18 @@ CREATE TABLE IF NOT EXISTS public.fuel_entries (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS public.contacts (
+  id uuid PRIMARY KEY,
+  user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+  name text NOT NULL DEFAULT '',
+  phone text NOT NULL DEFAULT '',
+  location text NOT NULL DEFAULT '',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.contacts IS
+  'Agenda de contactos (taller/persona); localStorage mecanipana:contacts. Campo location = dirección en texto. Opcional en reminders y maintenance_entries.';
+
 CREATE TABLE IF NOT EXISTS public.maintenance_entries (
   id uuid PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
@@ -65,6 +77,7 @@ CREATE TABLE IF NOT EXISTS public.maintenance_entries (
   location_lat double precision,
   location_lon double precision,
   paid_bs text NOT NULL DEFAULT '',
+  contact_id uuid REFERENCES public.contacts (id) ON DELETE SET NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -78,6 +91,7 @@ CREATE TABLE IF NOT EXISTS public.reminders (
   location_lat double precision,
   location_lon double precision,
   estimated_cost_bs text NOT NULL DEFAULT '',
+  contact_id uuid REFERENCES public.contacts (id) ON DELETE SET NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -192,6 +206,21 @@ ALTER TABLE public.reminders ADD COLUMN IF NOT EXISTS estimated_cost_bs text NOT
 COMMENT ON COLUMN public.maintenance_entries.paid_bs IS 'Monto pagado, texto libre (cualquier moneda); opcional.';
 COMMENT ON COLUMN public.reminders.estimated_cost_bs IS 'Costo estimado, texto libre (cualquier moneda); opcional.';
 
+CREATE TABLE IF NOT EXISTS public.contacts (
+  id uuid PRIMARY KEY,
+  user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+  name text NOT NULL DEFAULT '',
+  phone text NOT NULL DEFAULT '',
+  location text NOT NULL DEFAULT '',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.maintenance_entries ADD COLUMN IF NOT EXISTS contact_id uuid REFERENCES public.contacts (id) ON DELETE SET NULL;
+ALTER TABLE public.reminders ADD COLUMN IF NOT EXISTS contact_id uuid REFERENCES public.contacts (id) ON DELETE SET NULL;
+
+COMMENT ON COLUMN public.maintenance_entries.contact_id IS 'Contacto opcional (taller/persona); FK a public.contacts.';
+COMMENT ON COLUMN public.reminders.contact_id IS 'Contacto opcional; FK a public.contacts.';
+
 -- -----------------------------------------------------------------------------
 -- 3. Índices (consultas por usuario + orden temporal)
 -- -----------------------------------------------------------------------------
@@ -202,6 +231,7 @@ CREATE INDEX IF NOT EXISTS idx_fuel_entries_user_at ON public.fuel_entries (user
 CREATE INDEX IF NOT EXISTS idx_maintenance_entries_user_at ON public.maintenance_entries (user_id, at DESC);
 CREATE INDEX IF NOT EXISTS idx_maintenance_entries_user_urgencia ON public.maintenance_entries (user_id, urgencia DESC);
 CREATE INDEX IF NOT EXISTS idx_reminders_user_due ON public.reminders (user_id, due_at);
+CREATE INDEX IF NOT EXISTS idx_contacts_user_created ON public.contacts (user_id, created_at DESC);
 
 -- -----------------------------------------------------------------------------
 -- 4. Row Level Security + políticas (solo el dueño de auth.uid())
@@ -214,6 +244,7 @@ ALTER TABLE public.usage_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.fuel_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.maintenance_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_extra_vehicle_lines ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_extra_variant_labels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_extra_usage_kinds ENABLE ROW LEVEL SECURITY;
@@ -246,6 +277,9 @@ CREATE POLICY maintenance_entries_all_own ON public.maintenance_entries FOR ALL 
 
 DROP POLICY IF EXISTS reminders_all_own ON public.reminders;
 CREATE POLICY reminders_all_own ON public.reminders FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS contacts_all_own ON public.contacts;
+CREATE POLICY contacts_all_own ON public.contacts FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
 DROP POLICY IF EXISTS user_extra_vehicle_lines_all_own ON public.user_extra_vehicle_lines;
 CREATE POLICY user_extra_vehicle_lines_all_own ON public.user_extra_vehicle_lines FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
@@ -331,7 +365,7 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, service_role;
 -- - Perfil: profiles.display_name / avatar_url (metadatos opcionales para UI).
 -- - Config sincronizable: app_options.theme, .locale, .fuentes_grandes, .preferences_extra (JSON).
 -- - vehicle_line / variant_label / vehicle_notes → vehicle_context.
--- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders (due_at, text, location_* y costos opcionales).
+-- - Logs: usage_entries.urgencia / maintenance_entries.urgencia (1–100), fuel_entries, reminders (due_at, text, location_*, costos, contact_id opcional), contacts (agenda).
 -- - admin_emails: correos con rol admin UI (crear el mismo correo en Authentication con contraseña de prueba).
 -- - Opciones extra por desplegable / lista:
 --     user_extra_vehicle_lines, user_extra_variant_labels,

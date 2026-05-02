@@ -930,3 +930,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 
 ---
 
+## 2026-05-02 (24)
+
+**Prompt:**
+
+> add a simple contact module, that will be an input on recordatorio and on mantenimiento, just add name, phone, and location for it, the input should be a simple select, but with a modal to add new contact on the fly, make sure to take into account localstorage and db supabase
+
+**Outcome:** `ContactEntry` + `mecanipana:contacts`; `contactId` en `ReminderEntry`/`MaintenanceEntry`; UI `ContactPickerField` (select + modal); migración `contacts`, `contact_id`; `POST /api/contacts` (upsert); sync `pushContactEntryRemote` y asegurar contacto antes de recordatorio/mantenimiento.
+
+---
+

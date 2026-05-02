@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   maintenanceLog: "mecanipana:maintenanceLog",
   maintenanceWhatCustom: "mecanipana:maintenanceWhatCustom",
   reminders: "mecanipana:reminders",
+  contacts: "mecanipana:contacts",
   options: "mecanipana:options",
   vehicleNotes: "mecanipana:vehicleNotes",
   extraUsageNotePresets: "mecanipana:extraUsageNotePresets",

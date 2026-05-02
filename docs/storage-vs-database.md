@@ -20,6 +20,7 @@ Convención en Postgres: nombres en **snake_case**; en TypeScript / JSON local m
 | `mecanipana:maintenanceLog` | JSON array `MaintenanceEntry[]` | `maintenance_entries` |
 | `mecanipana:maintenanceWhatCustom` | JSON array de strings | `user_maintenance_what_custom`: columna `label` |
 | `mecanipana:reminders` | JSON array `ReminderEntry[]` | `reminders` |
+| `mecanipana:contacts` | JSON array `ContactEntry[]` | `contacts` |
 | `mecanipana:options` | JSON objeto `AppOptions`: `{ fuentesGrandes, theme }` (`theme`: `win98` \| `neumorphism` \| `facephism`) | `app_options`: `fuentes_grandes`, `theme`, `locale`, `preferences_extra` |
 | `mecanipana:extraUsageNotePresets` | JSON array de strings | `user_extra_usage_note_presets`: columna `phrase` |
 
@@ -61,6 +62,7 @@ Constantes TypeScript: ver `src/lib/storage-keys.ts`.
 | `locationLat` | `location_lat` (double precision, nullable) |
 | `locationLon` | `location_lon` (double precision, nullable) |
 | `paidBs` | `paid_bs` (texto libre; moneda la escribe el usuario) |
+| `contactId` | `contact_id` (uuid, FK a `contacts`, nullable) |
 
 ### `ReminderEntry` → `reminders`
 
@@ -74,6 +76,16 @@ Constantes TypeScript: ver `src/lib/storage-keys.ts`.
 | `locationLat` | `location_lat` |
 | `locationLon` | `location_lon` |
 | `estimatedCostBs` | `estimated_cost_bs` (texto libre; moneda la escribe el usuario) |
+| `contactId` | `contact_id` (uuid, FK a `contacts`, nullable) |
+
+### `ContactEntry` → `contacts`
+
+| Campo JSON | Columna DB |
+|------------|------------|
+| `id` | `id` (uuid) |
+| `name` | `name` |
+| `phone` | `phone` |
+| `location` | `location` (taller o dirección, texto) |
 
 Los query params `?tema=` / `?texto=` en `/recordatorios` solo prellenan el formulario en el navegador; **no** se guardan en filas (el texto sugerido termina en `text` solo si el usuario envía el formulario). La etiqueta del día de la semana junto a la fecha es solo presentación.
 
@@ -108,4 +120,4 @@ El respaldo en Opciones serializa **todas** las claves que empiezan por `mecanip
 - Claves: `src/lib/storage-keys.ts`
 - Tipos de filas: `src/lib/mecanipana-types.ts`
 - Migración Postgres: `supabase/migrations/20260428120000_initial_schema.sql`
-- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders` — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`. Búsqueda de lugar (Nominatim, uso político): `GET /api/osm/search?q=`.
+- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders`, `POST /api/contacts` (upsert agenda) — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`. Búsqueda de lugar (Nominatim, uso político): `GET /api/osm/search?q=`.

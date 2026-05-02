@@ -16,6 +16,7 @@ import { useToast } from "@/components/toast-provider";
 import {
   appendMaintenance,
   appendMaintenanceWhatCustom,
+  formatContactOneLine,
   loadMaintenanceLog,
   loadMaintenanceWhatCustom,
 } from "@/lib/local-storage-data";
@@ -23,6 +24,7 @@ import { openStreetMapMarkerUrl } from "@/lib/osm";
 import { pushMaintenanceEntryRemote } from "@/lib/remote/sync-log-entries-remote";
 import { DatePresetField, useDatePresetState } from "@/components/date-preset-field";
 import { LocationOsmField, type LocationOsmValue } from "@/components/location-osm-field";
+import { ContactPickerField } from "@/components/contact-picker-field";
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 
 const PREDEFINED_MAINTENANCE_WHAT = [
@@ -60,6 +62,7 @@ export function MantenimientoScreen() {
     locationLat: null,
     locationLon: null,
   });
+  const [contactId, setContactId] = useState<string | null>(null);
   const [, bump] = useState(0);
   const recent = loadMaintenanceLog().slice(0, 12);
 
@@ -110,11 +113,13 @@ export function MantenimientoScreen() {
       locationLat: location.locationLat,
       locationLon: location.locationLon,
       paidBs: paidBs.trim().slice(0, 64),
+      contactId,
     });
     void pushMaintenanceEntryRemote(row);
     setWhat(PREDEFINED_MAINTENANCE_WHAT[0]!);
     setNote("");
     setPaidBs("");
+    setContactId(null);
     setLocation({ locationLabel: "", locationLat: null, locationLon: null });
     bump((n) => n + 1);
     showToast("Guardado en este equipo.");
@@ -217,6 +222,7 @@ export function MantenimientoScreen() {
             autoComplete="off"
           />
         </div>
+        <ContactPickerField idPrefix="mant" value={contactId} onChange={setContactId} />
         <LocationOsmField idPrefix="mant-loc" value={location} onChange={setLocation} />
         <div className="win98-form-actions">
           <button type="submit" className="win98-btn win98-btn--accent-blue">
@@ -245,6 +251,11 @@ export function MantenimientoScreen() {
                     ? ` · ${r.locationLabel.trim()}`
                     : ""}
                 </div>
+                {r.contactId ? (
+                  <div className="win98-muted text-[0.82rem] leading-snug">
+                    {formatContactOneLine(r.contactId) || "Contacto (sin datos en agenda)"}
+                  </div>
+                ) : null}
                 {r.locationLat != null &&
                 r.locationLon != null &&
                 Number.isFinite(r.locationLat) &&

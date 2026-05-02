@@ -10,6 +10,7 @@ import {
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import {
   buildHistoryRows,
+  formatContactOneLine,
   getMaintenanceSuggestionTiles,
   loadFuelLog,
   loadMaintenanceLog,
@@ -164,6 +165,11 @@ export function ResumenScreen() {
                   {r.estimatedCostBs.trim() ? (
                     <div className="win98-muted mt-1 text-[0.82rem] leading-snug">
                       ~ {r.estimatedCostBs.trim()} (estim.)
+                    </div>
+                  ) : null}
+                  {r.contactId ? (
+                    <div className="win98-muted mt-1 text-[0.82rem] leading-snug">
+                      {formatContactOneLine(r.contactId) || "Contacto (sin datos en agenda)"}
                     </div>
                   ) : null}
                   {r.locationLabel.trim() ? (
