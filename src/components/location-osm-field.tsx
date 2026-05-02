@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import dynamic from "next/dynamic";
+import { useCallback, useId, useState } from "react";
 import { openStreetMapMarkerUrl } from "@/lib/osm";
 
 export type LocationOsmValue = {
@@ -8,6 +9,19 @@ export type LocationOsmValue = {
   locationLat: number | null;
   locationLon: number | null;
 };
+
+const LocationMapPicker = dynamic(
+  () =>
+    import("@/components/location-map-picker").then((m) => m.LocationMapPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[min(16rem,45vh)] items-center justify-center border-2 border-[#808080] bg-[#f0f0f0] text-[0.9rem] text-[#505050]">
+        Cargando mapa…
+      </div>
+    ),
+  }
+);
 
 type Props = {
   idPrefix: string;
@@ -18,17 +32,21 @@ type Props = {
 type SearchHit = { display_name: string; lat: number; lon: number };
 
 export function LocationOsmField({ idPrefix, value, onChange }: Props) {
+  const [searchDraft, setSearchDraft] = useState("");
   const [results, setResults] = useState<SearchHit[]>([]);
   const [loading, setLoading] = useState(false);
+  const [reverseLoading, setReverseLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  const inputId = `${idPrefix}-label`;
-  const searchLabelId = `${idPrefix}-search-status`;
+  const labelTextareaId = `${idPrefix}-label`;
+  const mapInstrId = `${idPrefix}-map-instr`;
+  const searchInputId = `${idPrefix}-search-q`;
+  const searchRegionId = useId();
 
   const onSearch = useCallback(async () => {
-    const q = value.locationLabel.trim();
+    const q = searchDraft.trim();
     if (q.length < 2) {
-      setSearchError("Escribe al menos 2 caracteres.");
+      setSearchError("Escribe al menos 2 caracteres en la búsqueda.");
       setResults([]);
       return;
     }
@@ -58,22 +76,65 @@ export function LocationOsmField({ idPrefix, value, onChange }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [value.locationLabel]);
+  }, [searchDraft]);
+
+  async function handleMapClick(lat: number, lon: number) {
+    setSearchError(null);
+    onChange({
+      ...value,
+      locationLat: lat,
+      locationLon: lon,
+    });
+    setReverseLoading(true);
+    try {
+      const res = await fetch(
+        `/api/osm/reverse?lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}`,
+        { credentials: "same-origin" }
+      );
+      const data = (await res.json()) as {
+        ok?: boolean;
+        display_name?: string;
+      };
+      if (res.ok && data.ok && typeof data.display_name === "string") {
+        onChange({
+          locationLabel: data.display_name.trim().slice(0, 500),
+          locationLat: lat,
+          locationLon: lon,
+        });
+        return;
+      }
+      onChange({
+        locationLabel: `${lat.toFixed(5)}, ${lon.toFixed(5)}`,
+        locationLat: lat,
+        locationLon: lon,
+      });
+    } catch {
+      onChange({
+        locationLabel: `${lat.toFixed(5)}, ${lon.toFixed(5)}`,
+        locationLat: lat,
+        locationLon: lon,
+      });
+    } finally {
+      setReverseLoading(false);
+    }
+  }
 
   function pickHit(hit: SearchHit) {
     onChange({
-      locationLabel: hit.display_name,
+      locationLabel: hit.display_name.trim().slice(0, 500),
       locationLat: hit.lat,
       locationLon: hit.lon,
     });
     setResults([]);
     setSearchError(null);
+    setSearchDraft("");
   }
 
   function clearLocation() {
     onChange({ locationLabel: "", locationLat: null, locationLon: null });
     setResults([]);
     setSearchError(null);
+    setSearchDraft("");
   }
 
   const hasCoords =
@@ -82,41 +143,53 @@ export function LocationOsmField({ idPrefix, value, onChange }: Props) {
     Number.isFinite(value.locationLat) &&
     Number.isFinite(value.locationLon);
 
+  const hasAny =
+    value.locationLabel.trim() !== "" ||
+    value.locationLat != null ||
+    value.locationLon != null;
+
   return (
     <div className="win98-form-row flex-col items-stretch sm:flex-row sm:items-start">
-      <label className="win98-label shrink-0" htmlFor={inputId}>
+      <label className="win98-label shrink-0" htmlFor={labelTextareaId}>
         Ubicación (opcional)
       </label>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <p id={mapInstrId} className="win98-muted m-0 text-[0.82rem] leading-snug">
+          <strong>Elegir en el mapa:</strong> toca o haz clic donde esté el lugar. Luego
+          puedes afinar el texto abajo.
+        </p>
+        <LocationMapPicker
+          labelledBy={mapInstrId}
+          lat={value.locationLat}
+          lon={value.locationLon}
+          onMapClick={handleMapClick}
+        />
+        {reverseLoading ? (
+          <p className="m-0 text-[0.82rem] text-[#303030]" aria-live="polite">
+            Buscando nombre del lugar…
+          </p>
+        ) : null}
+
+        <label className="win98-label m-0" htmlFor={labelTextareaId}>
+          Texto del lugar (editable)
+        </label>
         <textarea
-          id={inputId}
+          id={labelTextareaId}
           className="win98-textarea"
           value={value.locationLabel}
           onChange={(e) =>
             onChange({
               ...value,
-              locationLabel: e.target.value,
-              locationLat: null,
-              locationLon: null,
+              locationLabel: e.target.value.slice(0, 500),
             })
           }
-          placeholder="Taller, dirección o lugar — «Buscar en mapa» para enlazar en OpenStreetMap"
+          placeholder="Se rellena al elegir en el mapa o al buscar; puedes editarlo."
           maxLength={500}
           rows={2}
-          aria-describedby={searchLabelId}
         />
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className="win98-btn"
-            onClick={() => void onSearch()}
-            disabled={loading}
-          >
-            {loading ? "Buscando…" : "Buscar en mapa"}
-          </button>
-          {(value.locationLabel.trim() ||
-            value.locationLat != null ||
-            value.locationLon != null) ? (
+
+        <div className="flex flex-wrap items-center gap-2 border-t border-[#c0c0c0] pt-3">
+          {(hasAny || searchDraft.trim()) ? (
             <button type="button" className="win98-btn" onClick={clearLocation}>
               Quitar ubicación
             </button>
@@ -132,8 +205,40 @@ export function LocationOsmField({ idPrefix, value, onChange }: Props) {
             </a>
           ) : null}
         </div>
-        <p id={searchLabelId} className="win98-muted m-0 text-[0.72rem] leading-snug">
-          Datos de lugares ©{" "}
+
+        <div
+          id={searchRegionId}
+          className="mt-1 border border-[#b0b0b0] bg-[#f5f5f5] p-2"
+          role="region"
+          aria-label="Búsqueda alternativa por texto"
+        >
+          <p className="m-0 mb-2 text-[0.82rem] font-bold text-[#303030]">
+            O buscar por texto
+          </p>
+          <div className="flex flex-wrap items-stretch gap-2">
+            <input
+              id={searchInputId}
+              className="win98-input min-w-[10rem] flex-1"
+              type="text"
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              placeholder="Dirección o nombre del lugar"
+              maxLength={200}
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              className="win98-btn shrink-0"
+              onClick={() => void onSearch()}
+              disabled={loading}
+            >
+              {loading ? "Buscando…" : "Buscar"}
+            </button>
+          </div>
+        </div>
+
+        <p className="win98-muted m-0 text-[0.72rem] leading-snug">
+          Mapa y datos ©{" "}
           <a
             href="https://www.openstreetmap.org/copyright"
             target="_blank"

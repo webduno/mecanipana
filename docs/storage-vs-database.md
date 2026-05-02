@@ -120,4 +120,4 @@ El respaldo en Opciones serializa **todas** las claves que empiezan por `mecanip
 - Claves: `src/lib/storage-keys.ts`
 - Tipos de filas: `src/lib/mecanipana-types.ts`
 - Migración Postgres: `supabase/migrations/20260428120000_initial_schema.sql`
-- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders`, `POST /api/contacts` (upsert agenda) — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`. Búsqueda de lugar (Nominatim, uso político): `GET /api/osm/search?q=`.
+- Insert remoto (sesión Supabase): `POST /api/usage-entries`, `POST /api/maintenance-entries`, `POST /api/reminders`, `POST /api/contacts` (upsert agenda) — ver `src/app/api/*/route.ts` y `src/lib/remote/sync-log-entries-remote.ts`. Lugares (Nominatim): `GET /api/osm/search?q=` (texto), `GET /api/osm/reverse?lat=&lon=` (clic en mapa).

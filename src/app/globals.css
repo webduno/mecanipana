@@ -602,3 +602,10 @@ body.mp-font-lg {
 .mp-mi-info-pulse {
   animation: mpMiInfoPulseRing 2s ease-in-out infinite;
 }
+
+/* Leaflet embebido en formularios (altura del contenedor padre) */
+.location-map-picker.leaflet-container {
+  height: 100%;
+  width: 100%;
+  font-family: inherit;
+}

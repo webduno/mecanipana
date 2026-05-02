@@ -940,3 +940,13 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 
 ---
 
+## 2026-05-02 (25)
+
+**Prompt:**
+
+> for the location, it should be either enter text to search, or the actual map to select location, but select on map should be main one
+
+**Outcome:** `LocationOsmField`: mapa Leaflet/OSM primario (clic → Nominatim reverse vía `GET /api/osm/reverse`); texto editable sin borrar coords; bloque secundario «Buscar por texto»; dependencias `leaflet` + `react-leaflet`; estilo `.location-map-picker` en `globals.css`.
+
+---
+
