@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { ReminderEntry } from "@/lib/mecanipana-types";
 import { VehicleSetupGate } from "@/components/vehicle-setup-gate";
 import {
@@ -9,9 +10,38 @@ import {
   saveReminders,
 } from "@/lib/local-storage-data";
 
+/** Si la URL solo trae `tema`, prellenamos con el mismo rótulo que en Resumen */
+const TEXTO_POR_TEMA: Record<string, string> = {
+  caucho: "Cauchos",
+  freno: "Frenos",
+  bateria: "Batería",
+  refrigerante: "Refrigerante",
+  filtro: "Filtros",
+  papeles: "Papeles",
+  luces: "Luces",
+  vidrios: "Vidrios",
+  aceite: "Aceite",
+};
+
 function toDateInputValue(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** Fecha por defecto del formulario: dentro de 7 días (calendario local). */
+function defaultDueDateInputValue() {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  return toDateInputValue(d);
+}
+
+/** Día de la semana legible para `YYYY-MM-DD` (mediodía local, es-VE). */
+function weekdayFromDateInputValue(yyyyMmDd: string): string {
+  if (!yyyyMmDd || !/^\d{4}-\d{2}-\d{2}$/.test(yyyyMmDd)) return "";
+  const d = new Date(`${yyyyMmDd}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return "";
+  const w = d.toLocaleDateString("es-VE", { weekday: "long" });
+  return w ? w.charAt(0).toUpperCase() + w.slice(1) : "";
 }
 
 function formatDue(iso: string) {
@@ -28,10 +58,24 @@ function formatDue(iso: string) {
   }
 }
 
-export function RecordatoriosScreen() {
+function RecordatoriosScreenInner() {
+  const searchParams = useSearchParams();
   const [items, setItems] = useState<ReminderEntry[]>(() => loadReminders());
-  const [dueAt, setDueAt] = useState(toDateInputValue(new Date()));
+  const [dueAt, setDueAt] = useState(() => defaultDueDateInputValue());
   const [text, setText] = useState("");
+
+  const qsKey = searchParams.toString();
+
+  useEffect(() => {
+    const textoParam = searchParams.get("texto")?.trim();
+    const temaParam = searchParams.get("tema")?.trim();
+    const fromTema =
+      temaParam && TEXTO_POR_TEMA[temaParam] ? TEXTO_POR_TEMA[temaParam] : "";
+    const prefill =
+      textoParam && textoParam.length > 0 ? textoParam : fromTema;
+    if (prefill) setText(prefill);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `qsKey` refleja cambios de URL sin depender de la referencia de `searchParams`.
+  }, [qsKey]);
 
   function persist(next: ReminderEntry[]) {
     saveReminders(next);
@@ -51,6 +95,7 @@ export function RecordatoriosScreen() {
     };
     persist([row, ...items]);
     setText("");
+    setDueAt(defaultDueDateInputValue());
   }
 
   function toggle(id: string) {
@@ -64,24 +109,33 @@ export function RecordatoriosScreen() {
     persist(items.filter((x) => x.id !== id));
   }
 
+  const dueWeekdayLabel = weekdayFromDateInputValue(dueAt);
+
   return (
     <VehicleSetupGate>
       <p className="m-0 text-pretty">
-        Fechas importantes: revisión, papeles, repuesto pendiente, etc.
+        Añade un recordatorio para un mantenimiento en específico.
       </p>
       <form onSubmit={onAdd} className="win98-inset">
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="rec-fecha">
             Fecha objetivo
           </label>
-          <input
-            id="rec-fecha"
-            className="win98-input"
-            type="date"
-            value={dueAt}
-            onChange={(e) => setDueAt(e.target.value)}
-            required
-          />
+          <div className="min-w-0 flex flex-col gap-1">
+            <input
+              id="rec-fecha"
+              className="win98-input"
+              type="date"
+              value={dueAt}
+              onChange={(e) => setDueAt(e.target.value)}
+              required
+            />
+            {dueWeekdayLabel ? (
+              <span className="win98-muted text-[0.82rem] leading-snug" aria-live="polite">
+                {dueWeekdayLabel}
+              </span>
+            ) : null}
+          </div>
         </div>
         <div className="win98-form-row">
           <label className="win98-label" htmlFor="rec-texto">
@@ -138,5 +192,13 @@ export function RecordatoriosScreen() {
         </ul>
       )}
     </VehicleSetupGate>
+  );
+}
+
+export function RecordatoriosScreen() {
+  return (
+    <Suspense fallback={<p className="win98-muted m-0">Cargando…</p>}>
+      <RecordatoriosScreenInner />
+    </Suspense>
   );
 }

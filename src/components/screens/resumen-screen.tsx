@@ -176,11 +176,7 @@ export function ResumenScreen() {
                 key={tile.id}
                 href={tile.href}
                 className={suggestionTileClass(tile.tone)}
-                title={
-                  tile.href === "/mantenimiento"
-                    ? "Abrir registro de mantenimiento"
-                    : "Abrir recordatorios"
-                }
+                title="Abrir recordatorios"
               >
                 <span className="text-[1.6rem] leading-none" aria-hidden>
                   {tile.emoji}

@@ -322,8 +322,17 @@ export type MaintenanceSuggestionTile = {
   title: string;
   subtitle: string;
   tone: "ok" | "attention" | "tip";
-  href: "/mantenimiento" | "/recordatorios";
+  /** `/recordatorios` con `tema` + `texto` para prellenar el formulario */
+  href: string;
 };
+
+/** Deep link a Recordatorios desde Resumen u otras pantallas (`tema` = id de categoría). */
+export function recordatoriosSuggestionHref(tema: string, texto: string): string {
+  const q = new URLSearchParams();
+  q.set("tema", tema);
+  q.set("texto", texto);
+  return `/recordatorios?${q.toString()}`;
+}
 
 /**
  * Tarjetas compactas para Resumen (VE): heurística por `what` en el log local
@@ -352,7 +361,7 @@ export function getMaintenanceSuggestionTiles(
         title,
         subtitle: softNever ? "Revisar" : "Anotar",
         tone: softNever ? "tip" : "attention",
-        href: "/mantenimiento",
+        href: recordatoriosSuggestionHref(id, title),
       });
       return;
     }
@@ -363,7 +372,7 @@ export function getMaintenanceSuggestionTiles(
         title,
         subtitle: "Ya toca",
         tone: "attention",
-        href: "/mantenimiento",
+        href: recordatoriosSuggestionHref(id, title),
       });
       return;
     }
@@ -373,7 +382,7 @@ export function getMaintenanceSuggestionTiles(
       title,
       subtitle: "Al día",
       tone: "ok",
-      href: "/mantenimiento",
+      href: recordatoriosSuggestionHref(id, title),
     });
   };
 
@@ -390,7 +399,7 @@ export function getMaintenanceSuggestionTiles(
       title: "Papeles",
       subtitle: "En lista",
       tone: "ok",
-      href: "/recordatorios",
+      href: recordatoriosSuggestionHref("papeles", "Papeles"),
     });
   } else {
     tiles.push({
@@ -399,7 +408,7 @@ export function getMaintenanceSuggestionTiles(
       title: "Papeles",
       subtitle: "Anótalo",
       tone: "attention",
-      href: "/recordatorios",
+      href: recordatoriosSuggestionHref("papeles", "Papeles"),
     });
   }
 

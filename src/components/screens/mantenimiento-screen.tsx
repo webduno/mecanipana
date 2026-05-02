@@ -109,7 +109,7 @@ export function MantenimientoScreen() {
   return (
     <VehicleSetupGate>
       <p className="m-0 text-pretty">
-        Cambio de aceite, caucho, frenos, taller, etc.
+        Registra un mantenimiento realizado.
       </p>
       <form onSubmit={onSubmit} className="win98-inset">
         <UrgenciaField

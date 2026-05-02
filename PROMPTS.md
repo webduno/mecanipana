@@ -819,3 +819,43 @@ Add new prompts below the latest entry (newest at bottom). Useful for sharing co
 **Outcome:** Pregunta 8 renombrada a **Estado de la batería**; opciones **Nueva**, **Usada**, **Dañada**, **No estoy seguro** y **Otro (especificar)**; `buildBody` y placeholder del detalle alineados.
 
 ---
+
+## 2026-05-02 (13)
+
+**Prompt:**
+
+> this goes to mantenimiento instead of recordatorio
+
+**Outcome:** En Resumen, tarjetas de «Recordatorios sugeridos» que venían de `pushLogTile` enlazan a **`/recordatorios`** (`getMaintenanceSuggestionTiles` en `local-storage-data.ts`); tipo `MaintenanceSuggestionTile` unificado a ese `href`; tooltip del `Link` en `resumen-screen.tsx`: «Abrir recordatorios».
+
+---
+
+## 2026-05-02 (14)
+
+**Prompt:**
+
+> and also, add url param to recordatorio so it sends that aswell and it can be put in the form
+
+**Outcome:** Deep links **`/recordatorios?tema=<id>&texto=<rótulo>`** vía `recordatoriosSuggestionHref` en `local-storage-data.ts` desde las tarjetas de sugerencias; `recordatorios-screen.tsx` lee query con `useSearchParams`, prellena el textarea (prioriza `texto`, si no hay usa mapa por `tema`), envuelto en `Suspense`.
+
+---
+
+## 2026-05-02 (15)
+
+**Prompt:**
+
+> put the date as default for next week here, next 7 days
+
+**Outcome:** «Fecha objetivo» en `recordatorios-screen.tsx` arranca en **hoy + 7 días** (`defaultDueDateInputValue`); tras «Añadir» la fecha vuelve a ese valor por defecto.
+
+---
+
+## 2026-05-02 (16)
+
+**Prompt:**
+
+> add day name so its clearer, dont remove currentinput, just add it
+
+**Outcome:** Bajo el `<input type="date">` de Recordatorios se muestra el **día de la semana** (`weekdayFromDateInputValue`, `es-VE`, nombre largo capitalizado) con `aria-live="polite"`; el control de fecha no cambia.
+
+---
