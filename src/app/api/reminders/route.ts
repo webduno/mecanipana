@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
   const contactId = parseOptionalContactId(body);
 
-  const { error } = await ctx.client.from("reminders").insert({
+  const { error } = await ctx.client.from("mecanipana_reminders").insert({
     id,
     user_id: ctx.userId,
     due_at: dueIso,

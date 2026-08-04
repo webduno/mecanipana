@@ -55,7 +55,7 @@ export async function POST(request: Request) {
   const ctx = await getLogInsertContext();
   if (ctx.kind === "error") return ctx.response;
 
-  const { error } = await ctx.client.from("usage_entries").insert({
+  const { error } = await ctx.client.from("mecanipana_usage_entries").insert({
     id,
     user_id: ctx.userId,
     at: atIso,

@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 
   const contactId = parseOptionalContactId(body);
 
-  const { error } = await ctx.client.from("maintenance_entries").insert({
+  const { error } = await ctx.client.from("mecanipana_maintenance_entries").insert({
     id,
     user_id: ctx.userId,
     at: atIso,
